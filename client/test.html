@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>测试</title>
+</head>
+<body>
+  <h1>JavaScript 测试</h1>
+  <div id="output">等待加载...</div>
+  <script>
+    document.getElementById('output').innerHTML = '<p>✓ JavaScript 执行正常</p>';
+    console.log('Script running...');
+
+    // 测试 fetch
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('output').innerHTML += '<p>✓ API 正常: ' + JSON.stringify(data) + '</p>';
+      })
+      .catch(err => {
+        document.getElementById('output').innerHTML += '<p style="color:red">✗ API 错误: ' + err.message + '</p>';
+      });
+  </script>
+</body>
+</html>

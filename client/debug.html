@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>MarkMe 调试页面</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+    .test { margin: 10px 0; padding: 10px; background: white; border-radius: 4px; }
+    .pass { color: green; }
+    .fail { color: red; }
+    h1 { margin-bottom: 20px; }
+    button { padding: 10px 20px; margin: 10px 0; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>MarkMe 前端调试</h1>
+  <div id="results"></div>
+  <button onclick="runTests()">运行测试</button>
+  <button onclick="window.location.href='/'">返回首页</button>
+
+  <script>
+    const results = document.getElementById('results');
+
+    function log(msg, pass = true) {
+      const div = document.createElement('div');
+      div.className = 'test ' + (pass ? 'pass' : 'fail');
+      div.textContent = (pass ? '✓ ' : '✗ ') + msg;
+      results.appendChild(div);
+    }
+
+    async function runTests() {
+      results.innerHTML = '';
+
+      // Test 1: marked library
+      log('测试 marked 库...');
+      if (typeof marked !== 'undefined') {
+        log('marked 库已加载: v' + (marked.version || 'unknown'));
+      } else {
+        log('marked 库未加载', false);
+      }
+
+      // Test 2: fetch API
+      log('测试 fetch API...');
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        log('API 正常: ' + JSON.stringify(data));
+      } catch (e) {
+        log('API 错误: ' + e.message, false);
+      }
+
+      // Test 3: Posts API
+      log('测试文章 API...');
+      try {
+        const res = await fetch('/api/posts');
+        const data = await res.json();
+        log('文章数量: ' + data.posts.length);
+      } catch (e) {
+        log('文章 API 错误: ' + e.message, false);
+      }
+
+      // Test 4: Tags API
+      log('测试标签 API...');
+      try {
+        const res = await fetch('/api/tags');
+        const data = await res.json();
+        log('标签: ' + data.join(', '));
+      } catch (e) {
+        log('标签 API 错误: ' + e.message, false);
+      }
+
+      // Test 5: Render markdown
+      log('测试 Markdown 渲染...');
+      try {
+        const html = marked.parse('# 测试\n\n**粗体**');
+        if (html.includes('<strong>')) {
+          log('Markdown 渲染正常');
+        } else {
+          log('Markdown 渲染异常', false);
+        }
+      } catch (e) {
+        log('Markdown 渲染错误: ' + e.message, false);
+      }
+
+      log('\n如果所有测试都通过，但首页仍显示"加载中"，请尝试:');
+      log('1. 按 Ctrl+Shift+R 强制刷新');
+      log('2. 清除浏览器缓存');
+      log('3. 使用无痕/隐私模式打开');
+    }
+
+    // Auto run on load
+    runTests();
+  </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+name: markme-blog-manager
+version: 1.0.0
+description: MarkMe 博客系统管理工具 - 支持文章和文件的完整 CRUD 操作
+author: MarkMe
+
+instructions: |
+  这是 MarkMe 博客系统的管理工具。
+  你可以通过这些工具管理博客文章和上传的文件。
+  所有数据管理都通过此工具进行，前端页面仅用于展示。
+
+tools:
+  # 文章管理
+  - name: create_post
+    description: 创建新的博客文章
+    parameters:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 文章标题
+        content:
+          type: string
+          description: 文章内容 (Markdown 格式)
+        summary:
+          type: string
+          description: 文章摘要
+        tags:
+          type: array
+          items:
+            type: string
+          description: 文章标签列表
+        status:
+          type: string
+          enum: [published, draft]
+          description: 文章状态
+      required:
+        - title
+        - content
+
+  - name: update_post
+    description: 更新现有的博客文章
+    parameters:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 文章 ID
+        title:
+          type: string
+          description: 新标题
+        content:
+          type: string
+          description: 新内容
+        summary:
+          type: string
+          description: 新摘要
+        tags:
+          type: array
+          items:
+            type: string
+          description: 新标签列表
+        status:
+          type: string
+          enum: [published, draft]
+          description: 新状态
+      required:
+        - id
+
+  - name: delete_post
+    description: 删除博客文章
+    parameters:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 文章 ID
+      required:
+        - id
+
+  - name: list_posts
+    description: 列出所有博客文章
+    parameters:
+      type: object
+      properties:
+        page:
+          type: number
+          description: 页码
+        limit:
+          type: number
+          description: 每页数量
+        status:
+          type: string
+          enum: [published, draft, all]
+          description: 筛选状态
+
+  - name: get_post
+    description: 获取特定博客文章详情
+    parameters:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 文章 ID
+      required:
+        - id
+
+  # 文件管理
+  - name: upload_file
+    description: 上传单个文件到博客系统
+    parameters:
+      type: object
+      properties:
+        file_path:
+          type: string
+          description: 文件的绝对路径
+        post_id:
+          type: number
+          description: 关联的文章 ID (可选)
+      required:
+        - file_path
+
+  - name: upload_folder
+    description: 上传整个文件夹到博客系统
+    parameters:
+      type: object
+      properties:
+        folder_path:
+          type: string
+          description: 文件夹的绝对路径
+        post_id:
+          type: number
+          description: 关联的文章 ID (可选)
+      required:
+        - folder_path
+
+  - name: list_files
+    description: 列出所有已上传的文件
+    parameters:
+      type: object
+      properties: {}
+
+  - name: get_file
+    description: 获取文件详情
+    parameters:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 文件 ID
+      required:
+        - id
+
+  - name: update_file
+    description: 更新文件元数据（名称、关联文章）
+    parameters:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 文件 ID
+        original_name:
+          type: string
+          description: 新的显示名称
+        post_id:
+          type: number
+          description: 关联的文章 ID (null 取消关联)
+      required:
+        - id
+
+  - name: replace_file
+    description: 替换文件内容
+    parameters:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 文件 ID
+        file_path:
+          type: string
+          description: 新文件的路径
+      required:
+        - id
+        - file_path
+
+  - name: delete_file
+    description: 删除已上传的文件
+    parameters:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 文件 ID
+      required:
+        - id
+
+  # 统计
+  - name: get_stats
+    description: 获取博客统计数据
+    parameters:
+      type: object
+      properties: {}
