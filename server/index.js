@@ -13,6 +13,11 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// MCP Bridge 路由（远程 AI 客户端通过 /bridge/tools/:name 调用）
+const bridgeRouter = require('./bridge-router');
+app.use('/bridge', bridgeRouter);
+
 app.use(express.static(path.join(__dirname, '../client')));
 
 const storage = multer.diskStorage({
