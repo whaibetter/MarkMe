@@ -20,6 +20,7 @@ app.use(express.json());
 
 // 安全配置
 const API_KEY = config.API_KEY;
+const HOST = config.HOST;
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 const MAX_FILE_SIZE = config.MAX_FILE_SIZE;
 const ALLOWED_EXTENSIONS = config.ALLOWED_EXTENSIONS;
@@ -156,7 +157,7 @@ const TOOLS = {
     }
   },
   replace_file: {
-    description: "Replace file content",
+    description: "Replace file content with a local file (server-side path)",
     parameters: {
       type: "object",
       properties: {
@@ -164,6 +165,29 @@ const TOOLS = {
         file_path: { type: "string", description: "Path to new file" }
       },
       required: ["id", "file_path"]
+    }
+  },
+  upload_content: {
+    description: "Upload a file by content (base64) - for remote clients without server filesystem access",
+    parameters: {
+      type: "object",
+      properties: {
+        filename: { type: "string", description: "File name with extension (e.g. 'readme.md')" },
+        content: { type: "string", description: "File content as base64 encoded string" },
+        post_id: { type: "number", description: "Associated post ID (optional)" }
+      },
+      required: ["filename", "content"]
+    }
+  },
+  replace_file_content: {
+    description: "Replace file content by base64 content - for remote clients",
+    parameters: {
+      type: "object",
+      properties: {
+        id: { type: "number", description: "File ID" },
+        content: { type: "string", description: "New file content as base64 encoded string" }
+      },
+      required: ["id", "content"]
     }
   },
   delete_file: {
@@ -368,6 +392,48 @@ function executeTool(name, args) {
         return { success: true, data: db.prepare('SELECT * FROM files WHERE id = ?').get(id) };
       }
 
+      case 'upload_content': {
+        const { filename, content, post_id } = args;
+        if (!filename || !content) return { success: false, error: 'filename and content required' };
+
+        if (!isAllowedFile(filename)) return { success: false, error: 'File type not allowed' };
+
+        if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+        const buf = Buffer.from(content, 'base64');
+        if (buf.length > MAX_FILE_SIZE) return { success: false, error: 'File too large (max 50MB)' };
+
+        const ext = path.extname(filename);
+        const storedName = Date.now() + '-' + Math.round(Math.random() * 1E9) + ext;
+        fs.writeFileSync(path.join(UPLOADS_DIR, storedName), buf);
+
+        const mime = require('mime-types');
+        const mimeType = mime.lookup(ext) || 'application/octet-stream';
+        const stmt = db.prepare('INSERT INTO files (filename, original_name, mime_type, size, post_id) VALUES (?, ?, ?, ?, ?)');
+        const result = stmt.run(storedName, filename, mimeType, buf.length, post_id || null);
+
+        return { success: true, data: { id: result.lastInsertRowid, filename: storedName, original_name: filename, url: '/uploads/' + storedName } };
+      }
+
+      case 'replace_file_content': {
+        const { id, content } = args;
+        const file = db.prepare('SELECT * FROM files WHERE id = ?').get(id);
+        if (!file) return { success: false, error: 'File not found' };
+
+        const buf = Buffer.from(content, 'base64');
+        if (buf.length > MAX_FILE_SIZE) return { success: false, error: 'File too large (max 50MB)' };
+
+        const filePath = path.join(UPLOADS_DIR, file.filename);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        fs.writeFileSync(filePath, buf);
+
+        const mime = require('mime-types');
+        const mimeType = mime.lookup(path.extname(file.original_name)) || 'application/octet-stream';
+        db.prepare('UPDATE files SET mime_type = ?, size = ? WHERE id = ?').run(mimeType, buf.length, id);
+
+        return { success: true, data: db.prepare('SELECT * FROM files WHERE id = ?').get(id) };
+      }
+
       case 'delete_file': {
         const file = db.prepare('SELECT * FROM files WHERE id = ?').get(args.id);
         if (!file) return { success: false, error: 'File not found' };
@@ -438,8 +504,12 @@ app.post('/call', (req, res) => {
   res.json(result);
 });
 
-app.listen(PORT, () => {
-  console.log(`MarkMe MCP HTTP Bridge running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  const displayHost = HOST === '0.0.0.0' ? '0.0.0.0 (all interfaces)' : HOST;
+  console.log(`MarkMe MCP HTTP Bridge running on ${displayHost}:${PORT}`);
+  if (HOST === '0.0.0.0') {
+    console.log(`Remote access: http://<your-server-ip>:${PORT}`);
+  }
   console.log(`API Documentation:`);
   console.log(`  GET  /tools          - List all available tools`);
   console.log(`  POST /tools/:name    - Call a tool by name`);

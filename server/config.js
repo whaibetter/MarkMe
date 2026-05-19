@@ -8,7 +8,10 @@ module.exports = {
   // MCP HTTP Bridge 端口
   MCP_BRIDGE_PORT: process.env.MCP_BRIDGE_PORT || 8081,
 
-  // API Key（可选，设置后需要认证）
+  // 监听地址（0.0.0.0 = 公网可访问，127.0.0.1 = 仅本地）
+  HOST: process.env.MARKME_HOST || '0.0.0.0',
+
+  // API Key（远程访问时强烈建议设置）
   API_KEY: process.env.MARKME_API_KEY || '',
 
   // 上传文件大小限制（字节）

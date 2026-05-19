@@ -148,7 +148,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     },
     {
       name: 'replace_file',
-      description: 'Replace file content with a new file',
+      description: 'Replace file content with a new file (server-side path)',
       inputSchema: {
         type: 'object',
         properties: {
@@ -156,6 +156,31 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           file_path: { type: 'string', description: 'Path to new file' }
         },
         required: ['id', 'file_path']
+      }
+    },
+    {
+      name: 'upload_content',
+      description: 'Upload a file by content (base64) - for remote clients',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          filename: { type: 'string', description: 'File name with extension' },
+          content: { type: 'string', description: 'File content as base64 encoded string' },
+          post_id: { type: 'number', description: 'Associated post ID (optional)' }
+        },
+        required: ['filename', 'content']
+      }
+    },
+    {
+      name: 'replace_file_content',
+      description: 'Replace file content by base64 content - for remote clients',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', description: 'File ID' },
+          content: { type: 'string', description: 'New file content as base64 encoded string' }
+        },
+        required: ['id', 'content']
       }
     },
     {
@@ -389,6 +414,44 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const mimeType = mime.lookup(ext) || 'application/octet-stream';
 
         db.prepare('UPDATE files SET mime_type = ?, size = ? WHERE id = ?').run(mimeType, stats.size, id);
+
+        const updated = db.prepare('SELECT * FROM files WHERE id = ?').get(id);
+        return { content: [{ type: 'text', text: JSON.stringify(updated, null, 2) }] };
+      }
+
+      case 'upload_content': {
+        const { filename, content, post_id } = args;
+        if (!filename || !content) return { content: [{ type: 'text', text: 'filename and content required' }], isError: true };
+
+        const uploadsDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+        const buf = Buffer.from(content, 'base64');
+        const ext = path.extname(filename);
+        const storedName = Date.now() + '-' + Math.round(Math.random() * 1E9) + ext;
+        fs.writeFileSync(path.join(uploadsDir, storedName), buf);
+
+        const mime = require('mime-types');
+        const mimeType = mime.lookup(ext) || 'application/octet-stream';
+        const stmt = db.prepare('INSERT INTO files (filename, original_name, mime_type, size, post_id) VALUES (?, ?, ?, ?, ?)');
+        const result = stmt.run(storedName, filename, mimeType, buf.length, post_id || null);
+
+        return { content: [{ type: 'text', text: JSON.stringify({ id: result.lastInsertRowid, filename: storedName, original_name: filename, url: '/uploads/' + storedName }) }] };
+      }
+
+      case 'replace_file_content': {
+        const { id, content } = args;
+        const file = db.prepare('SELECT * FROM files WHERE id = ?').get(id);
+        if (!file) return { content: [{ type: 'text', text: 'File not found' }], isError: true };
+
+        const buf = Buffer.from(content, 'base64');
+        const filePath = path.join(__dirname, 'uploads', file.filename);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        fs.writeFileSync(filePath, buf);
+
+        const mime = require('mime-types');
+        const mimeType = mime.lookup(path.extname(file.original_name)) || 'application/octet-stream';
+        db.prepare('UPDATE files SET mime_type = ?, size = ? WHERE id = ?').run(mimeType, buf.length, id);
 
         const updated = db.prepare('SELECT * FROM files WHERE id = ?').get(id);
         return { content: [{ type: 'text', text: JSON.stringify(updated, null, 2) }] };

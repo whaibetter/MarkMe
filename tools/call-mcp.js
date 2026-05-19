@@ -7,20 +7,26 @@
 
 const http = require('http');
 
+const BRIDGE_HOST = process.env.MARKME_HOST || 'localhost';
 const BRIDGE_PORT = process.env.MCP_BRIDGE_PORT || 8081;
+const API_KEY = process.env.MARKME_API_KEY || '';
 
 function callTool(name, args = {}) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify(args);
+    const headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Length': Buffer.byteLength(data)
+    };
+    if (API_KEY) {
+      headers['Authorization'] = 'Bearer ' + API_KEY;
+    }
     const options = {
-      hostname: 'localhost',
+      hostname: BRIDGE_HOST,
       port: BRIDGE_PORT,
       path: '/tools/' + name,
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Content-Length': Buffer.byteLength(data)
-      }
+      headers
     };
 
     const req = http.request(options, (res) => {
@@ -55,16 +61,26 @@ MarkMe MCP 工具调用器
 用法:
   node call-mcp.js <工具名> [参数JSON]
 
+环境变量:
+  MARKME_HOST       服务器地址 (默认: localhost)
+  MCP_BRIDGE_PORT   端口 (默认: 8081)
+  MARKME_API_KEY    API Key (远程访问时需要)
+
 示例:
   node call-mcp.js get_stats
   node call-mcp.js list_posts '{"limit": 5}'
   node call-mcp.js create_post '{"title":"标题","content":"内容","tags":["tag1"]}'
   node call-mcp.js upload_file '{"file_path":"C:/path/to/file.txt"}'
+  node call-mcp.js upload_content '{"filename":"test.md","content":"base64内容"}'
   node call-mcp.js upload_folder '{"folder_path":"C:/path/to/folder"}'
+
+远程调用:
+  MARKME_HOST=117.72.196.45 MARKME_API_KEY=your_key node call-mcp.js get_stats
 
 可用工具:
   create_post, update_post, delete_post, list_posts, get_post
-  upload_file, upload_folder, list_files, get_file, update_file, replace_file, delete_file
+  upload_file, upload_content, upload_folder
+  list_files, get_file, update_file, replace_file, replace_file_content, delete_file
   get_stats
 `);
     return;
