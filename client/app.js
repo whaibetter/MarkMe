@@ -23,6 +23,103 @@ function renderMd(text) {
   return '<p>' + text.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
 }
 
+function typesetMath(el) {
+  if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+    MathJax.typesetPromise([el]).catch(function(err) {
+      console.error('MathJax typeset error:', err);
+    });
+  }
+}
+
+var tocObserver = null;
+
+function buildTocHtml(items) {
+  var html = '<div class="toc-title">目录</div>';
+  html += '<ul class="toc-list">';
+  for (var i = 0; i < items.length; i++) {
+    var cls = items[i].level === 'h3' ? 'toc-link toc-h3' : 'toc-link';
+    html += '<li><a class="' + cls + '" href="#' + items[i].id + '">' +
+            escapeHtml(items[i].text) + '</a></li>';
+  }
+  html += '</ul>';
+  return html;
+}
+
+function createMobileToc(items) {
+  removeMobileToc();
+
+  var btn = document.createElement('button');
+  btn.className = 'toc-mobile-btn';
+  btn.innerHTML = '&#9776;';
+  btn.setAttribute('aria-label', '目录');
+  document.body.appendChild(btn);
+
+  var overlay = document.createElement('div');
+  overlay.className = 'toc-overlay';
+  document.body.appendChild(overlay);
+
+  var panel = document.createElement('div');
+  panel.className = 'toc-mobile-panel';
+  var panelHtml = '<button class="toc-mobile-close">&times;</button>';
+  panelHtml += buildTocHtml(items);
+  panel.innerHTML = panelHtml;
+  document.body.appendChild(panel);
+
+  btn.addEventListener('click', function() {
+    overlay.classList.add('open');
+    panel.classList.add('open');
+  });
+
+  function closePanel() {
+    overlay.classList.remove('open');
+    panel.classList.remove('open');
+  }
+
+  overlay.addEventListener('click', closePanel);
+  panel.querySelector('.toc-mobile-close').addEventListener('click', closePanel);
+
+  var links = panel.querySelectorAll('.toc-link');
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', closePanel);
+  }
+}
+
+function removeMobileToc() {
+  var existing = document.querySelectorAll('.toc-mobile-btn, .toc-overlay, .toc-mobile-panel');
+  for (var i = 0; i < existing.length; i++) {
+    existing[i].remove();
+  }
+}
+
+function setupScrollSpy(items) {
+  var links = document.querySelectorAll('.toc-link');
+  var headingEls = [];
+  for (var i = 0; i < items.length; i++) {
+    var el = document.getElementById(items[i].id);
+    if (el) headingEls.push(el);
+  }
+
+  tocObserver = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        var id = entries[i].target.id;
+        for (var j = 0; j < links.length; j++) {
+          links[j].classList.remove('active');
+          if (links[j].getAttribute('href') === '#' + id) {
+            links[j].classList.add('active');
+          }
+        }
+      }
+    }
+  }, {
+    rootMargin: '-20% 0px -70% 0px'
+  });
+
+  for (var k = 0; k < headingEls.length; k++) {
+    tocObserver.observe(headingEls[k]);
+  }
+}
+
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -31,6 +128,11 @@ function escapeHtml(str) {
 function init() {
   console.log('init called');
   var app = document.getElementById('app');
+  var main = document.querySelector('.main');
+  if (main) main.classList.remove('post-page');
+  removeMobileToc();
+  if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
+
   var path = window.location.pathname;
   var search = window.location.search;
   console.log('Path:', path, 'Search:', search);
@@ -92,6 +194,7 @@ function showHome(app) {
 
 function showPost(app, id) {
   console.log('showPost:', id);
+  document.querySelector('.main').classList.add('post-page');
   fetchJSON(API + '/posts/' + id)
     .then(function(post) {
       console.log('Got post:', post.title);
@@ -131,6 +234,39 @@ function showPost(app, id) {
 
       html += '</article>';
       app.innerHTML = html;
+      typesetMath(app);
+
+      // Generate TOC
+      var headings = app.querySelectorAll('.post-content h2, .post-content h3');
+      var tocItems = [];
+      for (var hi = 0; hi < headings.length; hi++) {
+        var h = headings[hi];
+        var slug = 'heading-' + hi + '-' + h.textContent.trim()
+          .toLowerCase()
+          .replace(/[^\w一-鿿]+/g, '-')
+          .replace(/^-|-$/g, '');
+        h.id = slug;
+        tocItems.push({
+          id: slug,
+          text: h.textContent.trim(),
+          level: h.tagName.toLowerCase()
+        });
+      }
+
+      if (tocItems.length > 0) {
+        var layout = document.createElement('div');
+        layout.className = 'post-layout';
+        while (app.firstChild) {
+          layout.appendChild(app.firstChild);
+        }
+        var sidebar = document.createElement('aside');
+        sidebar.className = 'toc-sidebar';
+        sidebar.innerHTML = buildTocHtml(tocItems);
+        layout.appendChild(sidebar);
+        app.appendChild(layout);
+        createMobileToc(tocItems);
+        setupScrollSpy(tocItems);
+      }
     })
     .catch(function(err) {
       console.error('Error:', err);
