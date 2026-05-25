@@ -47,7 +47,8 @@ const TOOLS = {
   replace_file: { description: "Replace file content (server-side path)", parameters: { type: "object", properties: { id: { type: "number" }, file_path: { type: "string" } }, required: ["id", "file_path"] } },
   replace_file_content: { description: "Replace file content by base64 - for remote clients", parameters: { type: "object", properties: { id: { type: "number" }, content: { type: "string" } }, required: ["id", "content"] } },
   delete_file: { description: "Delete an uploaded file", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } },
-  get_stats: { description: "Get blog statistics", parameters: { type: "object", properties: {} } }
+  get_stats: { description: "Get blog statistics", parameters: { type: "object", properties: {} } },
+  get_system_info: { description: "Get system resource usage of the MarkMe application (CPU, memory, disk, uptime)", parameters: { type: "object", properties: {} } }
 };
 
 function executeTool(name, args) {
@@ -197,6 +198,58 @@ function executeTool(name, args) {
         const totalSize = db.prepare('SELECT COALESCE(SUM(size), 0) as total FROM files').get();
         return { success: true, data: { posts: { total: posts.count, published: published.count, drafts: drafts.count }, files: { count: files.count, totalSize: totalSize.total } } };
       }
+      case 'get_system_info': {
+        const mem = process.memoryUsage();
+        const cpu = process.cpuUsage();
+        const uptimeSec = process.uptime();
+        const totalCpuMs = (cpu.user + cpu.system) / 1000;
+        const cpuPercent = uptimeSec > 0 ? ((totalCpuMs / (uptimeSec * 1000)) * 100).toFixed(1) : '0.0';
+
+        const dbPath = path.join(__dirname, 'markme.db');
+        const dbSize = fs.existsSync(dbPath) ? fs.statSync(dbPath).size : 0;
+
+        let uploadsSize = 0, uploadsCount = 0;
+        const uploadsDir = path.join(__dirname, 'uploads');
+        if (fs.existsSync(uploadsDir)) {
+          const walk = (dir) => {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const full = path.join(dir, entry.name);
+              if (entry.isDirectory()) walk(full);
+              else { uploadsSize += fs.statSync(full).size; uploadsCount++; }
+            }
+          };
+          walk(uploadsDir);
+        }
+
+        const posts = db.prepare('SELECT COUNT(*) as count FROM posts').get();
+        const files = db.prepare('SELECT COUNT(*) as count FROM files').get();
+
+        return { success: true, data: {
+          process: {
+            pid: process.pid,
+            nodeVersion: process.version,
+            platform: process.platform,
+            arch: process.arch,
+            uptime: Math.round(process.uptime()) + 's'
+          },
+          memory: {
+            rss: (mem.rss / 1024 / 1024).toFixed(1) + ' MB',
+            heapUsed: (mem.heapUsed / 1024 / 1024).toFixed(1) + ' MB',
+            heapTotal: (mem.heapTotal / 1024 / 1024).toFixed(1) + ' MB',
+            external: (mem.external / 1024 / 1024).toFixed(1) + ' MB'
+          },
+          cpu: { usage: cpuPercent + '%' },
+          disk: {
+            database: { size: (dbSize / 1024).toFixed(1) + ' KB', path: dbPath },
+            uploads: { size: (uploadsSize / 1024).toFixed(1) + ' KB', count: uploadsCount, path: uploadsDir }
+          },
+          blog: {
+            posts: posts.count,
+            files: files.count
+          }
+        } };
+      }
+
       default:
         return { success: false, error: `Unknown tool: ${name}` };
     }

@@ -75,11 +75,12 @@ start-all.bat
 
 ## MCP 工具
 
-15 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
+16 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
 
 - **文章**: `create_post`, `update_post`, `delete_post`, `list_posts`, `get_post`
 - **文件**: `upload_file`, `upload_folder`, `upload_content` (内容直接写入), `list_files`, `get_file`, `update_file`, `replace_file`, `replace_file_content`, `delete_file`
 - **统计**: `get_stats`
+- **系统监控**: `get_system_info` (返回 CPU、内存、磁盘、运行时间等系统资源使用情况)
 
 ## HTTP Bridge 调用示例
 
@@ -88,6 +89,11 @@ start-all.bat
 curl -X POST http://localhost:8080/bridge/tools/create_post \
   -H "Content-Type: application/json" \
   -d '{"title":"标题","content":"内容","tags":["标签"]}'
+
+# 查询系统资源使用情况
+curl -X POST http://localhost:8080/bridge/tools/get_system_info \
+  -H "Content-Type: application/json" \
+  -d '{}'
 
 # CLI 工具
 node tools/call-mcp.js create_post '{"title":"标题","content":"内容"}'
