@@ -11,6 +11,7 @@ const db = require('./db');
 const path = require('path');
 const fs = require('fs');
 const config = require('./config');
+const markmeConfig = require('./markme-config');
 
 const app = express();
 const PORT = config.MCP_BRIDGE_PORT;
@@ -205,6 +206,14 @@ const TOOLS = {
   get_system_info: {
     description: "Get system resource usage of the MarkMe application (CPU, memory, disk, uptime)",
     parameters: { type: "object", properties: {} }
+  },
+  get_markme_config: {
+    description: "Get MarkMe client configuration (server URL, API key status)",
+    parameters: { type: "object", properties: {} }
+  },
+  set_markme_config: {
+    description: "Set MarkMe client configuration (server URL and optional API key)",
+    parameters: { type: "object", properties: { server_url: { type: "string" }, api_key: { type: "string" } }, required: ["server_url"] }
   }
 };
 
@@ -513,6 +522,18 @@ function executeTool(name, args) {
             files: files.count
           }
         } };
+      }
+
+      case 'get_markme_config': {
+        const cfg = markmeConfig.getConfig();
+        if (!cfg || !cfg.server_url) return { success: true, data: { configured: false, message: 'MarkMe server URL not configured. Use set_markme_config to set the server URL.' } };
+        return { success: true, data: { configured: true, server_url: cfg.server_url, api_key_set: !!cfg.api_key } };
+      }
+
+      case 'set_markme_config': {
+        const { server_url, api_key } = args;
+        markmeConfig.setConfig(server_url, api_key || '');
+        return { success: true, data: { server_url, message: 'Configuration saved to ' + markmeConfig.getConfigPath() } };
       }
 
       default:

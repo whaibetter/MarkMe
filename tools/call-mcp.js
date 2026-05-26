@@ -6,10 +6,30 @@
  */
 
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 
-const BRIDGE_HOST = process.env.MARKME_HOST || 'localhost';
-const BRIDGE_PORT = process.env.MCP_BRIDGE_PORT || 8081;
-const API_KEY = process.env.MARKME_API_KEY || '';
+// 读取配置文件 ~/.markme/config.json
+function loadConfig() {
+  const configPath = path.join(os.homedir(), '.markme', 'config.json');
+  try {
+    if (fs.existsSync(configPath)) {
+      return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    }
+  } catch {}
+  return null;
+}
+
+const config = loadConfig();
+
+// 优先级：环境变量 > 配置文件 > 默认值
+const BRIDGE_HOST = process.env.MARKME_HOST
+  || (config && config.server_url ? new URL(config.server_url).hostname : 'localhost');
+const BRIDGE_PORT = process.env.MCP_BRIDGE_PORT
+  || (config && config.server_url ? new URL(config.server_url).port : '8081');
+const API_KEY = process.env.MARKME_API_KEY
+  || (config && config.api_key ? config.api_key : '');
 
 function callTool(name, args = {}) {
   return new Promise((resolve, reject) => {
@@ -24,7 +44,7 @@ function callTool(name, args = {}) {
     const options = {
       hostname: BRIDGE_HOST,
       port: BRIDGE_PORT,
-      path: '/tools/' + name,
+      path: '/bridge/tools/' + name,
       method: 'POST',
       headers
     };
@@ -42,7 +62,8 @@ function callTool(name, args = {}) {
     });
 
     req.on('error', (err) => {
-      reject(new Error(`无法连接到 MCP Bridge (端口 ${BRIDGE_PORT}): ${err.message}\n请先运行: node server/mcp-http-bridge.js`));
+      const configPath = path.join(os.homedir(), '.markme', 'config.json');
+      reject(new Error(`无法连接到 MarkMe 服务器 (${BRIDGE_HOST}:${BRIDGE_PORT}): ${err.message}\n请检查配置文件: ${configPath}\n或设置环境变量: MARKME_HOST / MCP_BRIDGE_PORT`));
     });
 
     req.write(data);
@@ -61,10 +82,14 @@ MarkMe MCP 工具调用器
 用法:
   node call-mcp.js <工具名> [参数JSON]
 
-环境变量:
-  MARKME_HOST       服务器地址 (默认: localhost)
-  MCP_BRIDGE_PORT   端口 (默认: 8081)
-  MARKME_API_KEY    API Key (远程访问时需要)
+配置 (优先级从高到低):
+  1. 环境变量: MARKME_HOST, MCP_BRIDGE_PORT, MARKME_API_KEY
+  2. 配置文件: ~/.markme/config.json
+  3. 默认值: localhost:8081
+
+配置文件:
+  当前配置: ${config ? JSON.stringify(config) : '未配置'}
+  配置路径: ${path.join(os.homedir(), '.markme', 'config.json')}
 
 示例:
   node call-mcp.js get_stats
@@ -73,15 +98,15 @@ MarkMe MCP 工具调用器
   node call-mcp.js upload_file '{"file_path":"C:/path/to/file.txt"}'
   node call-mcp.js upload_content '{"filename":"test.md","content":"base64内容"}'
   node call-mcp.js upload_folder '{"folder_path":"C:/path/to/folder"}'
-
-远程调用:
-  MARKME_HOST=117.72.196.45 MARKME_API_KEY=your_key node call-mcp.js get_stats
+  node call-mcp.js get_markme_config
+  node call-mcp.js set_markme_config '{"server_url":"http://117.72.196.45:8080"}'
 
 可用工具:
   create_post, update_post, delete_post, list_posts, get_post
   upload_file, upload_content, upload_folder
   list_files, get_file, update_file, replace_file, replace_file_content, delete_file
-  get_stats
+  get_stats, get_system_info
+  get_markme_config, set_markme_config
 `);
     return;
   }

@@ -4,21 +4,92 @@ MarkMe Blog SDK - Python 客户端
 """
 
 import requests
+import json
+import os
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 
 
-class MarkMeClient:
-    """MarkMe 博客系统 Python SDK"""
+def _load_config() -> Dict:
+    """读取 ~/.markme/config.json 配置文件"""
+    config_path = Path.home() / '.markme' / 'config.json'
+    try:
+        if config_path.exists():
+            return json.loads(config_path.read_text(encoding='utf-8'))
+    except Exception:
+        pass
+    return {}
 
-    def __init__(self, base_url: str = "http://localhost:3000/api"):
-        self.base_url = base_url.rstrip('/')
+
+def _save_config(config: Dict):
+    """保存配置到 ~/.markme/config.json"""
+    config_dir = Path.home() / '.markme'
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_path = config_dir / 'config.json'
+    config_path.write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding='utf-8')
+
+
+class MarkMeClient:
+    """MarkMe 博客系统 Python SDK (HTTP REST API)
+
+    地址优先级：参数 > 配置文件 > 默认值
+    """
+
+    def __init__(self, base_url: str = None, api_key: str = None):
+        config = _load_config()
+
+        if base_url:
+            self.base_url = base_url.rstrip('/')
+        elif config.get('server_url'):
+            self.base_url = config['server_url'].rstrip('/')
+        else:
+            self.base_url = 'http://localhost:8080/api'
+
+        self.api_key = api_key or config.get('api_key', '')
+
+    def _get_bridge_url(self) -> str:
+        """获取 bridge URL（用于写操作）"""
+        base = self.base_url
+        if base.endswith('/api'):
+            base = base[:-4]
+        return base + '/bridge/tools'
 
     def _request(self, method: str, endpoint: str, **kwargs) -> Any:
         url = f"{self.base_url}{endpoint}"
-        response = requests.request(method, url, **kwargs)
+        headers = kwargs.pop('headers', {})
+        if self.api_key:
+            headers['Authorization'] = f'Bearer {self.api_key}'
+        response = requests.request(method, url, headers=headers, **kwargs)
         response.raise_for_status()
         return response.json()
+
+    def _call_tool(self, tool_name: str, args: Dict = None) -> Any:
+        """通过 bridge 调用工具"""
+        url = f"{self._get_bridge_url()}/{tool_name}"
+        headers = {'Content-Type': 'application/json'}
+        if self.api_key:
+            headers['Authorization'] = f'Bearer {self.api_key}'
+        response = requests.post(url, json=args or {}, headers=headers)
+        response.raise_for_status()
+        return response.json()
+
+    # ========== 配置管理 ==========
+
+    def get_config(self) -> Dict:
+        """获取 MarkMe 客户端配置"""
+        return self._call_tool('get_markme_config')
+
+    def set_config(self, server_url: str, api_key: str = '') -> Dict:
+        """设置 MarkMe 客户端配置"""
+        result = self._call_tool('set_markme_config', {
+            'server_url': server_url,
+            'api_key': api_key
+        })
+        # 同时更新本地配置
+        if result.get('success'):
+            self.base_url = server_url.rstrip('/')
+            self.api_key = api_key
+        return result
 
     # ========== 文章管理 ==========
 
@@ -26,99 +97,102 @@ class MarkMeClient:
                     summary: Optional[str] = None,
                     tags: Optional[List[str]] = None,
                     status: str = "published") -> Dict:
-        """创建博客文章
-
-        Args:
-            title: 文章标题
-            content: 文章内容 (Markdown)
-            summary: 文章摘要 (可选，默认取内容前200字)
-            tags: 标签列表
-            status: 状态 (published/draft)
-
-        Returns:
-            创建的文章信息
-        """
-        return self._request("POST", "/posts", json={
-            "title": title,
-            "content": content,
-            "summary": summary,
-            "tags": tags or [],
-            "status": status
+        """创建博客文章"""
+        return self._call_tool('create_post', {
+            'title': title,
+            'content': content,
+            'summary': summary,
+            'tags': tags or [],
+            'status': status
         })
 
     def get_posts(self, page: int = 1, limit: int = 10,
                   tag: Optional[str] = None,
                   status: str = "published") -> Dict:
-        """获取文章列表
-
-        Args:
-            page: 页码
-            limit: 每页数量
-            tag: 按标签筛选
-            status: 按状态筛选
-
-        Returns:
-            文章列表和分页信息
-        """
+        """获取文章列表"""
         params = {"page": page, "limit": limit, "status": status}
         if tag:
             params["tag"] = tag
         return self._request("GET", "/posts", params=params)
 
     def get_post(self, post_id: int) -> Dict:
-        """获取文章详情
-
-        Args:
-            post_id: 文章 ID
-
-        Returns:
-            文章详情 (包含关联文件)
-        """
+        """获取文章详情"""
         return self._request("GET", f"/posts/{post_id}")
 
-    def get_tags(self) -> List[str]:
-        """获取所有标签
+    def update_post(self, post_id: int, **kwargs) -> Dict:
+        """更新文章"""
+        return self._call_tool('update_post', {'id': post_id, **kwargs})
 
-        Returns:
-            标签列表
-        """
+    def delete_post(self, post_id: int) -> Dict:
+        """删除文章"""
+        return self._call_tool('delete_post', {'id': post_id})
+
+    def list_posts(self, page: int = 1, limit: int = 20, status: str = 'all') -> Dict:
+        """列出文章（通过 bridge）"""
+        return self._call_tool('list_posts', {
+            'page': page, 'limit': limit, 'status': status
+        })
+
+    def get_tags(self) -> List[str]:
+        """获取所有标签"""
         return self._request("GET", "/tags")
 
     def get_stats(self) -> Dict:
-        """获取博客统计
+        """获取博客统计"""
+        return self._call_tool('get_stats')
 
-        Returns:
-            统计信息 (文章数、文件数)
-        """
-        return self._request("GET", "/stats")
-
-    # ========== 文件管理 (通过 HTTP API) ==========
+    # ========== 文件管理 ==========
 
     def list_files(self) -> List[Dict]:
-        """列出所有文件
-
-        Returns:
-            文件列表
-        """
-        return self._request("GET", "/files")
+        """列出所有文件"""
+        return self._call_tool('list_files')
 
     def get_file(self, file_id: int) -> Dict:
-        """获取文件详情
+        """获取文件详情"""
+        return self._call_tool('get_file', {'id': file_id})
 
-        Args:
-            file_id: 文件 ID
+    def upload_file(self, file_path: str, post_id: Optional[int] = None) -> Dict:
+        """上传服务器本地文件"""
+        args = {'file_path': file_path}
+        if post_id:
+            args['post_id'] = post_id
+        return self._call_tool('upload_file', args)
 
-        Returns:
-            文件详情
-        """
-        return self._request("GET", f"/files/{file_id}")
+    def upload_content(self, filename: str, content_b64: str, post_id: Optional[int] = None) -> Dict:
+        """通过 base64 上传文件内容"""
+        args = {'filename': filename, 'content': content_b64}
+        if post_id:
+            args['post_id'] = post_id
+        return self._call_tool('upload_content', args)
+
+    def upload_folder(self, folder_path: str, post_id: Optional[int] = None) -> Dict:
+        """上传整个文件夹"""
+        args = {'folder_path': folder_path}
+        if post_id:
+            args['post_id'] = post_id
+        return self._call_tool('upload_folder', args)
+
+    def update_file(self, file_id: int, **kwargs) -> Dict:
+        """更新文件元数据"""
+        return self._call_tool('update_file', {'id': file_id, **kwargs})
+
+    def delete_file(self, file_id: int) -> Dict:
+        """删除文件"""
+        return self._call_tool('delete_file', {'id': file_id})
+
+    # ========== 系统 ==========
+
+    def get_system_info(self) -> Dict:
+        """获取系统资源使用情况"""
+        return self._call_tool('get_system_info')
 
 
 class MarkMeMCPClient:
     """通过 MCP 协议调用 MarkMe (需要 mcp 包)"""
 
-    def __init__(self, server_path: str = "C:/Users/whai/Documents/Project/MarkMe/server/mcp-server.js"):
-        self.server_path = server_path
+    def __init__(self, server_path: str = None):
+        config = _load_config()
+        self.server_path = server_path or "C:/Users/whai/Documents/Project/MarkMe/server/mcp-server.js"
         self._session = None
 
     async def connect(self):
@@ -142,17 +216,18 @@ class MarkMeMCPClient:
             await self._session.__aexit__(None, None, None)
 
     async def call_tool(self, tool_name: str, arguments: Dict) -> Any:
-        """调用 MCP 工具
-
-        Args:
-            tool_name: 工具名称
-            arguments: 工具参数
-
-        Returns:
-            工具返回结果
-        """
+        """调用 MCP 工具"""
         result = await self._session.call_tool(tool_name, arguments)
         return result
+
+    async def get_config(self) -> Dict:
+        return await self.call_tool('get_markme_config', {})
+
+    async def set_config(self, server_url: str, api_key: str = '') -> Dict:
+        return await self.call_tool('set_markme_config', {
+            'server_url': server_url,
+            'api_key': api_key
+        })
 
     async def create_post(self, title: str, content: str, **kwargs) -> Dict:
         return await self.call_tool("create_post", {
@@ -187,14 +262,18 @@ class MarkMeMCPClient:
 
 
 # 便捷函数
-def create_client(base_url: str = "http://localhost:3000/api") -> MarkMeClient:
+def create_client(base_url: str = None, api_key: str = None) -> MarkMeClient:
     """创建 MarkMe 客户端实例"""
-    return MarkMeClient(base_url)
+    return MarkMeClient(base_url, api_key)
 
 
 # 使用示例
 if __name__ == "__main__":
     client = MarkMeClient()
+
+    # 检查配置
+    config = client.get_config()
+    print(f"配置状态: {config}")
 
     # 获取统计信息
     stats = client.get_stats()
@@ -203,11 +282,3 @@ if __name__ == "__main__":
     # 获取文章列表
     posts = client.get_posts()
     print(f"文章数量: {posts['total']}")
-
-    # 创建文章
-    # result = client.create_post(
-    #     title="SDK 测试",
-    #     content="# 测试\n\n通过 Python SDK 创建",
-    #     tags=["python", "sdk"]
-    # )
-    # print(f"创建成功: {result}")

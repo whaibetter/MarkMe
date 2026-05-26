@@ -29,6 +29,11 @@ start-all.bat
 ./start-all.sh
 ```
 
+CLI 工具调用 MCP（连接独立 bridge，端口 8081）：
+```bash
+node tools/call-mcp.js <tool_name> '<json_args>'
+```
+
 ## 架构
 
 ### 三层访问入口
@@ -54,6 +59,15 @@ start-all.bat
 - SQLite 使用 WAL journal 模式 + 外键约束
 - `folders` 表已定义但当前未被任何工具使用
 - 文件上传存储在 `server/uploads/`，使用时间戳重命名
+- `mcp-server.js` 依赖 `@modelcontextprotocol/sdk`，但该包未在 `package.json` 中声明，需手动安装
+
+### 前端
+
+- 原生 JS SPA，无构建步骤，所有文件直接由 Express 静态服务
+- 主题系统：`data-theme` 属性（dark/light），用 `localStorage` 持久化
+- Markdown 渲染：`marked.min.js`（本地 vendor），支持 MathJax（CDN）用于 LaTeX 公式
+- 字体：Google Fonts Outfit
+- 路由：`app.js` 中监听 `popstate` 和链接点击，根据 URL 路径切换视图
 
 ### 数据库表
 
@@ -73,10 +87,31 @@ start-all.bat
 | API_KEY | (空) | Bearer token 认证 |
 | MAX_FILE_SIZE | 50MB | 文件大小限制 |
 
+### 客户端配置文件
+
+所有 Agent 共享统一配置文件 `~/.markme/config.json`：
+
+```json
+{
+  "server_url": "http://117.72.196.45:8080",
+  "api_key": "your-secret-key"
+}
+```
+
+**配置优先级**：环境变量 > 配置文件 > 默认值
+
+Agent 首次使用时会通过 `get_markme_config` 检查配置，未配置时询问用户并调用 `set_markme_config` 保存。
+
+相关文件：
+- `server/markme-config.js` — 共享配置模块（读写配置文件）
+- `tools/call-mcp.js` — CLI 工具读取配置
+- `sdk/markme_client.py` — Python SDK 读取配置
+
 ## MCP 工具
 
-16 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
+18 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
 
+- **配置**: `get_markme_config` (获取配置), `set_markme_config` (设置服务器地址和 API Key)
 - **文章**: `create_post`, `update_post`, `delete_post`, `list_posts`, `get_post`
 - **文件**: `upload_file`, `upload_folder`, `upload_content` (内容直接写入), `list_files`, `get_file`, `update_file`, `replace_file`, `replace_file_content`, `delete_file`
 - **统计**: `get_stats`
@@ -105,7 +140,7 @@ node tools/call-mcp.js create_post '{"title":"标题","content":"内容"}'
 |------|----------|------|
 | MCP Stdio | Claude Desktop | `server/mcp-server.js` |
 | HTTP Bridge | 自定义 Agent | `server/mcp-http-bridge.js` 或 `/bridge` 路由 |
-| Python SDK | Python Agent | `sdk/markme_client.py` |
+| Python SDK | Python Agent | `sdk/markme_client.py`（同步 HTTP 客户端，封装所有工具） |
 | Claude Code Skill | Claude Code | `skills/markme-manager.json` |
 | OpenClaw Skill | OpenClaw | `skills/markme-openclaw.yaml` |
 

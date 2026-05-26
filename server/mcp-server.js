@@ -9,6 +9,7 @@ const {
 const db = require('./db');
 const path = require('path');
 const fs = require('fs');
+const markmeConfig = require('./markme-config');
 
 const server = new Server(
   { name: 'markme-blog', version: '1.0.0' },
@@ -200,6 +201,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     inputSchema: {
       type: 'object',
       properties: {}
+    }
+  },
+  {
+    name: 'get_markme_config',
+    description: 'Get MarkMe client configuration (server URL, API key status)',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+  {
+    name: 'set_markme_config',
+    description: 'Set MarkMe client configuration (server URL and optional API key)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        server_url: { type: 'string', description: 'MarkMe server URL, e.g. http://117.72.196.45:8080' },
+        api_key: { type: 'string', description: 'API key for authentication (optional)' }
+      },
+      required: ['server_url']
     }
   }
   ]
@@ -526,6 +547,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             files: files.count
           }
         }, null, 2) }] };
+      }
+
+      case 'get_markme_config': {
+        const config = markmeConfig.getConfig();
+        if (!config || !config.server_url) {
+          return { content: [{ type: 'text', text: JSON.stringify({ configured: false, message: 'MarkMe server URL not configured. Use set_markme_config to set the server URL.' }) }] };
+        }
+        return { content: [{ type: 'text', text: JSON.stringify({ configured: true, server_url: config.server_url, api_key_set: !!config.api_key }) }] };
+      }
+
+      case 'set_markme_config': {
+        const { server_url, api_key } = args;
+        markmeConfig.setConfig(server_url, api_key || '');
+        return { content: [{ type: 'text', text: JSON.stringify({ success: true, server_url, message: 'Configuration saved to ' + markmeConfig.getConfigPath() }) }] };
       }
 
       default:
