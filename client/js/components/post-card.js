@@ -34,7 +34,7 @@ export function renderPostList(posts, emptyMessage) {
 
   var html = '<div class="post-list">';
   for (var i = 0; i < posts.length; i++) {
-    html += renderPostCard(posts[i], i);
+    html += renderPostCard(posts[i], posts[i]._index != null ? posts[i]._index : i);
   }
   html += '</div>';
   return html;

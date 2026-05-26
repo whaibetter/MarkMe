@@ -43,9 +43,9 @@ export function init() {
     } else if (section === 'topics') {
       showTags(app);
       updateNav('topics');
-    } else if (section === 'home') {
+    } else if (section === 'about') {
       showProfile(app);
-      updateNav('home');
+      updateNav('about');
     } else {
       showHome(app);
       updateNav('blogs');
