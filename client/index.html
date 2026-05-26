@@ -3,11 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MarkMe - 博客</title>
+  <title>Wenhai's Blog</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- CSS Modules -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/post-card.css">
+  <link rel="stylesheet" href="css/post-detail.css">
+  <link rel="stylesheet" href="css/toc.css">
+  <link rel="stylesheet" href="css/tags.css">
+  <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/profile.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
   <script>
     (function() {
       var t = localStorage.getItem('markme-theme');
@@ -28,24 +41,22 @@
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
 <body>
-  <div class="gradient-bg">
-    <div class="gradient-orb orb-1"></div>
-    <div class="gradient-orb orb-2"></div>
-    <div class="gradient-orb orb-3"></div>
-  </div>
+  <!-- Noise texture overlay -->
+  <div class="noise-bg"></div>
 
+  <!-- Reading progress bar -->
   <div class="reading-progress" id="reading-progress"></div>
 
+  <!-- Header -->
   <header class="header">
     <div class="container">
       <div class="header-left">
-        <h1 class="logo"><a href="/">MarkMe</a></h1>
-        <span class="logo-dot"></span>
-        <span class="logo-tagline">Thoughts & Words</span>
+        <h1 class="logo"><a href="/">Wenhai's Blog</a></h1>
       </div>
       <nav class="nav">
-        <a href="/" class="active">首页</a>
-        <a href="/tags">标签</a>
+        <a href="/?section=blogs" data-section="blogs" data-link class="active">Blogs</a>
+        <a href="/?section=topics" data-section="topics" data-link>Topics</a>
+        <a href="/" data-section="home" data-link>Home</a>
         <button class="theme-toggle" aria-label="Toggle theme">
           <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -54,23 +65,26 @@
     </div>
   </header>
 
+  <!-- Main content -->
   <main class="main container">
     <div id="app">
       <div class="loading">
         <div class="loading-ring"></div>
-        <span>Loading...</span>
+        <span>Loading</span>
       </div>
     </div>
   </main>
 
+  <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-glow"></div>
-      <p>MarkMe &copy; 2026 &mdash; A space for words</p>
+      <div class="footer-divider"></div>
+      <p>Wenhai &copy; 2026</p>
     </div>
   </footer>
 
+  <!-- Scripts -->
   <script src="marked.min.js"></script>
-  <script src="app.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

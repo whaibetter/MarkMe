@@ -1,0 +1,129 @@
+/* ===== CSS Variables & Reset ===== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  /* Editorial palette - warm dark with golden accents */
+  --bg: #0c0c0e;
+  --bg-deep: #08080a;
+  --bg-warm: #141210;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Text hierarchy - magazine style with strong contrast */
+  --text: #e8e4dc;
+  --text-secondary: #a09888;
+  --text-muted: #6b6158;
+  --text-bright: #faf8f4;
+  --text-accent: #d4a853;
+
+  /* Accent - golden editorial */
+  --accent: #c8963e;
+  --accent-light: #d4a853;
+  --accent-soft: rgba(200, 150, 62, 0.12);
+  --accent-glow: rgba(200, 150, 62, 0.08);
+
+  /* Supporting colors */
+  --blue: #5b8fb9;
+  --rose: #b95b6b;
+  --green: #6b9b7b;
+
+  /* Code blocks */
+  --code-bg: rgba(0, 0, 0, 0.4);
+  --code-border: rgba(255, 255, 255, 0.05);
+
+  /* Surfaces */
+  --header-bg: rgba(12, 12, 14, 0.85);
+  --panel-bg: rgba(16, 14, 12, 0.95);
+  --modal-bg: rgba(16, 14, 12, 0.92);
+
+  /* Effects */
+  --blur: 16px;
+  --blur-strong: 32px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(200, 150, 62, 0.06);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* Typography - editorial pairing */
+  --font-display: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: 0.2s var(--ease-out);
+  --transition-normal: 0.4s var(--ease-out);
+  --transition-slow: 0.7s var(--ease-out);
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] {
+  --bg: #faf8f4;
+  --bg-deep: #f0ece4;
+  --bg-warm: #f5f0e8;
+  --surface: rgba(0, 0, 0, 0.03);
+  --surface-hover: rgba(0, 0, 0, 0.06);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.15);
+
+  --text: #2a2520;
+  --text-secondary: #6b6158;
+  --text-muted: #9b9188;
+  --text-bright: #1a1814;
+  --text-accent: #a07830;
+
+  --accent: #a07830;
+  --accent-light: #b88840;
+  --accent-soft: rgba(160, 120, 48, 0.08);
+  --accent-glow: rgba(160, 120, 48, 0.05);
+
+  --code-bg: rgba(0, 0, 0, 0.04);
+  --code-border: rgba(0, 0, 0, 0.08);
+
+  --header-bg: rgba(250, 248, 244, 0.85);
+  --panel-bg: rgba(250, 248, 244, 0.95);
+  --modal-bg: rgba(250, 248, 244, 0.92);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 40px rgba(160, 120, 48, 0.04);
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono');
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}

@@ -90,6 +90,40 @@ app.get('/api/stats', (req, res) => {
   res.json({ posts: posts.count, files: files.count });
 });
 
+// GitHub Profile API with server-side cache
+const GITHUB_USER = 'whaibetter';
+const PROFILE_CACHE_KEY = 'github-profile';
+const profileCache = new Map();
+
+async function fetchGitHubProfile() {
+  const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_USER}/main/README.md`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`GitHub fetch failed: ${res.status}`);
+  return await res.text();
+}
+
+app.get('/api/profile', async (req, res) => {
+  try {
+    const cached = profileCache.get(PROFILE_CACHE_KEY);
+    const now = Date.now();
+
+    if (cached && now - cached.timestamp < 60 * 60 * 1000) {
+      return res.json({ content: cached.content, cached: true });
+    }
+
+    const content = await fetchGitHubProfile();
+    profileCache.set(PROFILE_CACHE_KEY, { content, timestamp: now });
+    res.json({ content, cached: false });
+  } catch (err) {
+    console.error('Profile fetch error:', err);
+    const cached = profileCache.get(PROFILE_CACHE_KEY);
+    if (cached) {
+      return res.json({ content: cached.content, cached: true, stale: true });
+    }
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Catch-all to serve frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/index.html'));

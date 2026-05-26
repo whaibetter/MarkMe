@@ -1,0 +1,123 @@
+/* ===== Post List ===== */
+.post-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Post Card - Editorial Grid ===== */
+.post-card {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  transition: all var(--transition-normal);
+  animation: fadeInUp 0.6s var(--ease-out) both;
+}
+
+.post-card:first-child {
+  padding-top: 0;
+}
+
+.post-card:last-child {
+  border-bottom: none;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.post-card:hover {
+  padding-left: 16px;
+}
+
+/* ===== Card Number (Magazine style) ===== */
+.post-card-num {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--border);
+  position: absolute;
+  right: 0;
+  top: 32px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  transition: color var(--transition-normal);
+}
+
+.post-card:first-child .post-card-num {
+  top: 0;
+}
+
+.post-card:hover .post-card-num {
+  color: var(--accent-soft);
+}
+
+/* ===== Card Content ===== */
+.post-card-content {
+  max-width: 560px;
+}
+
+.post-card-category {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.post-card h2 {
+  margin-bottom: 12px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.post-card h2 a {
+  color: var(--text-bright);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.post-card h2 a:hover {
+  color: var(--accent);
+}
+
+.post-meta {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.post-summary {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+  font-weight: 300;
+}
+
+/* ===== Empty State ===== */
+.post-list-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 300;
+  padding: 60px 0;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+}

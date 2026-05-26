@@ -1,0 +1,48 @@
+/* ===== Tag Cloud Page ===== */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  margin-bottom: 48px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.tag-cloud .tag {
+  font-size: 12px;
+  padding: 12px 20px;
+  background: var(--bg);
+  border: none;
+  border-radius: 0;
+}
+
+.tag-cloud .tag:hover {
+  background: var(--accent-soft);
+}
+
+/* ===== Tag Posts Page ===== */
+.tag-posts-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-bright);
+  letter-spacing: -0.02em;
+  position: relative;
+}
+
+.tag-posts-title::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.tag-posts-title span {
+  color: var(--accent);
+}
