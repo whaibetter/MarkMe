@@ -6,7 +6,7 @@ import { renderError } from '../components/error.js';
 
 var API = '/api';
 var currentPage = 1;
-var limit = 10;
+var limit = 7;
 var appEl = null;
 
 export function showHome(app) {

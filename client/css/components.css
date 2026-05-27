@@ -91,6 +91,8 @@
 .theme-label {
   text-transform: uppercase;
   white-space: nowrap;
+  min-width: 72px;
+  text-align: center;
 }
 
 /* ===== Error State ===== */
