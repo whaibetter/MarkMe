@@ -173,7 +173,7 @@
   }
 
   .hero-title {
-    font-size: 40px;
+    font-size: 36px;
   }
 
   .hero-subtitle {
@@ -208,6 +208,11 @@
   }
 
   /* Post detail mobile */
+  .post-page.container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
   .post-detail {
     padding: 0;
     max-width: 100%;
@@ -221,6 +226,8 @@
   .post-content {
     font-size: 16px;
     line-height: 1.8;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .post-content h1 {
@@ -250,10 +257,22 @@
   }
 
   .post-content pre {
-    padding: 16px 18px;
+    padding: 16px 14px;
     font-size: 13px;
     border-radius: var(--radius-sm);
+    margin: 1.5em -4px;
+    overflow-x: auto;
+    max-width: calc(100% + 8px);
+  }
+
+  .post-content blockquote {
+    padding: 16px 18px;
     margin: 1.5em 0;
+  }
+
+  .post-content img {
+    max-width: 100%;
+    height: auto;
   }
 
   .post-layout {
@@ -300,5 +319,127 @@
   /* Tag page mobile */
   .tag-posts-title {
     font-size: 24px;
+  }
+
+  /* Tag cloud mobile */
+  .tag-cloud .tag {
+    padding: 10px 14px;
+    font-size: 11px;
+  }
+
+  /* Profile mobile */
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .profile-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .profile-name {
+    font-size: 28px;
+  }
+
+  .profile-bio {
+    font-size: 15px;
+    max-width: 100%;
+  }
+
+  .profile-meta {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .profile-links {
+    justify-content: center;
+  }
+
+  /* Preview modal mobile */
+  .preview-container {
+    width: 96%;
+    max-height: 90vh;
+  }
+
+  .preview-header {
+    padding: 16px 20px;
+  }
+
+  .preview-content {
+    padding: 20px;
+  }
+}
+
+/* ===== SMALL PHONE (400px) ===== */
+@media (max-width: 400px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .hero-title {
+    font-size: 30px;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+  }
+
+  .hero-meta {
+    gap: 16px;
+  }
+
+  .hero-stat-num {
+    font-size: 20px;
+  }
+
+  .post-card h2 {
+    font-size: 18px;
+  }
+
+  .post-card-num {
+    font-size: 28px;
+  }
+
+  .post-header h1 {
+    font-size: 24px;
+  }
+
+  .post-content {
+    font-size: 15px;
+  }
+
+  .post-content h1 {
+    font-size: 22px;
+  }
+
+  .post-content h2 {
+    font-size: 20px;
+  }
+
+  .post-content h3 {
+    font-size: 17px;
+  }
+
+  .post-content pre {
+    font-size: 12px;
+    padding: 14px 12px;
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+
+  .post-content blockquote {
+    padding: 14px 16px;
+  }
+
+  .tag-posts-title {
+    font-size: 20px;
+  }
+
+  .stat-number {
+    font-size: 30px;
   }
 }

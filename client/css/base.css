@@ -108,6 +108,158 @@ html {
   --shadow-glow: 0 0 40px rgba(160, 120, 48, 0.04);
 }
 
+/* ===== NORD THEME ===== */
+[data-theme="nord"] {
+  --bg: #2e3440;
+  --bg-deep: #242933;
+  --bg-warm: #3b4252;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+
+  --text: #eceff4;
+  --text-secondary: #d8dee9;
+  --text-muted: #7b88a1;
+  --text-bright: #ffffff;
+  --text-accent: #88c0d0;
+
+  --accent: #88c0d0;
+  --accent-light: #8fbcbb;
+  --accent-soft: rgba(136, 192, 208, 0.12);
+  --accent-glow: rgba(136, 192, 208, 0.08);
+
+  --blue: #5e81ac;
+  --rose: #bf616a;
+  --green: #a3be8c;
+
+  --code-bg: rgba(0, 0, 0, 0.3);
+  --code-border: rgba(255, 255, 255, 0.06);
+
+  --header-bg: rgba(46, 52, 64, 0.85);
+  --panel-bg: rgba(46, 52, 64, 0.95);
+  --modal-bg: rgba(46, 52, 64, 0.92);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(136, 192, 208, 0.06);
+}
+
+/* ===== DRACULA THEME ===== */
+[data-theme="dracula"] {
+  --bg: #282a36;
+  --bg-deep: #1e1f29;
+  --bg-warm: #343746;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+
+  --text: #f8f8f2;
+  --text-secondary: #cccad4;
+  --text-muted: #6272a4;
+  --text-bright: #ffffff;
+  --text-accent: #bd93f9;
+
+  --accent: #bd93f9;
+  --accent-light: #caa8fa;
+  --accent-soft: rgba(189, 147, 249, 0.12);
+  --accent-glow: rgba(189, 147, 249, 0.08);
+
+  --blue: #6272a4;
+  --rose: #ff79c6;
+  --green: #50fa7b;
+
+  --code-bg: rgba(0, 0, 0, 0.3);
+  --code-border: rgba(255, 255, 255, 0.06);
+
+  --header-bg: rgba(40, 42, 54, 0.85);
+  --panel-bg: rgba(40, 42, 54, 0.95);
+  --modal-bg: rgba(40, 42, 54, 0.92);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(189, 147, 249, 0.06);
+}
+
+/* ===== FOREST THEME ===== */
+[data-theme="forest"] {
+  --bg: #1a1f16;
+  --bg-deep: #141810;
+  --bg-warm: #22281c;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+
+  --text: #e0ddd4;
+  --text-secondary: #a8a48e;
+  --text-muted: #6b6a58;
+  --text-bright: #f0ede4;
+  --text-accent: #a8c068;
+
+  --accent: #7c9a5e;
+  --accent-light: #a8c068;
+  --accent-soft: rgba(124, 154, 94, 0.12);
+  --accent-glow: rgba(124, 154, 94, 0.08);
+
+  --blue: #6890b0;
+  --rose: #c07060;
+  --green: #a8c068;
+
+  --code-bg: rgba(0, 0, 0, 0.35);
+  --code-border: rgba(255, 255, 255, 0.05);
+
+  --header-bg: rgba(26, 31, 22, 0.85);
+  --panel-bg: rgba(26, 31, 22, 0.95);
+  --modal-bg: rgba(26, 31, 22, 0.92);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(124, 154, 94, 0.06);
+}
+
+/* ===== CYBERPUNK THEME ===== */
+[data-theme="cyberpunk"] {
+  --bg: #0a0a1a;
+  --bg-deep: #06060f;
+  --bg-warm: #12122a;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 45, 123, 0.15);
+  --border-hover: rgba(255, 45, 123, 0.3);
+
+  --text: #e0e0ff;
+  --text-secondary: #9090cc;
+  --text-muted: #5050a0;
+  --text-bright: #ffffff;
+  --text-accent: #ff2d7b;
+
+  --accent: #ff2d7b;
+  --accent-light: #ff5c96;
+  --accent-soft: rgba(255, 45, 123, 0.12);
+  --accent-glow: rgba(255, 45, 123, 0.08);
+
+  --blue: #00d4ff;
+  --rose: #ff2d7b;
+  --green: #39ff14;
+
+  --code-bg: rgba(0, 0, 0, 0.5);
+  --code-border: rgba(255, 45, 123, 0.1);
+
+  --header-bg: rgba(10, 10, 26, 0.85);
+  --panel-bg: rgba(10, 10, 26, 0.95);
+  --modal-bg: rgba(10, 10, 26, 0.92);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 16px 64px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 40px rgba(255, 45, 123, 0.08);
+}
+
 @font-face {
   font-family: 'JetBrains Mono';
   src: local('JetBrains Mono');

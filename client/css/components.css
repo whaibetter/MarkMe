@@ -60,53 +60,37 @@
   background: none;
   border: 1px solid var(--border);
   border-radius: 2px;
-  width: 36px;
   height: 36px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
   cursor: pointer;
   transition: all var(--transition-fast);
   margin-left: 12px;
-  position: relative;
-  overflow: hidden;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
 }
 
 .theme-toggle:hover {
   border-color: var(--accent);
   background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .theme-icon {
   width: 16px;
   height: 16px;
-  fill: none;
-  stroke: var(--text-secondary);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  position: absolute;
-  transition: all 0.3s ease;
+  stroke: currentColor;
+  flex-shrink: 0;
 }
 
-.theme-icon-dark {
-  opacity: 1;
-  transform: rotate(0deg) scale(1);
-}
-
-.theme-icon-light {
-  opacity: 0;
-  transform: rotate(-90deg) scale(0.5);
-}
-
-[data-theme="light"] .theme-icon-dark {
-  opacity: 0;
-  transform: rotate(90deg) scale(0.5);
-}
-
-[data-theme="light"] .theme-icon-light {
-  opacity: 1;
-  transform: rotate(0deg) scale(1);
+.theme-label {
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* ===== Error State ===== */

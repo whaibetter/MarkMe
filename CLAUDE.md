@@ -54,20 +54,25 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 
 ### 关键设计
 
-- `bridge-router.js` 和 `mcp-http-bridge.js` 包含重复的工具定义和 `executeTool` 逻辑，修改工具行为时需同步更新两处
+- **三处 `executeTool()` 副本**：`bridge-router.js`、`mcp-http-bridge.js`、`mcp-server.js` 各有一份工具定义和执行逻辑。前两处返回 `{success, data}` JSON，`mcp-server.js` 返回 MCP 格式 `content: [{type: "text", text: ...}]`。修改工具行为时需同步更新三处
 - 前端 SPA 使用 `history.pushState` 路由，所有非 API/静态文件请求都返回 `index.html`
 - SQLite 使用 WAL journal 模式 + 外键约束
 - `folders` 表已定义但当前未被任何工具使用
 - 文件上传存储在 `server/uploads/`，使用时间戳重命名
 - `mcp-server.js` 依赖 `@modelcontextprotocol/sdk`，但该包未在 `package.json` 中声明，需手动安装
+- `/api/profile` 端点从 GitHub 获取 `whaibetter` 的 README，服务端缓存 1 小时
 
 ### 前端
 
-- 原生 JS SPA，无构建步骤，所有文件直接由 Express 静态服务
-- 主题系统：`data-theme` 属性（dark/light），用 `localStorage` 持久化
-- Markdown 渲染：`marked.min.js`（本地 vendor），支持 MathJax（CDN）用于 LaTeX 公式
-- 字体：Google Fonts Outfit
-- 路由：`app.js` 中监听 `popstate` 和链接点击，根据 URL 路径切换视图
+- 原生 JS SPA（ES Modules），无构建步骤，所有文件直接由 Express 静态服务
+- 入口：`client/index.html` → `client/js/app.js`（模块系统）
+- **遗留文件**：`client/app.js`（单体旧版）和 `client/style.css`（单体旧版 CSS）仍存在但**不再被加载**，当前使用 `client/js/` 模块 + `client/css/` 模块化样式
+- 主题系统：`data-theme` 属性（dark/light），用 `localStorage` 持久化，`index.html` 内联脚本防止 FOUC
+- Markdown 渲染：`marked.min.js`（本地 vendor），MathJax（CDN）用于 LaTeX 公式（`$...$` 行内，`$$...$$` 块级，手动触发 `typesetMath`）
+- 字体：Google Fonts Outfit + Playfair Display
+- 路由：`js/router.js` 监听 `popstate` 和链接点击（`data-link` 属性），根据 URL 路径切换视图
+- 阅读时间计算支持中文（400 字/分钟）和非中文（200 词/分钟）
+- 调试页面：`client/debug.html`（自动测试 API 和渲染）、`client/test.html`（基础连通性测试）
 
 ### 数据库表
 
@@ -140,9 +145,34 @@ node tools/call-mcp.js create_post '{"title":"标题","content":"内容"}'
 |------|----------|------|
 | MCP Stdio | Claude Desktop | `server/mcp-server.js` |
 | HTTP Bridge | 自定义 Agent | `server/mcp-http-bridge.js` 或 `/bridge` 路由 |
-| Python SDK | Python Agent | `sdk/markme_client.py`（同步 HTTP 客户端，封装所有工具） |
+| Python SDK | Python Agent | `sdk/markme_client.py`（`MarkMeClient` 同步 HTTP + `MarkMeMCPClient` 异步 MCP，`create_client()` 工厂函数） |
 | Claude Code Skill | Claude Code | `skills/markme-manager.json` |
 | OpenClaw Skill | OpenClaw | `skills/markme-openclaw.yaml` |
+
+## 启动脚本
+
+| 脚本 | 作用 |
+|------|------|
+| `start.bat` / `start.sh` | 仅启动主服务器（`server/index.js`） |
+| `start-all.bat` / `start-all.sh` | 启动主服务器 + MCP HTTP Bridge（双进程） |
+
+## 文档
+
+- `docs/adding-posts.md` — 添加文章教程（CLI、curl、AI Agent、文件上传）
+- `docs/agent-configuration.md` — 7 种 Agent 集成方式的详细对比和故障排除
+
+## 测试
+
+无正式测试框架。可用的测试工具：
+- `test-mcp-bridge.js` — 手动 Bridge 测试脚本（注意：端口硬编码为 3001，已过时）
+- `client/debug.html` — 浏览器内诊断页面
+- `test_screenshot.py` — Playwright 截图测试（桌面 1280x900 + 移动端 390x844）
+
+## 已知问题
+
+- `examples/agent_example.py` 端口硬编码为 3001（应为 8080/8081）
+- `README.md` 快速开始引用端口 3000（应为 8080）
+- `.gitignore` 规则被已跟踪文件绕过（`*.db`、`server/.env` 等在 .gitignore 添加前已提交）
 
 ## 安全
 
