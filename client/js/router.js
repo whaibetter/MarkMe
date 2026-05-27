@@ -13,7 +13,7 @@ export function init() {
   console.log('init called');
   var app = document.getElementById('app');
   var main = document.querySelector('.main');
-  if (main) { main.classList.remove('post-page'); main.classList.remove('container-wide'); }
+  if (main) main.classList.remove('post-page');
   removeMobileToc();
   cleanupReadingProgress();
   disconnectTocObserver();
@@ -45,7 +45,6 @@ export function init() {
       showTags(app);
       updateNav('topics');
     } else if (section === 'notes') {
-      if (main) main.classList.add('container-wide');
       showNotes(app);
       updateNav('notes');
     } else if (section === 'about') {
