@@ -8,11 +8,13 @@ const config = require('./config');
 
 const app = express();
 const PORT = config.PORT;
+const DATA_DIR = process.env.DATA_DIR || __dirname;
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const uploadsDir = path.join(DATA_DIR, 'uploads');
+app.use('/uploads', express.static(uploadsDir));
 
 // MCP Bridge 路由（远程 AI 客户端通过 /bridge/tools/:name 调用）
 const bridgeRouter = require('./bridge-router');
@@ -22,9 +24,8 @@ app.use(express.static(path.join(__dirname, '../client')));
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

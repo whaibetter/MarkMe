@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  markme:
+    build: .
+    container_name: markme
+    ports:
+      - "17111:8080"
+    volumes:
+      - ./data:/app/server/data
+      - ./uploads:/app/server/uploads
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - NODE_ENV=production
+      - DATA_DIR=/app/server/data
+    restart: unless-stopped
