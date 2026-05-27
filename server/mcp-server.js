@@ -10,6 +10,7 @@ const db = require('./db');
 const path = require('path');
 const fs = require('fs');
 const markmeConfig = require('./markme-config');
+const notes = require('./notes-sync');
 
 const server = new Server(
   { name: 'markme-blog', version: '1.0.0' },
@@ -221,6 +222,36 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         api_key: { type: 'string', description: 'API key for authentication (optional)' }
       },
       required: ['server_url']
+    }
+  },
+  {
+    name: 'list_notes',
+    description: 'List notes directory tree from the learning-notes repository (read-only)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string', description: 'Relative path within repo, default root' },
+        depth: { type: 'number', description: 'Tree depth, default 2' }
+      }
+    }
+  },
+  {
+    name: 'get_note',
+    description: 'Get the content of a specific note file (read-only)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string', description: 'Relative path to the file' }
+      },
+      required: ['path']
+    }
+  },
+  {
+    name: 'notes_status',
+    description: 'Get notes repository sync status (cloning/ready/error)',
+    inputSchema: {
+      type: 'object',
+      properties: {}
     }
   }
   ]
@@ -561,6 +592,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { server_url, api_key } = args;
         markmeConfig.setConfig(server_url, api_key || '');
         return { content: [{ type: 'text', text: JSON.stringify({ success: true, server_url, message: 'Configuration saved to ' + markmeConfig.getConfigPath() }) }] };
+      }
+
+      case 'list_notes': {
+        const { path: notePath = '', depth = 2 } = args;
+        if (notePath.includes('..')) return { content: [{ type: 'text', text: 'Invalid path' }], isError: true };
+        const result = notes.buildTree(notePath, Math.min(depth, 8));
+        if (result.error) return { content: [{ type: 'text', text: result.error }], isError: true };
+        return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      }
+
+      case 'get_note': {
+        const { path: notePath } = args;
+        if (!notePath) return { content: [{ type: 'text', text: 'path is required' }], isError: true };
+        if (notePath.includes('..')) return { content: [{ type: 'text', text: 'Invalid path' }], isError: true };
+        const result = notes.getNoteContent(notePath);
+        if (result.error) return { content: [{ type: 'text', text: result.error }], isError: true };
+        return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      }
+
+      case 'notes_status': {
+        return { content: [{ type: 'text', text: JSON.stringify(notes.getStatus(), null, 2) }] };
       }
 
       default:

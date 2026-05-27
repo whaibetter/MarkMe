@@ -20,6 +20,12 @@ app.use('/uploads', express.static(uploadsDir));
 const bridgeRouter = require('./bridge-router');
 app.use('/bridge', bridgeRouter);
 
+// Notes 路由（学习笔记仓库）
+const notesRouter = require('./notes-router');
+const notesSync = require('./notes-sync');
+app.use('/notes-files', express.static(notesSync.NOTES_DIR));
+app.use('/api/notes', notesRouter);
+
 app.use(express.static(path.join(__dirname, '../client')));
 
 const storage = multer.diskStorage({
@@ -132,4 +138,6 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`MarkMe server running on http://localhost:${PORT}`);
+  // 后台初始化笔记仓库（不阻塞启动）
+  notesSync.initNotesRepo();
 });

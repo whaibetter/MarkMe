@@ -243,6 +243,36 @@
         "type": "object",
         "properties": {}
       }
+    },
+    {
+      "name": "list_notes",
+      "description": "列出学习笔记仓库的目录树（只读）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "仓库内相对路径，默认根目录" },
+          "depth": { "type": "number", "description": "树深度，默认 2" }
+        }
+      }
+    },
+    {
+      "name": "get_note",
+      "description": "获取指定笔记文件的内容（只读）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "文件的相对路径" }
+        },
+        "required": ["path"]
+      }
+    },
+    {
+      "name": "notes_status",
+      "description": "获取笔记仓库同步状态（克隆中/就绪/错误）",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
     }
   ]
 }

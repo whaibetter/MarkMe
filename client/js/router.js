@@ -7,12 +7,13 @@ import { showProfile } from './pages/profile.js';
 import { showHome } from './pages/home.js';
 import { showPost } from './pages/post.js';
 import { showTags, showTagPosts } from './pages/tags.js';
+import { showNotes } from './pages/notes.js';
 
 export function init() {
   console.log('init called');
   var app = document.getElementById('app');
   var main = document.querySelector('.main');
-  if (main) main.classList.remove('post-page');
+  if (main) { main.classList.remove('post-page'); main.classList.remove('container-wide'); }
   removeMobileToc();
   cleanupReadingProgress();
   disconnectTocObserver();
@@ -43,6 +44,10 @@ export function init() {
     } else if (section === 'topics') {
       showTags(app);
       updateNav('topics');
+    } else if (section === 'notes') {
+      if (main) main.classList.add('container-wide');
+      showNotes(app);
+      updateNav('notes');
     } else if (section === 'about') {
       showProfile(app);
       updateNav('about');

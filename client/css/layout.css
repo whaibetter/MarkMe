@@ -5,6 +5,10 @@
   padding: 0 32px;
 }
 
+.container-wide {
+  max-width: 1200px;
+}
+
 /* ===== Main ===== */
 .main {
   flex: 1;

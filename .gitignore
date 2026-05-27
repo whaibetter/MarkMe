@@ -5,6 +5,7 @@ server/node_modules/
 *.db-wal
 server/.env
 uploads/
+learning-notes/
 .DS_Store
 Thumbs.db
 *.log

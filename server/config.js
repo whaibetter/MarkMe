@@ -15,6 +15,9 @@ module.exports = {
   // API Key（远程访问时强烈建议设置）
   API_KEY: process.env.MARKME_API_KEY || '',
 
+  // 学习笔记仓库地址
+  NOTES_REPO_URL: process.env.NOTES_REPO_URL || 'https://gitee.com/lkwhai/learning-notes.git',
+
   // 上传文件大小限制（字节）
   MAX_FILE_SIZE: process.env.MAX_FILE_SIZE || 50 * 1024 * 1024,
 

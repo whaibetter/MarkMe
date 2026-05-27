@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const config = require('./config');
 const markmeConfig = require('./markme-config');
+const notes = require('./notes-sync');
 
 const API_KEY = config.API_KEY;
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -51,7 +52,10 @@ const TOOLS = {
   get_stats: { description: "Get blog statistics", parameters: { type: "object", properties: {} } },
   get_system_info: { description: "Get system resource usage of the MarkMe application (CPU, memory, disk, uptime)", parameters: { type: "object", properties: {} } },
   get_markme_config: { description: "Get MarkMe client configuration (server URL, API key status)", parameters: { type: "object", properties: {} } },
-  set_markme_config: { description: "Set MarkMe client configuration (server URL and optional API key)", parameters: { type: "object", properties: { server_url: { type: "string" }, api_key: { type: "string" } }, required: ["server_url"] } }
+  set_markme_config: { description: "Set MarkMe client configuration (server URL and optional API key)", parameters: { type: "object", properties: { server_url: { type: "string" }, api_key: { type: "string" } }, required: ["server_url"] } },
+  list_notes: { description: "List notes directory tree from the learning-notes repository (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path within repo, default root" }, depth: { type: "number", description: "Tree depth, default 2" } } } },
+  get_note: { description: "Get the content of a specific note file (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path to the file" } }, required: ["path"] } },
+  notes_status: { description: "Get notes repository sync status (cloning/ready/error)", parameters: { type: "object", properties: {} } }
 };
 
 function executeTool(name, args) {
@@ -263,6 +267,27 @@ function executeTool(name, args) {
         const { server_url, api_key } = args;
         markmeConfig.setConfig(server_url, api_key || '');
         return { success: true, data: { server_url, message: 'Configuration saved to ' + markmeConfig.getConfigPath() } };
+      }
+
+      case 'list_notes': {
+        const { path: notePath = '', depth = 2 } = args;
+        if (notePath.includes('..')) return { success: false, error: 'Invalid path' };
+        const result = notes.buildTree(notePath, Math.min(depth, 8));
+        if (result.error) return { success: false, error: result.error };
+        return { success: true, data: result };
+      }
+
+      case 'get_note': {
+        const { path: notePath } = args;
+        if (!notePath) return { success: false, error: 'path is required' };
+        if (notePath.includes('..')) return { success: false, error: 'Invalid path' };
+        const result = notes.getNoteContent(notePath);
+        if (result.error) return { success: false, error: result.error };
+        return { success: true, data: result };
+      }
+
+      case 'notes_status': {
+        return { success: true, data: notes.getStatus() };
       }
 
       default:

@@ -106,6 +106,20 @@ POST /bridge/tools/get_system_info
 {}
 ```
 
+### 学习笔记（只读）
+
+#### list_notes - 列出笔记目录树
+```json
+POST /bridge/tools/list_notes
+{"path": "", "depth": 2}
+```
+
+#### get_note - 获取笔记内容
+```json
+POST /bridge/tools/get_note
+{"path": "Java开发/Java基础.md"}
+```
+
 ## 使用示例
 
 用户说"帮我创建一篇关于AI的文章"时，执行：

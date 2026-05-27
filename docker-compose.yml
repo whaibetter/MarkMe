@@ -9,6 +9,7 @@ services:
     volumes:
       - ./data:/app/server/data
       - ./uploads:/app/server/uploads
+      - ./learning-notes:/app/server/data/learning-notes
     environment:
       - PORT=8080
       - HOST=0.0.0.0
