@@ -349,20 +349,29 @@
   }
 
   /* Profile mobile */
+  .profile {
+    padding: 32px 0 24px;
+  }
+
   .profile-header {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 24px;
+    gap: 16px;
+    margin-bottom: 24px;
   }
 
   .profile-avatar {
-    width: 96px;
-    height: 96px;
+    width: 80px;
+    height: 80px;
   }
 
   .profile-name {
-    font-size: 28px;
+    font-size: 24px;
+  }
+
+  .profile-login {
+    font-size: 13px;
   }
 
   .profile-bio {
@@ -378,6 +387,61 @@
 
   .profile-links {
     justify-content: center;
+  }
+
+  .profile-readme {
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+
+  .profile-readme.markdown-body {
+    font-size: 14px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .profile-readme.markdown-body h1 {
+    font-size: 22px;
+  }
+
+  .profile-readme.markdown-body h2 {
+    font-size: 18px;
+  }
+
+  .profile-readme.markdown-body h3 {
+    font-size: 16px;
+  }
+
+  .profile-readme.markdown-body pre {
+    padding: 12px 10px;
+    font-size: 12px;
+    margin-left: -4px;
+    margin-right: -4px;
+    max-width: calc(100% + 8px);
+  }
+
+  .profile-readme.markdown-body table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .profile-readme.markdown-body th,
+  .profile-readme.markdown-body td {
+    padding: 8px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .profile-readme.markdown-body img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .profile-readme.markdown-body blockquote {
+    padding: 12px 14px;
+    margin: 12px 0;
   }
 
   /* Preview modal mobile */

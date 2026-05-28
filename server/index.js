@@ -97,10 +97,25 @@ app.get('/api/stats', (req, res) => {
   res.json({ posts: posts.count, files: files.count });
 });
 
-// GitHub Profile API with server-side cache
+// GitHub Profile API with server-side cache (memory + disk persistence)
 const GITHUB_USER = 'whaibetter';
 const PROFILE_CACHE_KEY = 'github-profile';
+const PROFILE_CACHE_FILE = path.join(__dirname, 'data', 'profile-cache.json');
+const PROFILE_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 const profileCache = new Map();
+
+// Load cache from disk on startup
+try {
+  if (fs.existsSync(PROFILE_CACHE_FILE)) {
+    const saved = JSON.parse(fs.readFileSync(PROFILE_CACHE_FILE, 'utf-8'));
+    if (saved && saved.content && saved.timestamp) {
+      profileCache.set(PROFILE_CACHE_KEY, saved);
+      console.log('Profile cache loaded from disk');
+    }
+  }
+} catch (e) {
+  // Ignore corrupt cache file
+}
 
 async function fetchGitHubProfile() {
   const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_USER}/main/README.md`;
@@ -114,12 +129,22 @@ app.get('/api/profile', async (req, res) => {
     const cached = profileCache.get(PROFILE_CACHE_KEY);
     const now = Date.now();
 
-    if (cached && now - cached.timestamp < 60 * 60 * 1000) {
+    if (cached && now - cached.timestamp < PROFILE_CACHE_TTL) {
       return res.json({ content: cached.content, cached: true });
     }
 
     const content = await fetchGitHubProfile();
-    profileCache.set(PROFILE_CACHE_KEY, { content, timestamp: now });
+    const entry = { content, timestamp: now };
+    profileCache.set(PROFILE_CACHE_KEY, entry);
+
+    // Persist to disk
+    try {
+      fs.mkdirSync(path.dirname(PROFILE_CACHE_FILE), { recursive: true });
+      fs.writeFileSync(PROFILE_CACHE_FILE, JSON.stringify(entry));
+    } catch (e) {
+      console.error('Profile cache write error:', e.message);
+    }
+
     res.json({ content, cached: false });
   } catch (err) {
     console.error('Profile fetch error:', err);
