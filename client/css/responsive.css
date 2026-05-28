@@ -89,6 +89,15 @@
 
 /* ===== TABLET (768px) ===== */
 @media (max-width: 768px) {
+  .theme-label {
+    display: none;
+  }
+
+  .theme-toggle {
+    padding: 0 8px;
+    margin-left: 8px;
+  }
+
   .hero-title {
     font-size: 52px;
   }
@@ -147,11 +156,23 @@
   .nav {
     margin-top: 6px;
     gap: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .nav a {
-    padding: 6px 12px;
+    padding: 6px 10px;
     font-size: 11px;
+  }
+
+  .theme-toggle {
+    padding: 0 8px;
+    margin-left: 6px;
+    height: 32px;
+  }
+
+  .theme-label {
+    display: none;
   }
 
   body {
