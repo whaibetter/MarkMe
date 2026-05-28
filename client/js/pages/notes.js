@@ -1,6 +1,7 @@
 // ===== Notes Page =====
 
 import { renderMd, fetchJSON } from '../utils.js';
+import { buildTocHtml, createMobileToc, setupScrollSpy, removeMobileToc, disconnectTocObserver } from '../toc.js';
 
 var currentPath = '';
 
@@ -284,7 +285,7 @@ function loadFile(filePath) {
       // Text / Markdown
       var html = header;
       if (data.type === 'markdown') {
-        html += '<div class="notes-markdown markdown-body">' + renderMd(data.content) + '</div>';
+        html += '<div class="notes-toc-layout"><div class="notes-markdown markdown-body">' + renderMd(data.content) + '</div></div>';
       } else {
         html += '<pre style="background:var(--code-bg);padding:1rem;border-radius:8px;overflow-x:auto;line-height:1.6;font-size:0.9rem">' +
           escapeHtml(data.content) + '</pre>';
@@ -294,6 +295,35 @@ function loadFile(filePath) {
 
       if (window.MathJax && window.MathJax.typeset) {
         window.MathJax.typeset();
+      }
+
+      // Generate TOC for markdown files
+      removeMobileToc();
+      disconnectTocObserver();
+      if (data.type === 'markdown') {
+        var mdEl = contentEl.querySelector('.notes-markdown');
+        var tocLayout = contentEl.querySelector('.notes-toc-layout');
+        if (mdEl && tocLayout) {
+          var headings = mdEl.querySelectorAll('h2, h3');
+          var tocItems = [];
+          for (var hi = 0; hi < headings.length; hi++) {
+            var h = headings[hi];
+            var slug = 'notes-h-' + hi + '-' + h.textContent.trim()
+              .toLowerCase()
+              .replace(/[^\w一-鿿]+/g, '-')
+              .replace(/^-|-$/g, '');
+            h.id = slug;
+            tocItems.push({ id: slug, text: h.textContent.trim(), level: h.tagName.toLowerCase() });
+          }
+          if (tocItems.length > 0) {
+            var tocSidebar = document.createElement('aside');
+            tocSidebar.className = 'notes-toc-sidebar toc-sidebar';
+            tocSidebar.innerHTML = buildTocHtml(tocItems);
+            tocLayout.appendChild(tocSidebar);
+            createMobileToc(tocItems);
+            setupScrollSpy(tocItems);
+          }
+        }
       }
 
       markActiveInSidebar(filePath);

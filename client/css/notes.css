@@ -158,6 +158,27 @@
   color: var(--text);
 }
 
+/* TOC layout */
+.notes-toc-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.notes-toc-layout .notes-markdown {
+  flex: 1;
+  min-width: 0;
+}
+
+.notes-toc-layout .notes-toc-sidebar {
+  position: sticky;
+  top: 90px;
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  width: 200px;
+  flex-shrink: 0;
+}
+
 /* Markdown body */
 .notes-markdown {
   line-height: 1.8;
@@ -313,6 +334,10 @@
 
 /* Mobile: slide-out sidebar */
 @media (max-width: 768px) {
+  .notes-toc-layout .notes-toc-sidebar {
+    display: none;
+  }
+
   .notes-layout {
     grid-template-columns: 1fr;
     gap: 0;
