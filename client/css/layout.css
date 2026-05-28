@@ -161,6 +161,7 @@
   background-size: 256px 256px;
 }
 
-[data-theme="light"] .noise-bg {
+[data-theme="light"] .noise-bg,
+[data-theme="retro"] .noise-bg {
   opacity: 0.03;
 }

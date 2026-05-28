@@ -261,6 +261,44 @@ html {
   --shadow-glow: 0 0 40px rgba(255, 45, 123, 0.08);
 }
 
+/* ===== RETRO THEME (WhaiMusic inspired) ===== */
+[data-theme="retro"] {
+  --bg: #f7d5d5;
+  --bg-deep: #f0c4c4;
+  --bg-warm: #faf1e8;
+  --surface: rgba(0, 0, 0, 0.03);
+  --surface-hover: rgba(0, 0, 0, 0.06);
+  --border: rgba(0, 0, 0, 0.12);
+  --border-hover: rgba(0, 0, 0, 0.25);
+
+  --text: #2a2520;
+  --text-secondary: #5a5048;
+  --text-muted: #9b8e82;
+  --text-bright: #1a1410;
+  --text-accent: #2d726a;
+
+  --accent: #3a8f85;
+  --accent-light: #4aa89d;
+  --accent-soft: rgba(58, 143, 133, 0.1);
+  --accent-glow: rgba(58, 143, 133, 0.06);
+
+  --blue: #5b8fb9;
+  --rose: #c07060;
+  --green: #3a8f85;
+
+  --code-bg: #f5eadb;
+  --code-border: rgba(0, 0, 0, 0.1);
+
+  --header-bg: rgba(247, 213, 213, 0.9);
+  --panel-bg: rgba(250, 241, 232, 0.95);
+  --modal-bg: rgba(250, 241, 232, 0.95);
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 20px rgba(58, 143, 133, 0.06);
+}
+
 @font-face {
   font-family: 'JetBrains Mono';
   src: local('JetBrains Mono');

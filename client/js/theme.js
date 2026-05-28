@@ -1,13 +1,14 @@
 // ===== Theme Management =====
 
-var themes = ['dark', 'light', 'nord', 'dracula', 'forest', 'cyberpunk'];
+var themes = ['dark', 'light', 'nord', 'dracula', 'forest', 'cyberpunk', 'retro'];
 var themeLabels = {
   dark: 'Dark',
   light: 'Light',
   nord: 'Nord',
   dracula: 'Dracula',
   forest: 'Forest',
-  cyberpunk: 'Cyberpunk'
+  cyberpunk: 'Cyberpunk',
+  retro: 'Retro'
 };
 
 export function initTheme() {
