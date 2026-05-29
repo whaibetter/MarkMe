@@ -8,6 +8,7 @@ import { showHome } from './pages/home.js';
 import { showPost } from './pages/post.js';
 import { showTags, showTagPosts } from './pages/tags.js';
 import { showNotes } from './pages/notes.js';
+import { showFeed } from './pages/feed.js';
 
 export function init() {
   console.log('init called');
@@ -37,8 +38,11 @@ export function init() {
     updateNav('topics');
   } else {
     // Homepage sections
-    var section = new URLSearchParams(search).get('section') || 'blogs';
-    if (section === 'blogs') {
+    var section = new URLSearchParams(search).get('section') || 'feed';
+    if (section === 'feed') {
+      showFeed(app);
+      updateNav('feed');
+    } else if (section === 'blogs') {
       showHome(app);
       updateNav('blogs');
     } else if (section === 'topics') {
@@ -51,8 +55,8 @@ export function init() {
       showProfile(app);
       updateNav('about');
     } else {
-      showHome(app);
-      updateNav('blogs');
+      showFeed(app);
+      updateNav('feed');
     }
   }
 }

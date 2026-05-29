@@ -55,7 +55,12 @@ const TOOLS = {
   set_markme_config: { description: "Set WhaiBlog client configuration (server URL and optional API key)", parameters: { type: "object", properties: { server_url: { type: "string" }, api_key: { type: "string" } }, required: ["server_url"] } },
   list_notes: { description: "List notes directory tree from the learning-notes repository (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path within repo, default root" }, depth: { type: "number", description: "Tree depth, default 2" } } } },
   get_note: { description: "Get the content of a specific note file (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path to the file" } }, required: ["path"] } },
-  notes_status: { description: "Get notes repository sync status (cloning/ready/error)", parameters: { type: "object", properties: {} } }
+  notes_status: { description: "Get notes repository sync status (cloning/ready/error)", parameters: { type: "object", properties: {} } },
+  create_feed: { description: "Create a new feed item", parameters: { type: "object", properties: { title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } } }, required: ["title", "content"] } },
+  list_feeds: { description: "List all feed items", parameters: { type: "object", properties: { page: { type: "number" }, limit: { type: "number" } } } },
+  get_feed: { description: "Get a specific feed item", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } },
+  update_feed: { description: "Update an existing feed item", parameters: { type: "object", properties: { id: { type: "number" }, title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, status: { type: "string", enum: ["published", "draft"] } }, required: ["id"] } },
+  delete_feed: { description: "Delete a feed item", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } }
 };
 
 function executeTool(name, args) {
@@ -288,6 +293,37 @@ function executeTool(name, args) {
 
       case 'notes_status': {
         return { success: true, data: notes.getStatus() };
+      }
+
+      case 'create_feed': {
+        const { title, content, summary, source, url, tags = [] } = args;
+        const result = db.prepare('INSERT INTO feeds (title, content, summary, source, url, tags) VALUES (?, ?, ?, ?, ?, ?)').run(title, content, summary || content.substring(0, 200), source || null, url || null, JSON.stringify(tags));
+        return { success: true, data: { id: result.lastInsertRowid, title } };
+      }
+      case 'list_feeds': {
+        const { page = 1, limit = 20 } = args;
+        const offset = (page - 1) * limit;
+        const feeds = db.prepare('SELECT * FROM feeds ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
+        const total = db.prepare('SELECT COUNT(*) as count FROM feeds').get().count;
+        return { success: true, data: { feeds, total, page, limit } };
+      }
+      case 'get_feed': {
+        const feed = db.prepare('SELECT * FROM feeds WHERE id = ?').get(args.id);
+        if (!feed) return { success: false, error: 'Feed not found' };
+        return { success: true, data: feed };
+      }
+      case 'update_feed': {
+        const { id, ...updates } = args;
+        const feed = db.prepare('SELECT * FROM feeds WHERE id = ?').get(id);
+        if (!feed) return { success: false, error: 'Feed not found' };
+        const fields = [], values = [];
+        Object.entries(updates).forEach(([key, value]) => { if (value !== undefined) { fields.push(`${key} = ?`); values.push(key === 'tags' ? JSON.stringify(value) : value); } });
+        if (fields.length > 0) { fields.push('updated_at = CURRENT_TIMESTAMP'); values.push(id); db.prepare(`UPDATE feeds SET ${fields.join(', ')} WHERE id = ?`).run(...values); }
+        return { success: true, data: { id, ...updates } };
+      }
+      case 'delete_feed': {
+        db.prepare('DELETE FROM feeds WHERE id = ?').run(args.id);
+        return { success: true, message: `Feed ${args.id} deleted` };
       }
 
       default:

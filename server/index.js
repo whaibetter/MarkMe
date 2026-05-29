@@ -91,6 +91,33 @@ app.get('/api/tags', (req, res) => {
   res.json([...tagSet]);
 });
 
+// Feed API
+app.get('/api/feeds', (req, res) => {
+  const { page = 1, limit = 20, tag } = req.query;
+  const offset = (page - 1) * limit;
+  let query = 'SELECT * FROM feeds WHERE status = ?';
+  const params = ['published'];
+
+  if (tag) {
+    query += ' AND tags LIKE ?';
+    params.push(`%${tag}%`);
+  }
+
+  query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+  params.push(Number(limit), Number(offset));
+
+  const feeds = db.prepare(query).all(...params);
+  const total = db.prepare('SELECT COUNT(*) as count FROM feeds WHERE status = ?').get('published').count;
+
+  res.json({ feeds, total, page: Number(page), limit: Number(limit) });
+});
+
+app.get('/api/feeds/:id', (req, res) => {
+  const feed = db.prepare('SELECT * FROM feeds WHERE id = ?').get(req.params.id);
+  if (!feed) return res.status(404).json({ error: 'Feed not found' });
+  res.json(feed);
+});
+
 app.get('/api/stats', (req, res) => {
   const posts = db.prepare('SELECT COUNT(*) as count FROM posts WHERE status = ?').get('published');
   const files = db.prepare('SELECT COUNT(*) as count FROM files').get();
