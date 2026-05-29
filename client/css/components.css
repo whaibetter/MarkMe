@@ -85,7 +85,6 @@
   gap: 6px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  margin-left: 12px;
   color: var(--text-secondary);
   font-family: var(--font-body);
   font-size: 12px;
@@ -117,6 +116,44 @@
   white-space: nowrap;
   min-width: 72px;
   text-align: center;
+}
+
+/* ===== Nav Controls (lang + theme) ===== */
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+/* ===== Language Toggle ===== */
+.lang-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.lang-toggle:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.lang-label {
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* ===== Theme Dropdown ===== */

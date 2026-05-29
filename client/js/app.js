@@ -3,9 +3,15 @@
 import { init, goTag } from './router.js';
 import { toggleTheme, createThemeDropdown, bindDropdownEvents } from './theme.js';
 import { initAnimations, cleanupAnimations } from './animations.js';
+import { initLang, toggleLang } from './i18n.js';
 
 // Navigation event handling
 document.addEventListener('click', function(e) {
+  if (e.target.closest('.lang-toggle')) {
+    toggleLang();
+    init();
+    return;
+  }
   if (e.target.closest('.theme-toggle')) {
     toggleTheme();
     return;
@@ -65,6 +71,7 @@ function setupThemeDropdown() {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', function() {
+  initLang();
   init();
   initAnimations();
   setupThemeDropdown();

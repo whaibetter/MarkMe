@@ -3,6 +3,7 @@
 import { fetchJSON, escapeHtml, formatDate } from '../utils.js';
 import { renderError } from '../components/error.js';
 import { openMarkdownModal } from '../components/modal.js';
+import { t } from '../i18n.js';
 
 var API = '/api';
 var appEl = null;
@@ -24,18 +25,18 @@ function loadPage() {
       // Hero
       html += '<section class="hero">';
       html += '<div class="hero-content">';
-      html += '<div class="hero-issue hero-reveal" style="animation-delay:0.1s">Information Flow</div>';
-      html += '<h1 class="hero-title hero-reveal" style="animation-delay:0.2s">Feed</h1>';
-      html += '<p class="hero-subtitle hero-reveal" style="animation-delay:0.35s">Curated news and insights</p>';
+      html += '<div class="hero-issue hero-reveal" style="animation-delay:0.1s">' + t('feed.issue') + '</div>';
+      html += '<h1 class="hero-title hero-reveal" style="animation-delay:0.2s">' + t('feed.title') + '</h1>';
+      html += '<p class="hero-subtitle hero-reveal" style="animation-delay:0.35s">' + t('feed.subtitle') + '</p>';
       html += '<div class="hero-meta hero-reveal" style="animation-delay:0.5s">';
-      html += '<div class="hero-stat"><span class="hero-stat-num">' + data.total + '</span><span class="hero-stat-label">Items</span></div>';
+      html += '<div class="hero-stat"><span class="hero-stat-num">' + data.total + '</span><span class="hero-stat-label">' + t('feed.items') + '</span></div>';
       html += '</div>';
       html += '</div>';
       html += '</section>';
 
       // Feed cards
       if (data.feeds.length === 0) {
-        html += '<div class="feed-empty">No feed items yet</div>';
+        html += '<div class="feed-empty">' + t('feed.empty') + '</div>';
       } else {
         html += '<div class="feed-list">';
         for (var i = 0; i < data.feeds.length; i++) {
@@ -47,11 +48,11 @@ function loadPage() {
       // Pagination
       if (totalPages > 1) {
         html += '<div class="pagination reveal">';
-        html += '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="window._feedPage(' + (currentPage - 1) + ')">&#8249; Prev</button>';
+        html += '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="window._feedPage(' + (currentPage - 1) + ')">&#8249; ' + t('common.prev') + '</button>';
         for (var p = 1; p <= totalPages; p++) {
           html += '<button class="' + (p === currentPage ? 'active' : '') + '" onclick="window._feedPage(' + p + ')">' + p + '</button>';
         }
-        html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="window._feedPage(' + (currentPage + 1) + ')">Next &#8250;</button>';
+        html += '<button ' + (currentPage >= totalPages ? 'disabled' : '') + ' onclick="window._feedPage(' + (currentPage + 1) + ')">' + t('common.next') + ' &#8250;</button>';
         html += '</div>';
       }
 
