@@ -1,4 +1,4 @@
-// MarkMe 配置文件
+// WhaiBlog 配置文件
 // 可通过环境变量或此文件配置
 require('dotenv').config();
 

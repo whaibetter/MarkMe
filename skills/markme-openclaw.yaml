@@ -1,36 +1,36 @@
 name: markme-blog-manager
 version: 2.0.0
-description: MarkMe 博客系统管理工具 - 支持文章和文件的完整 CRUD 操作
-author: MarkMe
+description: WhaiBlog 博客系统管理工具 - 支持文章和文件的完整 CRUD 操作
+author: WhaiBlog
 
 instructions: |
-  这是 MarkMe 博客系统的管理工具。
+  这是 WhaiBlog 博客系统的管理工具。
   你可以通过这些工具管理博客文章和上传的文件。
   所有数据管理都通过此工具进行，前端页面仅用于展示。
 
   【重要】首次使用前必须先配置服务器地址：
   1. 调用 get_markme_config 检查是否已配置
-  2. 如果 configured=false，询问用户 MarkMe 服务器地址，然后调用 set_markme_config 保存
+  2. 如果 configured=false，询问用户 WhaiBlog 服务器地址，然后调用 set_markme_config 保存
   3. 配置完成后才能使用其他工具
 
-  配置文件保存在 ~/.markme/config.json，所有 MarkMe 工具共享此配置。
+  配置文件保存在 ~/.markme/config.json，所有 WhaiBlog 工具共享此配置。
 
 tools:
   # 配置管理
   - name: get_markme_config
-    description: 获取 MarkMe 客户端配置。首次使用前必须先调用此工具检查。
+    description: 获取 WhaiBlog 客户端配置。首次使用前必须先调用此工具检查。
     parameters:
       type: object
       properties: {}
 
   - name: set_markme_config
-    description: 设置 MarkMe 客户端配置（服务器地址和可选 API Key）
+    description: 设置 WhaiBlog 客户端配置（服务器地址和可选 API Key）
     parameters:
       type: object
       properties:
         server_url:
           type: string
-          description: MarkMe 服务器地址，如 http://117.72.196.45:8080
+          description: WhaiBlog 服务器地址，如 http://117.72.196.45:8080
         api_key:
           type: string
           description: API Key（可选）
@@ -263,7 +263,7 @@ tools:
 
   # 系统监控
   - name: get_system_info
-    description: 获取 MarkMe 应用的系统资源使用情况（CPU、内存、磁盘、运行时间）
+    description: 获取 WhaiBlog 应用的系统资源使用情况（CPU、内存、磁盘、运行时间）
     parameters:
       type: object
       properties: {}

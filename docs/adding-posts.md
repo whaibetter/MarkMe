@@ -1,6 +1,6 @@
-# MarkMe 添加文章教程
+# WhaiBlog 添加文章教程
 
-MarkMe 的前端页面是只读的，所有数据管理通过 MCP 或 API 进行。以下是添加文章的几种方式。
+WhaiBlog 的前端页面是只读的，所有数据管理通过 MCP 或 API 进行。以下是添加文章的几种方式。
 
 ## 前置信息
 
@@ -90,7 +90,7 @@ curl -X POST http://117.72.196.45:8080/bridge/tools/list_posts \
 
 在 Claude Code 或 OpenClaw 中，直接用自然语言告诉 AI：
 
-> "帮我在 MarkMe 上创建一篇文章，标题是《xxx》，内容是 xxx，标签是 xxx"
+> "帮我在 WhaiBlog 上创建一篇文章，标题是《xxx》，内容是 xxx，标签是 xxx"
 
 AI 会自动调用 MCP 工具完成操作。
 

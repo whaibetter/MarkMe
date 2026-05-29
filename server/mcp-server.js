@@ -198,7 +198,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     }
   , {
     name: 'get_system_info',
-    description: 'Get system resource usage of the MarkMe application (CPU, memory, disk, uptime)',
+    description: 'Get system resource usage of the WhaiBlog application (CPU, memory, disk, uptime)',
     inputSchema: {
       type: 'object',
       properties: {}
@@ -206,7 +206,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   },
   {
     name: 'get_markme_config',
-    description: 'Get MarkMe client configuration (server URL, API key status)',
+    description: 'Get WhaiBlog client configuration (server URL, API key status)',
     inputSchema: {
       type: 'object',
       properties: {}
@@ -214,11 +214,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   },
   {
     name: 'set_markme_config',
-    description: 'Set MarkMe client configuration (server URL and optional API key)',
+    description: 'Set WhaiBlog client configuration (server URL and optional API key)',
     inputSchema: {
       type: 'object',
       properties: {
-        server_url: { type: 'string', description: 'MarkMe server URL, e.g. http://117.72.196.45:8080' },
+        server_url: { type: 'string', description: 'WhaiBlog server URL, e.g. http://117.72.196.45:8080' },
         api_key: { type: 'string', description: 'API key for authentication (optional)' }
       },
       required: ['server_url']
@@ -583,7 +583,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_markme_config': {
         const config = markmeConfig.getConfig();
         if (!config || !config.server_url) {
-          return { content: [{ type: 'text', text: JSON.stringify({ configured: false, message: 'MarkMe server URL not configured. Use set_markme_config to set the server URL.' }) }] };
+          return { content: [{ type: 'text', text: JSON.stringify({ configured: false, message: 'WhaiBlog server URL not configured. Use set_markme_config to set the server URL.' }) }] };
         }
         return { content: [{ type: 'text', text: JSON.stringify({ configured: true, server_url: config.server_url, api_key_set: !!config.api_key }) }] };
       }
@@ -626,7 +626,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('MarkMe MCP server running on stdio');
+  console.error('WhaiBlog MCP server running on stdio');
 }
 
 main().catch(console.error);

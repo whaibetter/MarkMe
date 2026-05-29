@@ -1,7 +1,8 @@
-// ===== MarkMe App Entry Point =====
+// ===== WhaiBlog App Entry Point =====
 
 import { init, goTag } from './router.js';
-import { toggleTheme } from './theme.js';
+import { toggleTheme, createThemeDropdown, bindDropdownEvents } from './theme.js';
+import { initAnimations, cleanupAnimations } from './animations.js';
 
 // Navigation event handling
 document.addEventListener('click', function(e) {
@@ -17,13 +18,17 @@ document.addEventListener('click', function(e) {
     e.preventDefault();
     var href = link.getAttribute('href');
     console.log('Navigate to:', href);
+    cleanupAnimations();
     history.pushState(null, '', href);
     init();
   }
 });
 
 // Browser back/forward
-window.addEventListener('popstate', init);
+window.addEventListener('popstate', function() {
+  cleanupAnimations();
+  init();
+});
 
 // System theme change
 if (window.matchMedia) {
@@ -34,5 +39,33 @@ if (window.matchMedia) {
   });
 }
 
+// Header scroll effect
+var header = document.querySelector('.header');
+if (header) {
+  var lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    var scrollY = window.scrollY;
+    if (scrollY > 20) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+    lastScroll = scrollY;
+  }, { passive: true });
+}
+
+// Inject theme dropdown into toggle button
+function setupThemeDropdown() {
+  var toggle = document.querySelector('.theme-toggle');
+  if (toggle && !toggle.querySelector('.theme-dropdown')) {
+    toggle.insertAdjacentHTML('beforeend', createThemeDropdown());
+    bindDropdownEvents();
+  }
+}
+
 // Initialize on load
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', function() {
+  init();
+  initAnimations();
+  setupThemeDropdown();
+});

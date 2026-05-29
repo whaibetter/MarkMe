@@ -1,4 +1,4 @@
-# MarkMe - 轻量级博客系统
+# WhaiBlog - 轻量级博客系统
 
 一个轻量级的博客系统，支持通过 MCP、Claude Code Skill 和 OpenClaw Skill 进行 AI 驱动的内容管理。
 
@@ -111,7 +111,7 @@ npm start
 ## 项目结构
 
 ```
-MarkMe/
+WhaiBlog/
 ├── server/           # 后端
 │   ├── index.js      # Express 服务器
 │   ├── db.js         # SQLite 数据库

@@ -50,9 +50,9 @@ const TOOLS = {
   replace_file_content: { description: "Replace file content by base64 - for remote clients", parameters: { type: "object", properties: { id: { type: "number" }, content: { type: "string" } }, required: ["id", "content"] } },
   delete_file: { description: "Delete an uploaded file", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } },
   get_stats: { description: "Get blog statistics", parameters: { type: "object", properties: {} } },
-  get_system_info: { description: "Get system resource usage of the MarkMe application (CPU, memory, disk, uptime)", parameters: { type: "object", properties: {} } },
-  get_markme_config: { description: "Get MarkMe client configuration (server URL, API key status)", parameters: { type: "object", properties: {} } },
-  set_markme_config: { description: "Set MarkMe client configuration (server URL and optional API key)", parameters: { type: "object", properties: { server_url: { type: "string" }, api_key: { type: "string" } }, required: ["server_url"] } },
+  get_system_info: { description: "Get system resource usage of the WhaiBlog application (CPU, memory, disk, uptime)", parameters: { type: "object", properties: {} } },
+  get_markme_config: { description: "Get WhaiBlog client configuration (server URL, API key status)", parameters: { type: "object", properties: {} } },
+  set_markme_config: { description: "Set WhaiBlog client configuration (server URL and optional API key)", parameters: { type: "object", properties: { server_url: { type: "string" }, api_key: { type: "string" } }, required: ["server_url"] } },
   list_notes: { description: "List notes directory tree from the learning-notes repository (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path within repo, default root" }, depth: { type: "number", description: "Tree depth, default 2" } } } },
   get_note: { description: "Get the content of a specific note file (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path to the file" } }, required: ["path"] } },
   notes_status: { description: "Get notes repository sync status (cloning/ready/error)", parameters: { type: "object", properties: {} } }
@@ -259,7 +259,7 @@ function executeTool(name, args) {
 
       case 'get_markme_config': {
         const cfg = markmeConfig.getConfig();
-        if (!cfg || !cfg.server_url) return { success: true, data: { configured: false, message: 'MarkMe server URL not configured. Use set_markme_config to set the server URL.' } };
+        if (!cfg || !cfg.server_url) return { success: true, data: { configured: false, message: 'WhaiBlog server URL not configured. Use set_markme_config to set the server URL.' } };
         return { success: true, data: { configured: true, server_url: cfg.server_url, api_key_set: !!cfg.api_key } };
       }
 

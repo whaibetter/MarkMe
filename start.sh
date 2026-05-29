@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# MarkMe 博客系统启动脚本 (Linux/macOS)
+# WhaiBlog 博客系统启动脚本 (Linux/macOS)
 
 cd "$(dirname "$0")/server"
 
@@ -20,5 +20,5 @@ if [ ! -d "node_modules" ]; then
 fi
 
 # 启动服务器
-echo "Starting MarkMe server on http://localhost:${PORT}"
+echo "Starting WhaiBlog server on http://localhost:${PORT}"
 node index.js

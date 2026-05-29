@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# MarkMe 博客系统 - 完整启动脚本 (Linux/macOS)
+# WhaiBlog 博客系统 - 完整启动脚本 (Linux/macOS)
 
 set -e
 
@@ -21,7 +21,7 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 echo "========================================"
-echo " MarkMe Blog System - Full Launch"
+echo " WhaiBlog Blog System - Full Launch"
 echo "========================================"
 echo ""
 
@@ -46,7 +46,7 @@ sleep 2
 
 echo ""
 echo "========================================"
-echo -e " ${GREEN}MarkMe is running!${NC}"
+echo -e " ${GREEN}WhaiBlog is running!${NC}"
 echo "========================================"
 echo ""
 echo "  Frontend:        http://localhost:${PORT}"

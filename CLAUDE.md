@@ -2,9 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# MarkMe - 轻量级博客系统
+# WhaiBlog - 轻量级博客系统
 
-MarkMe 是一个 AI 驱动的轻量级博客系统。前端为**只读展示**，所有内容管理通过 AI 工具完成（MCP、HTTP Bridge、Python SDK）。
+WhaiBlog 是一个 AI 驱动的轻量级博客系统。前端为**只读展示**，所有内容管理通过 AI 工具完成（MCP、HTTP Bridge、Python SDK）。
 
 ## 技术栈
 
@@ -145,7 +145,7 @@ node tools/call-mcp.js create_post '{"title":"标题","content":"内容"}'
 |------|----------|------|
 | MCP Stdio | Claude Desktop | `server/mcp-server.js` |
 | HTTP Bridge | 自定义 Agent | `server/mcp-http-bridge.js` 或 `/bridge` 路由 |
-| Python SDK | Python Agent | `sdk/markme_client.py`（`MarkMeClient` 同步 HTTP + `MarkMeMCPClient` 异步 MCP，`create_client()` 工厂函数） |
+| Python SDK | Python Agent | `sdk/markme_client.py`（`WhaiBlogClient` 同步 HTTP + `WhaiBlogMCPClient` 异步 MCP，`create_client()` 工厂函数） |
 | Claude Code Skill | Claude Code | `skills/markme-manager.json` |
 | OpenClaw Skill | OpenClaw | `skills/markme-openclaw.yaml` |
 

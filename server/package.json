@@ -1,7 +1,7 @@
 {
   "name": "markme-server",
   "version": "1.0.0",
-  "description": "MarkMe Blog System - Backend",
+  "description": "WhaiBlog Blog System - Backend",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

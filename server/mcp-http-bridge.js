@@ -205,15 +205,15 @@ const TOOLS = {
     parameters: { type: "object", properties: {} }
   },
   get_system_info: {
-    description: "Get system resource usage of the MarkMe application (CPU, memory, disk, uptime)",
+    description: "Get system resource usage of the WhaiBlog application (CPU, memory, disk, uptime)",
     parameters: { type: "object", properties: {} }
   },
   get_markme_config: {
-    description: "Get MarkMe client configuration (server URL, API key status)",
+    description: "Get WhaiBlog client configuration (server URL, API key status)",
     parameters: { type: "object", properties: {} }
   },
   set_markme_config: {
-    description: "Set MarkMe client configuration (server URL and optional API key)",
+    description: "Set WhaiBlog client configuration (server URL and optional API key)",
     parameters: { type: "object", properties: { server_url: { type: "string" }, api_key: { type: "string" } }, required: ["server_url"] }
   },
   list_notes: {
@@ -539,7 +539,7 @@ function executeTool(name, args) {
 
       case 'get_markme_config': {
         const cfg = markmeConfig.getConfig();
-        if (!cfg || !cfg.server_url) return { success: true, data: { configured: false, message: 'MarkMe server URL not configured. Use set_markme_config to set the server URL.' } };
+        if (!cfg || !cfg.server_url) return { success: true, data: { configured: false, message: 'WhaiBlog server URL not configured. Use set_markme_config to set the server URL.' } };
         return { success: true, data: { configured: true, server_url: cfg.server_url, api_key_set: !!cfg.api_key } };
       }
 
@@ -617,7 +617,7 @@ app.post('/call', (req, res) => {
 
 app.listen(PORT, HOST, () => {
   const displayHost = HOST === '0.0.0.0' ? '0.0.0.0 (all interfaces)' : HOST;
-  console.log(`MarkMe MCP HTTP Bridge running on ${displayHost}:${PORT}`);
+  console.log(`WhaiBlog MCP HTTP Bridge running on ${displayHost}:${PORT}`);
   if (HOST === '0.0.0.0') {
     console.log(`Remote access: http://<your-server-ip>:${PORT}`);
   }

@@ -3,6 +3,7 @@
 import { fetchJSON } from '../utils.js';
 import { renderPostList } from '../components/post-card.js';
 import { renderError } from '../components/error.js';
+import { initAnimations, observeElements } from '../animations.js';
 
 var API = '/api';
 var currentPage = 1;
@@ -24,26 +25,32 @@ function loadPage() {
 
       // Hero section
       html += '<section class="hero">';
+      html += '<div class="hero-corner"></div>';
       html += '<div class="hero-content">';
+      html += '<div class="hero-issue hero-reveal" style="animation-delay:0.1s">Personal Blog</div>';
       html += '<h1 class="hero-title hero-reveal" style="animation-delay:0.2s">Wenhai\'s Blog</h1>';
-      html += '<p class="hero-subtitle hero-reveal" style="animation-delay:0.3s">Thoughts, ideas, and the written word</p>';
-      html += '<div class="hero-meta hero-reveal" style="animation-delay:0.4s">';
+      html += '<p class="hero-subtitle hero-reveal" style="animation-delay:0.35s">Thoughts, ideas, and the written word</p>';
+      html += '<div class="hero-meta hero-reveal" style="animation-delay:0.5s">';
       html += '<div class="hero-stat"><span class="hero-stat-num">' + data.total + '</span><span class="hero-stat-label">Articles</span></div>';
+      html += '<div class="hero-stat-divider"></div>';
+      html += '<div class="hero-stat"><span class="hero-stat-num">' + totalPages + '</span><span class="hero-stat-label">Pages</span></div>';
       html += '</div>';
       html += '</div>';
       html += '</section>';
 
-      // Post list
+      // Post list with stagger container
       var offset = (currentPage - 1) * limit;
       var posts = data.posts.map(function(p, i) {
         p._index = offset + i;
         return p;
       });
+      html += '<div class="post-list-stagger" data-stagger>';
       html += renderPostList(posts, 'No articles yet');
+      html += '</div>';
 
       // Pagination
       if (totalPages > 1) {
-        html += '<div class="pagination">';
+        html += '<div class="pagination reveal">';
         html += '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="window._homePage(' + (currentPage - 1) + ')">&#8249; Prev</button>';
         for (var i = 1; i <= totalPages; i++) {
           html += '<button class="' + (i === currentPage ? 'active' : '') + '" onclick="window._homePage(' + i + ')">' + i + '</button>';
@@ -53,6 +60,10 @@ function loadPage() {
       }
 
       appEl.innerHTML = html;
+
+      // Init scroll animations
+      initAnimations();
+      observeElements();
     })
     .catch(function(err) {
       console.error('Error:', err);

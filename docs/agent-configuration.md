@@ -1,10 +1,10 @@
-# MarkMe Agent 配置指南
+# WhaiBlog Agent 配置指南
 
-本教程介绍如何为各种 AI Agent 配置 MarkMe 博客系统的操作能力。配置完成后，Agent 可以通过自然语言管理你的博客文章和文件。
+本教程介绍如何为各种 AI Agent 配置 WhaiBlog 博客系统的操作能力。配置完成后，Agent 可以通过自然语言管理你的博客文章和文件。
 
 ## 前置条件
 
-确保 MarkMe 服务已启动：
+确保 WhaiBlog 服务已启动：
 
 ```bash
 cd server
@@ -53,7 +53,7 @@ start-all.bat      # Windows
 所有 Agent 首次使用时会自动检测配置：
 
 1. 调用 `get_markme_config` 检查是否已配置
-2. 如果未配置，询问用户 MarkMe 服务器地址
+2. 如果未配置，询问用户 WhaiBlog 服务器地址
 3. 调用 `set_markme_config` 保存配置
 4. 后续调用自动使用已保存的配置
 
@@ -88,7 +88,7 @@ echo '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}' > ~/.mark
 
 ## 一、Claude Desktop（MCP Stdio 协议）
 
-Claude Desktop 通过 MCP（Model Context Protocol）Stdio 协议与 MarkMe 通信，这是最推荐的方式。
+Claude Desktop 通过 MCP（Model Context Protocol）Stdio 协议与 WhaiBlog 通信，这是最推荐的方式。
 
 ### 步骤
 
@@ -113,7 +113,7 @@ Claude Desktop 通过 MCP（Model Context Protocol）Stdio 协议与 MarkMe 通�
 
 3. 重启 Claude Desktop。
 
-4. 验证：在对话框中输入 "帮我创建一篇博客文章"，Claude 会自动调用 MarkMe 工具。
+4. 验证：在对话框中输入 "帮我创建一篇博客文章"，Claude 会自动调用 WhaiBlog 工具。
 
 ### 工作原理
 
@@ -121,7 +121,7 @@ Claude Desktop 启动时会以子进程方式运行 `mcp-server.js`，通过 std
 
 ### 可选：远程服务器
 
-如果 MarkMe 部署在远程服务器，MCP Server 需要通过 HTTP Bridge 通信。修改 `mcp-server.js` 中的连接配置，或使用 HTTP Bridge 方式（见下文）。
+如果 WhaiBlog 部署在远程服务器，MCP Server 需要通过 HTTP Bridge 通信。修改 `mcp-server.js` 中的连接配置，或使用 HTTP Bridge 方式（见下文）。
 
 ---
 
@@ -149,9 +149,9 @@ cp skills/markme-manager.json ~/.claude/skills/
 
 ### 工作原理
 
-Claude Code 读取 `~/.claude/skills/` 目录下的 JSON 文件，识别其中定义的工具。当用户提到相关操作时，Claude Code 会通过 HTTP Bridge（`/bridge/tools/:name`）调用 MarkMe。
+Claude Code 读取 `~/.claude/skills/` 目录下的 JSON 文件，识别其中定义的工具。当用户提到相关操作时，Claude Code 会通过 HTTP Bridge（`/bridge/tools/:name`）调用 WhaiBlog。
 
-> 注意：此方式需要 MarkMe 主服务器运行中（`npm start`），Claude Code 通过 HTTP 连接 `localhost:8080`。
+> 注意：此方式需要 WhaiBlog 主服务器运行中（`npm start`），Claude Code 通过 HTTP 连接 `localhost:8080`。
 
 ---
 
@@ -189,7 +189,7 @@ agent.run("帮我创建一篇关于AI的博客文章")
 import requests
 from openclaw import Tool
 
-class MarkMeTool(Tool):
+class WhaiBlogTool(Tool):
     BASE_URL = "http://localhost:8080/bridge/tools"
 
     def create_post(self, title: str, content: str, tags: list = None):
@@ -228,9 +228,9 @@ pip install mcp
 ### 方式 A：HTTP REST API（只读）
 
 ```python
-from sdk.markme_client import MarkMeClient
+from sdk.markme_client import WhaiBlogClient
 
-client = MarkMeClient("http://localhost:8080/api")
+client = WhaiBlogClient("http://localhost:8080/api")
 
 # 只支持 GET 操作
 posts = client.get_posts(limit=5)
@@ -244,10 +244,10 @@ stats = client.get_stats()
 
 ```python
 import asyncio
-from sdk.markme_client import MarkMeMCPClient
+from sdk.markme_client import WhaiBlogMCPClient
 
 async def main():
-    client = MarkMeMCPClient(
+    client = WhaiBlogMCPClient(
         server_path="C:/Users/whai/Documents/Project/MarkMe/server/mcp-server.js"
     )
     await client.connect()
@@ -333,7 +333,7 @@ await callTool('upload_content', {
 
 ## 六、通用 HTTP 客户端（curl / 任何语言）
 
-任何能发送 HTTP 请求的工具都可以操作 MarkMe。
+任何能发送 HTTP 请求的工具都可以操作 WhaiBlog。
 
 ### 端点格式
 
@@ -496,7 +496,7 @@ MARKME_HOST=117.72.196.45 MARKME_API_KEY=your_key node tools/call-mcp.js get_sta
 
 ### Claude Code 无法调用工具
 
-- 确认 MarkMe 主服务器正在运行（`npm start`）
+- 确认 WhaiBlog 主服务器正在运行（`npm start`）
 - 确认 `markme-manager.json` 已复制到 `~/.claude/skills/`
 - 尝试用 curl 手动测试：`curl http://localhost:8080/bridge/tools`
 

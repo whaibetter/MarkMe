@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo  MarkMe Blog System
+echo  WhaiBlog Blog System
 echo ========================================
 echo.
 
@@ -12,7 +12,7 @@ if not exist node_modules (
     echo.
 )
 
-echo Starting MarkMe...
+echo Starting WhaiBlog...
 echo   Frontend: http://localhost:%PORT%
 echo   MCP Bridge: http://localhost:%MCP_BRIDGE_PORT%
 echo.

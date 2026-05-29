@@ -162,7 +162,7 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`MarkMe server running on http://localhost:${PORT}`);
+  console.log(`WhaiBlog server running on http://localhost:${PORT}`);
   // 后台初始化笔记仓库（不阻塞启动）
   notesSync.initNotesRepo();
 });

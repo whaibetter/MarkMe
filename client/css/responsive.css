@@ -99,7 +99,7 @@
   }
 
   .hero-title {
-    font-size: 52px;
+    font-size: 56px;
   }
 
   .hero-subtitle {
@@ -175,6 +175,12 @@
     display: none;
   }
 
+  /* Theme dropdown mobile */
+  .theme-dropdown {
+    right: -8px;
+    min-width: 130px;
+  }
+
   body {
     font-size: 15px;
   }
@@ -193,8 +199,21 @@
     margin-bottom: 40px;
   }
 
+  .hero::before {
+    display: none;
+  }
+
+  .hero-corner {
+    display: none;
+  }
+
+  .hero-issue {
+    font-size: 10px;
+    margin-bottom: 24px;
+  }
+
   .hero-title {
-    font-size: 36px;
+    font-size: 40px;
   }
 
   .hero-subtitle {
@@ -206,6 +225,10 @@
     gap: 20px;
   }
 
+  .hero-stat-divider {
+    display: none;
+  }
+
   .hero-stat-num {
     font-size: 24px;
   }
@@ -213,6 +236,10 @@
   /* Post card mobile */
   .post-card {
     padding: 24px 0;
+  }
+
+  .post-card::before {
+    display: none;
   }
 
   .post-card:hover {
@@ -466,11 +493,15 @@
   }
 
   .hero-title {
-    font-size: 30px;
+    font-size: 34px;
   }
 
   .hero-subtitle {
     font-size: 14px;
+  }
+
+  .hero-corner {
+    display: none;
   }
 
   .hero-meta {

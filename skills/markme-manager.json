@@ -1,12 +1,12 @@
 {
   "name": "markme-manager",
-  "description": "MarkMe 博客管理系统 - 通过 AI 管理博客文章和文件",
+  "description": "WhaiBlog 博客管理系统 - 通过 AI 管理博客文章和文件",
   "version": "2.0.0",
-  "instructions": "这是一个 MarkMe 博客管理工具。你可以使用这些工具来管理博客文章和上传的文件。支持完整的 CRUD 操作。\n\n【重要】首次使用前必须先配置服务器地址：\n1. 调用 get_markme_config 检查是否已配置\n2. 如果 configured=false，必须询问用户 MarkMe 服务器地址（如 http://117.72.196.45:8080），然后调用 set_markme_config 保存\n3. 配置完成后才能使用其他工具\n\n配置文件保存在 ~/.markme/config.json，所有 MarkMe 工具共享此配置。",
+  "instructions": "这是一个 WhaiBlog 博客管理工具。你可以使用这些工具来管理博客文章和上传的文件。支持完整的 CRUD 操作。\n\n【重要】首次使用前必须先配置服务器地址：\n1. 调用 get_markme_config 检查是否已配置\n2. 如果 configured=false，必须询问用户 WhaiBlog 服务器地址（如 http://117.72.196.45:8080），然后调用 set_markme_config 保存\n3. 配置完成后才能使用其他工具\n\n配置文件保存在 ~/.markme/config.json，所有 WhaiBlog 工具共享此配置。",
   "tools": [
     {
       "name": "get_markme_config",
-      "description": "获取 MarkMe 客户端配置（服务器地址、API Key 状态）。首次使用前必须先调用此工具检查配置。",
+      "description": "获取 WhaiBlog 客户端配置（服务器地址、API Key 状态）。首次使用前必须先调用此工具检查配置。",
       "parameters": {
         "type": "object",
         "properties": {}
@@ -14,13 +14,13 @@
     },
     {
       "name": "set_markme_config",
-      "description": "设置 MarkMe 客户端配置（服务器地址和可选的 API Key）。配置保存到 ~/.markme/config.json。",
+      "description": "设置 WhaiBlog 客户端配置（服务器地址和可选的 API Key）。配置保存到 ~/.markme/config.json。",
       "parameters": {
         "type": "object",
         "properties": {
           "server_url": {
             "type": "string",
-            "description": "MarkMe 服务器地址，如 http://117.72.196.45:8080"
+            "description": "WhaiBlog 服务器地址，如 http://117.72.196.45:8080"
           },
           "api_key": {
             "type": "string",
@@ -238,7 +238,7 @@
     },
     {
       "name": "get_system_info",
-      "description": "获取 MarkMe 应用的系统资源使用情况（CPU、内存、磁盘、运行时间）",
+      "description": "获取 WhaiBlog 应用的系统资源使用情况（CPU、内存、磁盘、运行时间）",
       "parameters": {
         "type": "object",
         "properties": {}

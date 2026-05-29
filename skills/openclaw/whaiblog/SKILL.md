@@ -1,9 +1,9 @@
 ---
-name: markme-blog-manager
-description: MarkMe 博客系统管理工具 - 通过 HTTP Bridge API 管理文章、文件和系统监控
+name: whaiblog
+description: WhaiBlog 博客系统管理工具 - 通过 HTTP Bridge API 管理文章、文件和系统监控
 ---
 
-这是 MarkMe 博客系统的管理工具，通过 HTTP Bridge API 操作博客。
+这是 WhaiBlog 博客系统的管理工具，通过 HTTP Bridge API 操作博客。
 
 ## 配置信息
 

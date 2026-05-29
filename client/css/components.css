@@ -8,7 +8,7 @@
 .tag {
   background: var(--accent-soft);
   color: var(--accent);
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: 2px;
   font-size: 11px;
   font-weight: 600;
@@ -21,9 +21,11 @@
 }
 
 .tag:hover {
-  background: var(--accent-glow);
+  background: var(--accent);
+  color: var(--bg);
   border-color: var(--accent);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 150, 62, 0.2);
 }
 
 /* ===== Back Link ===== */
@@ -31,28 +33,44 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
   color: var(--text-muted);
   text-decoration: none;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: all var(--transition-fast);
+  position: relative;
+}
+
+.back-link::before {
+  content: '\2190';
+  font-size: 15px;
+  transition: transform var(--transition-fast);
+}
+
+.back-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease-out);
 }
 
 .back-link:hover {
   color: var(--accent);
 }
 
-.back-link::before {
-  content: '\2190';
-  font-size: 14px;
-  transition: transform var(--transition-fast);
-}
-
 .back-link:hover::before {
   transform: translateX(-4px);
+}
+
+.back-link:hover::after {
+  width: 100%;
 }
 
 /* ===== Theme Toggle ===== */
@@ -73,6 +91,7 @@
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.05em;
+  position: relative;
 }
 
 .theme-toggle:hover {
@@ -86,6 +105,11 @@
   height: 16px;
   stroke: currentColor;
   flex-shrink: 0;
+  transition: transform 0.4s var(--ease-spring);
+}
+
+.theme-toggle:hover .theme-icon {
+  transform: rotate(30deg);
 }
 
 .theme-label {
@@ -94,6 +118,77 @@
   min-width: 72px;
   text-align: center;
 }
+
+/* ===== Theme Dropdown ===== */
+.theme-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--blur-strong));
+  -webkit-backdrop-filter: blur(var(--blur-strong));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  min-width: 140px;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.3s var(--ease-out);
+  z-index: 200;
+}
+
+.theme-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.theme-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: var(--font-body);
+}
+
+.theme-dropdown-item:hover {
+  background: var(--surface-hover);
+  color: var(--text-bright);
+}
+
+.theme-dropdown-item.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.theme-dropdown-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.theme-dropdown-dot[data-theme="dark"] { background: #0c0c0e; }
+.theme-dropdown-dot[data-theme="light"] { background: #faf8f4; }
+.theme-dropdown-dot[data-theme="nord"] { background: #2e3440; }
+.theme-dropdown-dot[data-theme="dracula"] { background: #282a36; }
+.theme-dropdown-dot[data-theme="forest"] { background: #1a1f16; }
+.theme-dropdown-dot[data-theme="cyberpunk"] { background: #0a0a1a; }
+.theme-dropdown-dot[data-theme="retro"] { background: #f7d5d5; }
 
 /* ===== Error State ===== */
 .error {
@@ -140,8 +235,9 @@
   left: 0;
   height: 100%;
   width: var(--progress, 0%);
-  background: var(--accent);
+  background: linear-gradient(to right, var(--accent), var(--accent-light));
   transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .reading-time {
@@ -156,7 +252,7 @@
   display: flex;
   justify-content: center;
   gap: 4px;
-  margin-top: 48px;
+  margin-top: 56px;
 }
 
 .pagination button {
@@ -171,18 +267,39 @@
   transition: all var(--transition-fast);
   font-family: var(--font-body);
   letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
+
+.pagination button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.pagination button:hover:not(:disabled)::after {
+  transform: scaleX(1);
 }
 
 .pagination button:hover:not(:disabled) {
   border-color: var(--accent);
   color: var(--accent);
-  background: var(--accent-soft);
 }
 
 .pagination button.active {
   background: var(--accent);
   color: var(--bg);
   border-color: var(--accent);
+}
+
+.pagination button.active::after {
+  display: none;
 }
 
 .pagination button:disabled {
@@ -202,23 +319,40 @@
 
 .stat-card {
   background: var(--bg);
-  padding: 28px;
+  padding: 32px;
   text-align: center;
-  transition: all var(--transition-fast);
+  transition: all 0.4s var(--ease-out);
+  position: relative;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease-out);
 }
 
 .stat-card:hover {
   background: var(--surface);
 }
 
+.stat-card:hover::after {
+  width: 60%;
+}
+
 .stat-number {
   font-family: var(--font-display);
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 700;
   color: var(--text-bright);
   letter-spacing: -0.03em;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .stat-label {
@@ -226,5 +360,5 @@
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
 }

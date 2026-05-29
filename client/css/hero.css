@@ -1,19 +1,64 @@
 /* ===== Hero Section - Editorial Style ===== */
 .hero {
-  padding: 80px 0 60px;
-  margin-bottom: 60px;
+  padding: 100px 0 72px;
+  margin-bottom: 72px;
   position: relative;
   border-bottom: 1px solid var(--border);
-  animation: fadeIn 0.8s var(--ease-out) both;
+  overflow: hidden;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Decorative editorial line */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--accent) 20%,
+    var(--accent) 80%,
+    transparent 100%
+  );
+  opacity: 0.3;
+}
+
+/* Bottom accent bar */
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 160px;
+  height: 2px;
+  background: linear-gradient(to right, var(--accent), transparent);
 }
 
 .hero-content {
   position: relative;
+}
+
+/* Editorial issue marker */
+.hero-issue {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero-issue::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 120px;
 }
 
 .hero-eyebrow {
@@ -22,73 +67,92 @@
   color: var(--accent);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   display: inline-block;
-  padding-bottom: 12px;
+  padding-bottom: 14px;
   border-bottom: 1px solid var(--accent);
+  position: relative;
+}
+
+.hero-eyebrow::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 8px;
+  height: 1px;
+  background: var(--bg);
 }
 
 .hero-title {
   font-family: var(--font-display);
-  font-size: 72px;
+  font-size: 80px;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-  margin-bottom: 24px;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  margin-bottom: 28px;
   color: var(--text-bright);
-  max-width: 600px;
+  max-width: 640px;
+  position: relative;
+}
+
+/* Decorative accent on first letter */
+.hero-title::first-letter {
+  color: var(--accent);
 }
 
 .hero-subtitle {
-  font-size: 18px;
+  font-size: 19px;
   color: var(--text-secondary);
   font-weight: 300;
   max-width: 480px;
-  line-height: 1.6;
-  margin-bottom: 40px;
+  line-height: 1.65;
+  margin-bottom: 48px;
+  letter-spacing: 0.01em;
 }
 
 .hero-meta {
   display: flex;
   align-items: center;
-  gap: 32px;
-  padding-top: 24px;
+  gap: 36px;
+  padding-top: 28px;
   border-top: 1px solid var(--border);
 }
 
 .hero-stat {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .hero-stat-num {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--text-bright);
   letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .hero-stat-label {
   font-size: 10px;
   font-weight: 600;
   color: var(--text-muted);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .hero-stat-divider {
   width: 1px;
-  height: 40px;
-  background: var(--border);
+  height: 44px;
+  background: linear-gradient(to bottom, transparent, var(--border), transparent);
 }
 
-/* ===== Hero Reveal Animation ===== */
+/* ===== Hero Reveal Sequence ===== */
 .hero-reveal {
   opacity: 0;
-  transform: translateY(20px);
-  animation: heroReveal 0.8s var(--ease-out) both;
+  transform: translateY(28px);
+  animation: heroReveal 0.9s var(--ease-out) both;
 }
 
 @keyframes heroReveal {
@@ -98,13 +162,33 @@
   }
 }
 
-/* ===== Asymmetric accent line ===== */
-.hero::after {
+/* Decorative corner accent */
+.hero-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  opacity: 0.08;
+}
+
+.hero-corner::before,
+.hero-corner::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 120px;
-  height: 1px;
   background: var(--accent);
+}
+
+.hero-corner::before {
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 80px;
+}
+
+.hero-corner::after {
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 1px;
 }

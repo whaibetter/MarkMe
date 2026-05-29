@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "markme": {
+    "whaiblog": {
       "command": "node",
       "args": ["C:/Users/whai/Documents/Project/MarkMe/server/mcp-server.js"],
       "cwd": "C:/Users/whai/Documents/Project/MarkMe/server"

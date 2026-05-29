@@ -1,6 +1,6 @@
 """
-MarkMe Blog SDK - Python 客户端
-用于 AI Agent 集成 MarkMe 博客系统
+WhaiBlog SDK - Python 客户端
+用于 AI Agent 集成 WhaiBlog 博客系统
 """
 
 import requests
@@ -29,8 +29,8 @@ def _save_config(config: Dict):
     config_path.write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding='utf-8')
 
 
-class MarkMeClient:
-    """MarkMe 博客系统 Python SDK (HTTP REST API)
+class WhaiBlogClient:
+    """WhaiBlog 博客系统 Python SDK (HTTP REST API)
 
     地址优先级：参数 > 配置文件 > 默认值
     """
@@ -76,11 +76,11 @@ class MarkMeClient:
     # ========== 配置管理 ==========
 
     def get_config(self) -> Dict:
-        """获取 MarkMe 客户端配置"""
+        """获取 WhaiBlog 客户端配置"""
         return self._call_tool('get_markme_config')
 
     def set_config(self, server_url: str, api_key: str = '') -> Dict:
-        """设置 MarkMe 客户端配置"""
+        """设置 WhaiBlog 客户端配置"""
         result = self._call_tool('set_markme_config', {
             'server_url': server_url,
             'api_key': api_key
@@ -187,8 +187,8 @@ class MarkMeClient:
         return self._call_tool('get_system_info')
 
 
-class MarkMeMCPClient:
-    """通过 MCP 协议调用 MarkMe (需要 mcp 包)"""
+class WhaiBlogMCPClient:
+    """通过 MCP 协议调用 WhaiBlog (需要 mcp 包)"""
 
     def __init__(self, server_path: str = None):
         config = _load_config()
@@ -262,14 +262,14 @@ class MarkMeMCPClient:
 
 
 # 便捷函数
-def create_client(base_url: str = None, api_key: str = None) -> MarkMeClient:
-    """创建 MarkMe 客户端实例"""
-    return MarkMeClient(base_url, api_key)
+def create_client(base_url: str = None, api_key: str = None) -> WhaiBlogClient:
+    """创建 WhaiBlog 客户端实例"""
+    return WhaiBlogClient(base_url, api_key)
 
 
 # 使用示例
 if __name__ == "__main__":
-    client = MarkMeClient()
+    client = WhaiBlogClient()
 
     # 检查配置
     config = client.get_config()

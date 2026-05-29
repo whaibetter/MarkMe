@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * MarkMe MCP 调用工具
+ * WhaiBlog MCP 调用工具
  * 在 Windows 上正确处理 UTF-8 编码
  */
 
@@ -63,7 +63,7 @@ function callTool(name, args = {}) {
 
     req.on('error', (err) => {
       const configPath = path.join(os.homedir(), '.markme', 'config.json');
-      reject(new Error(`无法连接到 MarkMe 服务器 (${BRIDGE_HOST}:${BRIDGE_PORT}): ${err.message}\n请检查配置文件: ${configPath}\n或设置环境变量: MARKME_HOST / MCP_BRIDGE_PORT`));
+      reject(new Error(`无法连接到 WhaiBlog 服务器 (${BRIDGE_HOST}:${BRIDGE_PORT}): ${err.message}\n请检查配置文件: ${configPath}\n或设置环境变量: MARKME_HOST / MCP_BRIDGE_PORT`));
     });
 
     req.write(data);
@@ -77,7 +77,7 @@ async function main() {
 
   if (args.length === 0) {
     console.log(`
-MarkMe MCP 工具调用器
+WhaiBlog MCP 工具调用器
 
 用法:
   node call-mcp.js <工具名> [参数JSON]
