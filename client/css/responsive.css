@@ -158,6 +158,8 @@
     gap: 2px;
     flex-wrap: wrap;
     justify-content: center;
+    position: relative;
+    padding-right: 40px;
   }
 
   .nav a {
@@ -166,8 +168,11 @@
   }
 
   .theme-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
     padding: 0 8px;
-    margin-left: 6px;
+    margin-left: 0;
     height: 32px;
   }
 

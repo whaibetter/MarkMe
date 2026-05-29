@@ -39,7 +39,7 @@ function loadPage() {
       } else {
         html += '<div class="feed-list">';
         for (var i = 0; i < data.feeds.length; i++) {
-          html += renderFeedCard(data.feeds[i], i);
+          html += renderFeedCard(data.feeds[i]);
         }
         html += '</div>';
       }
@@ -56,6 +56,18 @@ function loadPage() {
       }
 
       appEl.innerHTML = html;
+
+      // Event delegation for feed cards
+      var feedList = appEl.querySelector('.feed-list');
+      if (feedList) {
+        feedList.addEventListener('click', function(e) {
+          var card = e.target.closest('.feed-card');
+          if (card) {
+            var id = card.getAttribute('data-feed-id');
+            if (id) openFeedDetail(Number(id));
+          }
+        });
+      }
     })
     .catch(function(err) {
       console.error('Feed error:', err);
@@ -67,7 +79,7 @@ function renderFeedCard(feed) {
   var feedTags = [];
   try { feedTags = JSON.parse(feed.tags || '[]'); } catch(e) {}
 
-  var html = '<article class="feed-card" onclick="window._openFeed(' + feed.id + ')">';
+  var html = '<article class="feed-card" data-feed-id="' + feed.id + '">';
   html += '<div class="feed-card-header">';
   html += '<h3 class="feed-card-title">' + escapeHtml(feed.title) + '</h3>';
   if (feed.source) {
@@ -93,7 +105,7 @@ function renderFeedCard(feed) {
   return html;
 }
 
-window._openFeed = function(id) {
+function openFeedDetail(id) {
   fetchJSON(API + '/feeds/' + id)
     .then(function(feed) {
       openMarkdownModal(feed.title, feed.content);
@@ -101,7 +113,7 @@ window._openFeed = function(id) {
     .catch(function(err) {
       console.error('Feed detail error:', err);
     });
-};
+}
 
 window._feedPage = function(page) {
   currentPage = page;
