@@ -154,13 +154,13 @@
 
   .nav {
     margin-top: 6px;
-    gap: 2px;
-    flex-wrap: nowrap;
+    display: block;
+    white-space: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    justify-content: flex-start;
     width: 100%;
+    padding-bottom: 4px;
   }
 
   .nav::-webkit-scrollbar {
@@ -168,14 +168,17 @@
   }
 
   .nav a {
+    display: inline-block;
     padding: 6px 8px;
     font-size: 11px;
     white-space: nowrap;
-    flex-shrink: 0;
+    vertical-align: middle;
   }
 
   .nav-controls {
-    margin-left: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 4px;
     gap: 2px;
   }
 
