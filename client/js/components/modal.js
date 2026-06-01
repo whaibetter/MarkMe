@@ -38,7 +38,6 @@ export function openHtmlModal(title, htmlContent) {
   var modal = document.createElement('div');
   modal.className = 'preview-modal';
 
-  // Build modal shell
   var overlay = document.createElement('div');
   overlay.className = 'preview-overlay';
 
@@ -52,25 +51,20 @@ export function openHtmlModal(title, htmlContent) {
   var content = document.createElement('div');
   content.className = 'preview-content preview-content--html';
 
-  // Build iframe for HTML content — use blob: URL to avoid sandbox/CSP issues
-  var iframe = document.createElement('iframe');
-  iframe.className = 'html-embed-frame';
-  // Use blob URL to bypass any CSP or sandbox restrictions
-  var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-  iframe.src = URL.createObjectURL(blob);
+  // Render HTML directly — no iframe, avoids CSP/sandbox issues
+  content.innerHTML = htmlContent;
 
-  // Auto-resize iframe to fit content
-  iframe.addEventListener('load', function() {
-    try {
-      var doc = iframe.contentDocument || iframe.contentWindow.document;
-      if (doc && doc.body) {
-        var h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
-        iframe.style.height = Math.min(h + 20, window.innerHeight * 0.88) + 'px';
-      }
-    } catch(e) {}
-  });
+  // Re-write the HTML into its own root to isolate styles
+  // Extract the body content and wrap it
+  var wrapper = document.createElement('div');
+  wrapper.className = 'html-embed-root';
+  wrapper.style.cssText = 'width:100%;min-height:60vh;overflow:auto;';
+  wrapper.innerHTML = htmlContent;
 
-  content.appendChild(iframe);
+  // Remove the content we just set, replace with wrapper
+  content.removeChild(content.firstChild);
+  content.appendChild(wrapper);
+
   container.appendChild(header);
   container.appendChild(content);
   modal.appendChild(overlay);
