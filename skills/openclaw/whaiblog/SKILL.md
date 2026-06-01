@@ -7,12 +7,12 @@ description: WhaiBlog 博客系统管理工具 - 通过 HTTP Bridge API 管理�
 
 ## 配置信息
 
-配置文件路径: `C:\Users\whai\.whaiblog\config.json`
+配置文件路径: `~/.whaiblog/config.json`
 
 **调用前必须先读取配置文件获取 server_url 和 api_key：**
 
 ```bash
-cat C:\Users\whai\.whaiblog\config.json
+cat ~/.whaiblog/config.json
 ```
 
 配置文件格式:
@@ -184,7 +184,7 @@ POST /bridge/tools/get_note
 调用前先读取配置:
 ```bash
 # 读取配置
-config=$(cat C:\Users\whai\.whaiblog\config.json)
+config=$(cat ~/.whaiblog/config.json)
 server=$(echo $config | jq -r '.server_url')
 key=$(echo $config | jq -r '.api_key')
 
