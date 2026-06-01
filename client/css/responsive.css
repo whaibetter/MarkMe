@@ -586,4 +586,56 @@
   .stat-number {
     font-size: 30px;
   }
+
+  /* Profile small phone */
+  .profile {
+    padding: 24px 0 16px;
+  }
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profile-name {
+    font-size: 20px;
+  }
+
+  .profile-login {
+    font-size: 12px;
+  }
+
+  .profile-bio {
+    font-size: 14px;
+  }
+
+  .profile-link {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .profile-readme.markdown-body {
+    font-size: 13px;
+  }
+
+  .profile-readme.markdown-body h1 {
+    font-size: 18px;
+  }
+
+  .profile-readme.markdown-body h2 {
+    font-size: 16px;
+  }
+
+  .profile-readme.markdown-body h3 {
+    font-size: 14px;
+  }
+
+  .profile-readme.markdown-body pre {
+    font-size: 11px;
+    padding: 10px 8px;
+  }
+
+  .profile-readme.markdown-body code {
+    font-size: 11px;
+  }
 }

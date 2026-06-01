@@ -3,6 +3,7 @@
   padding: 60px 0 40px;
   animation: fadeIn 0.8s var(--ease-out) both;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 .profile-header {
@@ -252,6 +253,9 @@
   font-size: 15px;
   line-height: 1.8;
   color: var(--text-secondary);
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .profile-readme.markdown-body h1,
@@ -343,6 +347,11 @@
 .profile-readme.markdown-body video,
 .profile-readme.markdown-body iframe {
   max-width: 100%;
+}
+
+.profile-readme.markdown-body pre {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .profile-readme.markdown-body table {
