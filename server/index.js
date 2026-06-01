@@ -12,36 +12,50 @@ const DATA_DIR = process.env.DATA_DIR || __dirname;
 
 app.use(cors());
 
-// Handle Windows curl encoding: convert GBK/CP936 to UTF-8 when needed
-app.use(express.json({
-  limit: '50mb',
-  verify: function(req, res, buf) {
-    var contentType = req.headers['content-type'] || '';
-    var hasCharset = contentType.toLowerCase().includes('charset');
-    if (!hasCharset) {
-      // Check if valid UTF-8 (no replacement characters)
-      var str = buf.toString('utf-8');
-      if (str.indexOf('\ufffd') >= 0) {
-        try {
-          var iconv = require('iconv-lite');
+// Robust UTF-8 body parser: auto-detect and convert GBK/GB18030 to UTF-8
+// Replaces express.json() to handle Windows clients that send non-UTF-8 bytes
+app.use(function(req, res, next) {
+  if (req.method !== 'POST' && req.method !== 'PUT' && req.method !== 'PATCH') return next();
+  var contentType = req.headers['content-type'] || '';
+  if (!contentType.includes('application/json')) return next();
+
+  var chunks = [];
+  req.on('data', function(chunk) { chunks.push(chunk); });
+  req.on('end', function() {
+    var buf = Buffer.concat(chunks);
+    if (buf.length === 0) { req.body = {}; return next(); }
+
+    var str = buf.toString('utf-8');
+
+    // If UTF-8 has replacement characters, try other encodings
+    if (str.indexOf('\ufffd') >= 0) {
+      try {
+        var iconv = require('iconv-lite');
+        // Try GB18030 first (GBK superset, covers more CJK)
+        var gbStr = iconv.decode(buf, 'gb18030');
+        // Verify GB18030 decode didn't also produce replacement chars
+        if (gbStr.indexOf('\ufffd') < 0) {
+          str = gbStr;
+        } else {
+          // Fallback to GBK
           str = iconv.decode(buf, 'gbk');
-        } catch(e) {}
-        // Store decoded string for express.json to re-parse
-        req._decodedBody = str;
+        }
+      } catch(e) {
+        // Keep UTF-8 with replacement chars
       }
     }
-  }
-}));
 
-// If GBK was detected, replace the parsed body
-app.use(function(req, res, next) {
-  if (req._decodedBody && !req.body) {
     try {
-      req.body = JSON.parse(req._decodedBody);
-    } catch(e) {}
-  }
-  next();
+      req.body = JSON.parse(str);
+    } catch(e) {
+      req.body = {};
+    }
+    next();
+  });
 });
+
+// Fallback for non-JSON content types (e.g. form data)
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 const uploadsDir = path.join(DATA_DIR, 'uploads');
 app.use('/uploads', express.static(uploadsDir));

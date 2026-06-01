@@ -19,33 +19,42 @@ const PORT = config.MCP_BRIDGE_PORT;
 
 app.use(cors());
 
-// Handle Windows curl encoding: convert GBK/CP936 to UTF-8 when needed
-app.use(express.json({
-  limit: '50mb',
-  verify: function(req, res, buf) {
-    var contentType = req.headers['content-type'] || '';
-    var hasCharset = contentType.toLowerCase().includes('charset');
-    if (!hasCharset) {
-      var str = buf.toString('utf-8');
-      if (str.indexOf('\ufffd') >= 0) {
-        try {
-          var iconv = require('iconv-lite');
-          str = iconv.decode(buf, 'gbk');
-        } catch(e) {}
-        req._decodedBody = str;
-      }
-    }
-  }
-}));
-
+// Robust UTF-8 body parser: auto-detect and convert GBK/GB18030 to UTF-8
 app.use(function(req, res, next) {
-  if (req._decodedBody && !req.body) {
+  if (req.method !== 'POST' && req.method !== 'PUT' && req.method !== 'PATCH') return next();
+  var contentType = req.headers['content-type'] || '';
+  if (!contentType.includes('application/json')) return next();
+
+  var chunks = [];
+  req.on('data', function(chunk) { chunks.push(chunk); });
+  req.on('end', function() {
+    var buf = Buffer.concat(chunks);
+    if (buf.length === 0) { req.body = {}; return next(); }
+
+    var str = buf.toString('utf-8');
+
+    if (str.indexOf('\ufffd') >= 0) {
+      try {
+        var iconv = require('iconv-lite');
+        var gbStr = iconv.decode(buf, 'gb18030');
+        if (gbStr.indexOf('\ufffd') < 0) {
+          str = gbStr;
+        } else {
+          str = iconv.decode(buf, 'gbk');
+        }
+      } catch(e) {}
+    }
+
     try {
-      req.body = JSON.parse(req._decodedBody);
-    } catch(e) {}
-  }
-  next();
+      req.body = JSON.parse(str);
+    } catch(e) {
+      req.body = {};
+    }
+    next();
+  });
 });
+
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // 安全配置
 const API_KEY = config.API_KEY;
