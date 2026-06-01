@@ -257,7 +257,7 @@ const TOOLS = {
   },
   create_feed: {
     description: "Create a new feed item",
-    parameters: { type: "object", properties: { title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } } }, required: ["title", "content"] }
+    parameters: { type: "object", properties: { title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, format: { type: "string", enum: ["markdown", "html", "text"], description: "Content format: markdown (default), html, or text" } }, required: ["title", "content"] }
   },
   list_feeds: {
     description: "List all feed items",
@@ -269,7 +269,7 @@ const TOOLS = {
   },
   update_feed: {
     description: "Update an existing feed item",
-    parameters: { type: "object", properties: { id: { type: "number" }, title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, status: { type: "string", enum: ["published", "draft"] } }, required: ["id"] }
+    parameters: { type: "object", properties: { id: { type: "number" }, title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, format: { type: "string", enum: ["markdown", "html", "text"] }, status: { type: "string", enum: ["published", "draft"] } }, required: ["id"]
   },
   delete_feed: {
     description: "Delete a feed item",
@@ -618,9 +618,9 @@ function executeTool(name, args) {
       }
 
       case 'create_feed': {
-        const { title, content, summary, source, url, tags = [] } = args;
-        const result = db.prepare('INSERT INTO feeds (title, content, summary, source, url, tags) VALUES (?, ?, ?, ?, ?, ?)').run(title, content, summary || content.substring(0, 200), source || null, url || null, JSON.stringify(tags));
-        return { success: true, data: { id: result.lastInsertRowid, title } };
+        const { title, content, summary, source, url, tags = [], format = 'markdown' } = args;
+        const result = db.prepare('INSERT INTO feeds (title, content, summary, source, url, tags, format) VALUES (?, ?, ?, ?, ?, ?, ?)').run(title, content, summary || content.substring(0, 200), source || null, url || null, JSON.stringify(tags), format);
+        return { success: true, data: { id: result.lastInsertRowid, title, format } };
       }
       case 'list_feeds': {
         const { page = 1, limit = 20 } = args;

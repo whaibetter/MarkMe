@@ -124,7 +124,7 @@
           },
           "content": {
             "type": "string",
-            "description": "内容 (Markdown 格式)"
+            "description": "内容"
           },
           "summary": {
             "type": "string",
@@ -142,6 +142,11 @@
             "type": "array",
             "items": { "type": "string" },
             "description": "标签"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["markdown", "html", "text"],
+            "description": "内容格式：markdown（默认）、html 或 text"
           }
         },
         "required": ["title", "content"]
@@ -182,6 +187,7 @@
           "source": { "type": "string", "description": "新来源" },
           "url": { "type": "string", "description": "新链接" },
           "tags": { "type": "array", "items": { "type": "string" }, "description": "新标签" },
+          "format": { "type": "string", "enum": ["markdown", "html", "text"], "description": "内容格式" },
           "status": { "type": "string", "enum": ["published", "draft"], "description": "新状态" }
         },
         "required": ["id"]

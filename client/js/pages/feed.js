@@ -2,7 +2,7 @@
 
 import { fetchJSON, escapeHtml, formatDate } from '../utils.js';
 import { renderError } from '../components/error.js';
-import { openMarkdownModal } from '../components/modal.js';
+import { openFeedModal } from '../components/modal.js';
 import { t } from '../i18n.js';
 
 var API = '/api';
@@ -80,12 +80,20 @@ function renderFeedCard(feed) {
   var feedTags = [];
   try { feedTags = JSON.parse(feed.tags || '[]'); } catch(e) {}
 
+  var format = feed.format || 'markdown';
+  var formatLabels = { markdown: 'MD', html: 'HTML', text: 'TXT' };
+
   var html = '<article class="feed-card" data-feed-id="' + feed.id + '">';
   html += '<div class="feed-card-header">';
   html += '<h3 class="feed-card-title">' + escapeHtml(feed.title) + '</h3>';
+  html += '<div class="feed-card-badges">';
+  if (format !== 'markdown') {
+    html += '<span class="feed-card-format feed-card-format--' + format + '">' + (formatLabels[format] || format) + '</span>';
+  }
   if (feed.source) {
     html += '<span class="feed-card-source">' + escapeHtml(feed.source) + '</span>';
   }
+  html += '</div>';
   html += '</div>';
 
   if (feed.summary) {
@@ -109,7 +117,7 @@ function renderFeedCard(feed) {
 function openFeedDetail(id) {
   fetchJSON(API + '/feeds/' + id)
     .then(function(feed) {
-      openMarkdownModal(feed.title, feed.content);
+      openFeedModal(feed.title, feed.content, feed.format || 'markdown');
     })
     .catch(function(err) {
       console.error('Feed detail error:', err);

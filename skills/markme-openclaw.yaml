@@ -143,7 +143,7 @@ tools:
           description: 标题
         content:
           type: string
-          description: 内容 (Markdown 格式)
+          description: 内容
         summary:
           type: string
           description: 摘要
@@ -158,6 +158,10 @@ tools:
           items:
             type: string
           description: 标签列表
+        format:
+          type: string
+          enum: [markdown, html, text]
+          description: "内容格式：markdown（默认）、html 或 text"
       required:
         - title
         - content
@@ -213,6 +217,10 @@ tools:
           items:
             type: string
           description: 新标签列表
+        format:
+          type: string
+          enum: [markdown, html, text]
+          description: 内容格式
         status:
           type: string
           enum: [published, draft]
