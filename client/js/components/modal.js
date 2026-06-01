@@ -35,6 +35,21 @@ export function openMarkdownModal(title, markdownContent) {
 export function openHtmlModal(title, htmlContent) {
   closeModal();
 
+  // Extract body content from full HTML document
+  var bodyContent = htmlContent;
+  var bodyMatch = htmlContent.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  if (bodyMatch) {
+    bodyContent = bodyMatch[1];
+  }
+
+  // Extract <style> tags to inject separately
+  var styles = '';
+  var styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+  var sm;
+  while ((sm = styleRegex.exec(htmlContent)) !== null) {
+    styles += sm[1];
+  }
+
   var modal = document.createElement('div');
   modal.className = 'preview-modal';
 
@@ -51,18 +66,17 @@ export function openHtmlModal(title, htmlContent) {
   var content = document.createElement('div');
   content.className = 'preview-content preview-content--html';
 
-  // Render HTML directly — no iframe, avoids CSP/sandbox issues
-  content.innerHTML = htmlContent;
+  // Inject extracted styles scoped to this container
+  if (styles) {
+    var styleEl = document.createElement('style');
+    styleEl.textContent = styles;
+    content.appendChild(styleEl);
+  }
 
-  // Re-write the HTML into its own root to isolate styles
-  // Extract the body content and wrap it
+  // Render body content directly
   var wrapper = document.createElement('div');
   wrapper.className = 'html-embed-root';
-  wrapper.style.cssText = 'width:100%;min-height:60vh;overflow:auto;';
-  wrapper.innerHTML = htmlContent;
-
-  // Remove the content we just set, replace with wrapper
-  content.removeChild(content.firstChild);
+  wrapper.innerHTML = bodyContent;
   content.appendChild(wrapper);
 
   container.appendChild(header);

@@ -142,24 +142,33 @@
 
 /* ===== HTML Embed Modal ===== */
 .preview-container--wide {
-  max-width: 95vw;
-  width: 95vw;
-  max-height: 92vh;
+  max-width: 90vw;
+  width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .preview-content--html {
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
 }
 
-.html-embed-frame {
+.html-embed-root {
   width: 100%;
-  min-height: 60vh;
-  height: 75vh;
-  border: none;
-  background: #fff;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  transition: height 0.3s ease;
+}
+
+/* Override html-embed-root's own body background if present */
+.html-embed-root > *:first-child {
+  background: transparent !important;
+}
+
+.html-embed-root .container {
+  max-width: 100%;
+  padding: 0 20px;
 }
 
 /* ===== Responsive ===== */
@@ -186,9 +195,5 @@
     max-width: 100vw;
     max-height: 100vh;
     border-radius: 0;
-  }
-
-  .html-embed-frame {
-    height: 80vh;
   }
 }
