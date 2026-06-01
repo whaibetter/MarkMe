@@ -27,16 +27,25 @@ export function toggleTheme() {
   var toggle = document.querySelector('.theme-toggle');
   if (!toggle) return;
 
+  // Mobile: cycle directly, no dropdown
+  if (window.innerWidth <= 600) {
+    cycleTheme();
+    return;
+  }
+
   var dropdown = toggle.querySelector('.theme-dropdown');
   if (dropdown) {
     toggleDropdown(dropdown);
   } else {
-    // Fallback: cycle through themes
-    var current = document.documentElement.getAttribute('data-theme') || 'dark';
-    var idx = themes.indexOf(current);
-    var next = themes[(idx + 1) % themes.length];
-    setTheme(next);
+    cycleTheme();
   }
+}
+
+export function cycleTheme() {
+  var current = document.documentElement.getAttribute('data-theme') || 'dark';
+  var idx = themes.indexOf(current);
+  var next = themes[(idx + 1) % themes.length];
+  setTheme(next);
 }
 
 function setTheme(theme) {

@@ -154,8 +154,9 @@
 
   .nav {
     margin-top: 6px;
-    display: block;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 2px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -168,20 +169,20 @@
   }
 
   .nav a {
-    display: inline-block;
     padding: 6px 8px;
-    min-width: 56px;
+    min-width: 48px;
     text-align: center;
     font-size: 11px;
     white-space: nowrap;
-    vertical-align: middle;
+    flex-shrink: 0;
   }
 
   .nav-controls {
-    display: inline-block;
-    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin-left: 4px;
-    gap: 2px;
+    flex-shrink: 0;
   }
 
   .lang-toggle {
@@ -197,16 +198,6 @@
 
   .theme-label {
     display: none;
-  }
-
-  .theme-label {
-    display: none;
-  }
-
-  /* Theme dropdown mobile */
-  .theme-dropdown {
-    right: -8px;
-    min-width: 130px;
   }
 
   body {
