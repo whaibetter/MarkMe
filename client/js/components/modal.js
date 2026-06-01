@@ -52,11 +52,12 @@ export function openHtmlModal(title, htmlContent) {
   var content = document.createElement('div');
   content.className = 'preview-content preview-content--html';
 
-  // Build iframe with srcdoc set via property (avoids HTML entity escaping issues)
+  // Build iframe for HTML content — use blob: URL to avoid sandbox/CSP issues
   var iframe = document.createElement('iframe');
   iframe.className = 'html-embed-frame';
-  // No sandbox — content is from our own database, styles need full access
-  iframe.srcdoc = htmlContent;
+  // Use blob URL to bypass any CSP or sandbox restrictions
+  var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  iframe.src = URL.createObjectURL(blob);
 
   // Auto-resize iframe to fit content
   iframe.addEventListener('load', function() {
