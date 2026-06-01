@@ -155,6 +155,8 @@
   overflow-x: hidden;
   flex: 1;
   min-height: 0;
+  background: #0f0f23;
+  color: #e0e0e0;
 }
 
 .html-embed-root {
