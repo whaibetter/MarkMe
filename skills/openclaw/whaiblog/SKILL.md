@@ -1,6 +1,6 @@
 ---
 name: whaiblog
-description: WhaiBlog 博客系统管理工具 - 通过 HTTP Bridge API 管理文章、文件和系统监控
+description: WhaiBlog 博客系统管理工具 - 通过 HTTP Bridge API 管理文章、信息流、文件和系统监控
 ---
 
 这是 WhaiBlog 博客系统的管理工具，通过 HTTP Bridge API 操作博客。
@@ -65,6 +65,51 @@ POST /bridge/tools/list_posts
 #### get_post - 获取文章详情
 ```json
 POST /bridge/tools/get_post
+{"id": 1}
+```
+
+### 信息流管理
+
+#### create_feed - 创建信息流
+```json
+POST /bridge/tools/create_feed
+{
+  "title": "标题",
+  "content": "Markdown 内容",
+  "summary": "摘要",
+  "source": "来源网站",
+  "url": "https://原文链接",
+  "tags": ["标签1", "标签2"]
+}
+```
+
+#### list_feeds - 列出信息流
+```json
+POST /bridge/tools/list_feeds
+{"page": 1, "limit": 20}
+```
+
+#### get_feed - 获取信息流详情
+```json
+POST /bridge/tools/get_feed
+{"id": 1}
+```
+
+#### update_feed - 更新信息流
+```json
+POST /bridge/tools/update_feed
+{
+  "id": 1,
+  "title": "新标题",
+  "content": "新内容",
+  "source": "新来源",
+  "tags": ["新标签"]
+}
+```
+
+#### delete_feed - 删除信息流
+```json
+POST /bridge/tools/delete_feed
 {"id": 1}
 ```
 

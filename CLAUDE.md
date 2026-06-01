@@ -67,12 +67,19 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 - 原生 JS SPA（ES Modules），无构建步骤，所有文件直接由 Express 静态服务
 - 入口：`client/index.html` → `client/js/app.js`（模块系统）
 - **遗留文件**：`client/app.js`（单体旧版）和 `client/style.css`（单体旧版 CSS）仍存在但**不再被加载**，当前使用 `client/js/` 模块 + `client/css/` 模块化样式
-- 主题系统：`data-theme` 属性（dark/light），用 `localStorage` 持久化，`index.html` 内联脚本防止 FOUC
+- 主题系统：`data-theme` 属性（dark/light/nord/dracula/forest/cyberpunk/retro），用 `localStorage` 持久化，`index.html` 内联脚本防止 FOUC
 - Markdown 渲染：`marked.min.js`（本地 vendor），MathJax（CDN）用于 LaTeX 公式（`$...$` 行内，`$$...$$` 块级，手动触发 `typesetMath`）
 - 字体：Google Fonts Outfit + Playfair Display
 - 路由：`js/router.js` 监听 `popstate` 和链接点击（`data-link` 属性），根据 URL 路径切换视图
 - 阅读时间计算支持中文（400 字/分钟）和非中文（200 词/分钟）
 - 调试页面：`client/debug.html`（自动测试 API 和渲染）、`client/test.html`（基础连通性测试）
+
+### 学习笔记系统
+
+- `server/notes-sync.js` — 从 Git 仓库（默认 Gitee）克隆/同步学习笔记到 `server/data/notes/`
+- `server/notes-router.js` — 只读 API 路由（`/api/notes/*`）
+- `client/js/pages/notes.js` — 前端笔记浏览页面（Markdown 渲染 + 目录树）
+- 笔记仓库地址可通过 `NOTES_REPO_URL` 环境变量配置
 
 ### 数据库表
 
@@ -91,6 +98,7 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 | HOST | 0.0.0.0 | 监听地址 |
 | API_KEY | (空) | Bearer token 认证 |
 | MAX_FILE_SIZE | 50MB | 文件大小限制 |
+| NOTES_REPO_URL | `https://gitee.com/lkwhai/learning-notes.git` | 学习笔记 Git 仓库地址 |
 
 ### 客户端配置文件
 
@@ -114,13 +122,15 @@ Agent 首次使用时会通过 `get_markme_config` 检查配置，未配置时�
 
 ## MCP 工具
 
-18 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
+26 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
 
 - **配置**: `get_markme_config` (获取配置), `set_markme_config` (设置服务器地址和 API Key)
 - **文章**: `create_post`, `update_post`, `delete_post`, `list_posts`, `get_post`
+- **信息流**: `create_feed`, `update_feed`, `delete_feed`, `list_feeds`, `get_feed`
 - **文件**: `upload_file`, `upload_folder`, `upload_content` (内容直接写入), `list_files`, `get_file`, `update_file`, `replace_file`, `replace_file_content`, `delete_file`
 - **统计**: `get_stats`
 - **系统监控**: `get_system_info` (返回 CPU、内存、磁盘、运行时间等系统资源使用情况)
+- **学习笔记**: `list_notes` (列出笔记目录树), `get_note` (获取笔记内容), `notes_status` (同步状态)
 
 ## HTTP Bridge 调用示例
 
@@ -148,6 +158,7 @@ node tools/call-mcp.js create_post '{"title":"标题","content":"内容"}'
 | Python SDK | Python Agent | `sdk/markme_client.py`（`WhaiBlogClient` 同步 HTTP + `WhaiBlogMCPClient` 异步 MCP，`create_client()` 工厂函数） |
 | Claude Code Skill | Claude Code | `skills/markme-manager.json` |
 | OpenClaw Skill | OpenClaw | `skills/markme-openclaw.yaml` |
+| WhaiBlog Skill | OpenClaw | `skills/openclaw/whaiblog/SKILL.md` |
 
 ## 启动脚本
 
@@ -170,8 +181,6 @@ node tools/call-mcp.js create_post '{"title":"标题","content":"内容"}'
 
 ## 已知问题
 
-- `examples/agent_example.py` 端口硬编码为 3001（应为 8080/8081）
-- `README.md` 快速开始引用端口 3000（应为 8080）
 - `.gitignore` 规则被已跟踪文件绕过（`*.db`、`server/.env` 等在 .gitignore 添加前已提交）
 
 ## 安全
