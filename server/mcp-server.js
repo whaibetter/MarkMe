@@ -261,11 +261,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       type: 'object',
       properties: {
         title: { type: 'string', description: 'Feed title' },
-        content: { type: 'string', description: 'Feed content (markdown)' },
+        content: { type: 'string', description: 'Feed content' },
         summary: { type: 'string', description: 'Feed summary' },
         source: { type: 'string', description: 'Feed source name' },
         url: { type: 'string', description: 'Source URL' },
-        tags: { type: 'array', items: { type: 'string' }, description: 'Feed tags' }
+        tags: { type: 'array', items: { type: 'string' }, description: 'Feed tags' },
+        format: { type: 'string', enum: ['markdown', 'html', 'text'], description: 'Content format: markdown (default), html, or text' }
       },
       required: ['title', 'content']
     }
@@ -305,6 +306,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         source: { type: 'string' },
         url: { type: 'string' },
         tags: { type: 'array', items: { type: 'string' } },
+        format: { type: 'string', enum: ['markdown', 'html', 'text'] },
         status: { type: 'string', enum: ['published', 'draft'] }
       },
       required: ['id']
@@ -683,9 +685,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'create_feed': {
-        const { title, content, summary, source, url, tags = [] } = args;
-        const result = db.prepare('INSERT INTO feeds (title, content, summary, source, url, tags) VALUES (?, ?, ?, ?, ?, ?)').run(title, content, summary || content.substring(0, 200), source || null, url || null, JSON.stringify(tags));
-        return { content: [{ type: 'text', text: JSON.stringify({ id: result.lastInsertRowid, title }) }] };
+        const { title, content, summary, source, url, tags = [], format = 'markdown' } = args;
+        const result = db.prepare('INSERT INTO feeds (title, content, summary, source, url, tags, format) VALUES (?, ?, ?, ?, ?, ?, ?)').run(title, content, summary || content.substring(0, 200), source || null, url || null, JSON.stringify(tags), format);
+        return { content: [{ type: 'text', text: JSON.stringify({ id: result.lastInsertRowid, title, format }) }] };
       }
       case 'list_feeds': {
         const { page = 1, limit = 20 } = args;

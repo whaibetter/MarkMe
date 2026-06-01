@@ -89,13 +89,16 @@ POST /bridge/tools/get_post
 POST /bridge/tools/create_feed
 {
   "title": "标题",
-  "content": "Markdown 内容",
+  "content": "内容（支持 Markdown、HTML 或纯文本）",
   "summary": "摘要",
   "source": "来源网站",
   "url": "https://原文链接",
-  "tags": ["标签1", "标签2"]
+  "tags": ["标签1", "标签2"],
+  "format": "markdown"
 }
 ```
+
+format 可选值：`markdown`（默认）、`html`、`text`。HTML 内容会在 iframe 中安全渲染。
 
 #### list_feeds - 列出信息流
 ```json

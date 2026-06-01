@@ -52,10 +52,19 @@ db.exec(`
     source TEXT,
     url TEXT,
     tags TEXT DEFAULT '[]',
+    format TEXT DEFAULT 'markdown',
     status TEXT DEFAULT 'published',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `);
+
+// Migration: add format column to existing feeds table
+try {
+  db.prepare("SELECT format FROM feeds LIMIT 1").get();
+} catch {
+  db.exec("ALTER TABLE feeds ADD COLUMN format TEXT DEFAULT 'markdown'");
+  console.log('Migration: added format column to feeds table');
+}
 
 module.exports = db;

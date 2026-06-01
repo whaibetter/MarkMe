@@ -56,10 +56,10 @@ const TOOLS = {
   list_notes: { description: "List notes directory tree from the learning-notes repository (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path within repo, default root" }, depth: { type: "number", description: "Tree depth, default 2" } } } },
   get_note: { description: "Get the content of a specific note file (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path to the file" } }, required: ["path"] } },
   notes_status: { description: "Get notes repository sync status (cloning/ready/error)", parameters: { type: "object", properties: {} } },
-  create_feed: { description: "Create a new feed item", parameters: { type: "object", properties: { title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } } }, required: ["title", "content"] } },
+  create_feed: { description: "Create a new feed item", parameters: { type: "object", properties: { title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, format: { type: "string", enum: ["markdown", "html", "text"], description: "Content format: markdown (default), html, or text" } }, required: ["title", "content"] } },
   list_feeds: { description: "List all feed items", parameters: { type: "object", properties: { page: { type: "number" }, limit: { type: "number" } } } },
   get_feed: { description: "Get a specific feed item", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } },
-  update_feed: { description: "Update an existing feed item", parameters: { type: "object", properties: { id: { type: "number" }, title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, status: { type: "string", enum: ["published", "draft"] } }, required: ["id"] } },
+  update_feed: { description: "Update an existing feed item", parameters: { type: "object", properties: { id: { type: "number" }, title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, format: { type: "string", enum: ["markdown", "html", "text"] }, status: { type: "string", enum: ["published", "draft"] } }, required: ["id"] } },
   delete_feed: { description: "Delete a feed item", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } }
 };
 
@@ -296,9 +296,9 @@ function executeTool(name, args) {
       }
 
       case 'create_feed': {
-        const { title, content, summary, source, url, tags = [] } = args;
-        const result = db.prepare('INSERT INTO feeds (title, content, summary, source, url, tags) VALUES (?, ?, ?, ?, ?, ?)').run(title, content, summary || content.substring(0, 200), source || null, url || null, JSON.stringify(tags));
-        return { success: true, data: { id: result.lastInsertRowid, title } };
+        const { title, content, summary, source, url, tags = [], format = 'markdown' } = args;
+        const result = db.prepare('INSERT INTO feeds (title, content, summary, source, url, tags, format) VALUES (?, ?, ?, ?, ?, ?, ?)').run(title, content, summary || content.substring(0, 200), source || null, url || null, JSON.stringify(tags), format);
+        return { success: true, data: { id: result.lastInsertRowid, title, format } };
       }
       case 'list_feeds': {
         const { page = 1, limit = 20 } = args;
