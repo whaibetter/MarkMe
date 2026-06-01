@@ -168,6 +168,11 @@
   background: transparent !important;
 }
 
+/* Prevent sticky/fixed positioning inside HTML embed */
+.html-embed-root * {
+  position: static !important;
+}
+
 .html-embed-root .container {
   max-width: 100%;
   padding: 0 20px;
