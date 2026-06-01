@@ -64,7 +64,7 @@ cd server && npm install @modelcontextprotocol/sdk
 | DATA_DIR | `__dirname` | Data root (DB, uploads, notes) |
 | NOTES_REPO_URL | gitee repo URL | Learning notes source |
 
-Agent client config stored at `~/.markme/config.json` (read via `markme-config.js`).
+Agent client config stored at `~/.whaiblog/config.json` (read via `markme-config.js`).
 
 ## Database
 

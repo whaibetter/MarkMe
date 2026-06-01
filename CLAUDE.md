@@ -102,7 +102,7 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 
 ### 客户端配置文件
 
-所有 Agent 共享统一配置文件 `~/.markme/config.json`：
+所有 Agent 共享统一配置文件 `~/.whaiblog/config.json`：
 
 ```json
 {

@@ -36,7 +36,7 @@ start-all.bat      # Windows
 ### 配置文件位置
 
 ```
-~/.markme/config.json
+~/.whaiblog/config.json
 ```
 
 ### 配置文件格式
@@ -71,7 +71,7 @@ curl -X POST http://localhost:8080/bridge/tools/set_markme_config \
   -d '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}'
 
 # 直接编辑文件
-echo '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}' > ~/.markme/config.json
+echo '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}' > ~/.whaiblog/config.json
 ```
 
 ### 配置优先级
