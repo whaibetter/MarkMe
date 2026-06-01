@@ -55,7 +55,7 @@ export function openHtmlModal(title, htmlContent) {
   // Build iframe with srcdoc set via property (avoids HTML entity escaping issues)
   var iframe = document.createElement('iframe');
   iframe.className = 'html-embed-frame';
-  iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation');
+  // No sandbox — content is from our own database, styles need full access
   iframe.srcdoc = htmlContent;
 
   // Auto-resize iframe to fit content
