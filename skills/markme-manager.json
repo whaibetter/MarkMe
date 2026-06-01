@@ -1,8 +1,8 @@
 {
   "name": "markme-manager",
-  "description": "WhaiBlog 博客管理系统 - 通过 AI 管理博客文章和文件",
-  "version": "2.0.0",
-  "instructions": "这是一个 WhaiBlog 博客管理工具。你可以使用这些工具来管理博客文章和上传的文件。支持完整的 CRUD 操作。\n\n【重要】首次使用前必须先配置服务器地址：\n1. 调用 get_markme_config 检查是否已配置\n2. 如果 configured=false，必须询问用户 WhaiBlog 服务器地址（如 http://117.72.196.45:8080），然后调用 set_markme_config 保存\n3. 配置完成后才能使用其他工具\n\n配置文件保存在 ~/.markme/config.json，所有 WhaiBlog 工具共享此配置。",
+  "description": "WhaiBlog 博客管理系统 - 通过 AI 管理博客文章、信息流和文件",
+  "version": "2.1.0",
+  "instructions": "这是一个 WhaiBlog 博客管理工具。你可以使用这些工具来管理博客文章、信息流和上传的文件。支持完整的 CRUD 操作。\n\n【重要】首次使用前必须先配置服务器地址：\n1. 调用 get_markme_config 检查是否已配置\n2. 如果 configured=false，必须询问用户 WhaiBlog 服务器地址（如 http://117.72.196.45:8080），然后调用 set_markme_config 保存\n3. 配置完成后才能使用其他工具\n\n配置文件保存在 ~/.markme/config.json，所有 WhaiBlog 工具共享此配置。",
   "tools": [
     {
       "name": "get_markme_config",
@@ -108,6 +108,92 @@
         "type": "object",
         "properties": {
           "id": { "type": "number", "description": "文章 ID" }
+        },
+        "required": ["id"]
+      }
+    },
+    {
+      "name": "create_feed",
+      "description": "创建新的信息流条目",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "标题"
+          },
+          "content": {
+            "type": "string",
+            "description": "内容 (Markdown 格式)"
+          },
+          "summary": {
+            "type": "string",
+            "description": "摘要"
+          },
+          "source": {
+            "type": "string",
+            "description": "来源（如网站名、作者）"
+          },
+          "url": {
+            "type": "string",
+            "description": "原文链接"
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "标签"
+          }
+        },
+        "required": ["title", "content"]
+      }
+    },
+    {
+      "name": "list_feeds",
+      "description": "列出所有信息流条目",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "number", "description": "页码" },
+          "limit": { "type": "number", "description": "每页数量" }
+        }
+      }
+    },
+    {
+      "name": "get_feed",
+      "description": "获取特定信息流条目",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "description": "Feed ID" }
+        },
+        "required": ["id"]
+      }
+    },
+    {
+      "name": "update_feed",
+      "description": "更新信息流条目",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "description": "Feed ID" },
+          "title": { "type": "string", "description": "新标题" },
+          "content": { "type": "string", "description": "新内容" },
+          "summary": { "type": "string", "description": "新摘要" },
+          "source": { "type": "string", "description": "新来源" },
+          "url": { "type": "string", "description": "新链接" },
+          "tags": { "type": "array", "items": { "type": "string" }, "description": "新标签" },
+          "status": { "type": "string", "enum": ["published", "draft"], "description": "新状态" }
+        },
+        "required": ["id"]
+      }
+    },
+    {
+      "name": "delete_feed",
+      "description": "删除信息流条目",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "description": "Feed ID" }
         },
         "required": ["id"]
       }

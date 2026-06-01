@@ -95,6 +95,8 @@ WhaiBlog MCP 工具调用器
   node call-mcp.js get_stats
   node call-mcp.js list_posts '{"limit": 5}'
   node call-mcp.js create_post '{"title":"标题","content":"内容","tags":["tag1"]}'
+  node call-mcp.js create_feed '{"title":"标题","content":"内容","source":"来源","tags":["tag1"]}'
+  node call-mcp.js list_feeds '{"limit": 10}'
   node call-mcp.js upload_file '{"file_path":"C:/path/to/file.txt"}'
   node call-mcp.js upload_content '{"filename":"test.md","content":"base64内容"}'
   node call-mcp.js upload_folder '{"folder_path":"C:/path/to/folder"}'
@@ -103,6 +105,7 @@ WhaiBlog MCP 工具调用器
 
 可用工具:
   create_post, update_post, delete_post, list_posts, get_post
+  create_feed, list_feeds, get_feed, update_feed, delete_feed
   upload_file, upload_content, upload_folder
   list_files, get_file, update_file, replace_file, replace_file_content, delete_file
   get_stats, get_system_info
