@@ -394,6 +394,27 @@
     font-size: 11px;
   }
 
+  /* Tag filter mobile */
+  .tag-filter {
+    padding: 16px 0;
+    margin-bottom: 28px;
+  }
+
+  .tag-filter-list {
+    gap: 6px;
+  }
+
+  .tag-filter-item {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
+  .tag-filter-active {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
   /* Profile mobile */
   .profile {
     padding: 32px 0 24px;

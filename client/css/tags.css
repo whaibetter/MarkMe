@@ -1,4 +1,77 @@
-/* ===== Tag Cloud Page ===== */
+/* ===== Tag Filter Bar (in Blogs page) ===== */
+.tag-filter {
+  margin-bottom: 40px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tag-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.tag-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-filter-item {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-filter-item.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.tag-filter-active {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.tag-filter-current {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.tag-filter-current strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tag-filter-clear {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.05em;
+  transition: all var(--transition-fast);
+}
+
+.tag-filter-clear:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ===== Tag Cloud (standalone, kept for compatibility) ===== */
 .tag-cloud {
   display: flex;
   flex-wrap: wrap;
@@ -20,7 +93,7 @@
   background: var(--accent-soft);
 }
 
-/* ===== Tag Posts Page ===== */
+/* ===== Tag Posts Title ===== */
 .tag-posts-title {
   font-family: var(--font-display);
   font-size: 32px;

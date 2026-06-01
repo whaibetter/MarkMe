@@ -6,7 +6,6 @@ import { cleanupReadingProgress } from './reading-progress.js';
 import { showProfile } from './pages/profile.js';
 import { showHome } from './pages/home.js';
 import { showPost } from './pages/post.js';
-import { showTags, showTagPosts } from './pages/tags.js';
 import { showNotes } from './pages/notes.js';
 import { showFeed } from './pages/feed.js';
 
@@ -24,30 +23,22 @@ export function init() {
   var search = window.location.search;
   console.log('Path:', path, 'Search:', search);
 
-  if (path === '/tags') {
-    showTags(app);
-    updateNav('topics');
-  } else if (path.indexOf('/post/') === 0) {
+  if (path.indexOf('/post/') === 0) {
     var id = path.split('/')[2];
     showPost(app, id);
     updateNav('');
-  } else if (search.indexOf('tag=') >= 0) {
-    var params = new URLSearchParams(search);
-    var tag = params.get('tag');
-    showTagPosts(app, tag);
-    updateNav('topics');
   } else {
     // Homepage sections
-    var section = new URLSearchParams(search).get('section') || 'feed';
-    if (section === 'feed') {
+    var params = new URLSearchParams(search);
+    var section = params.get('section') || 'feed';
+    var tag = params.get('tag');
+
+    if (section === 'feed' && !tag) {
       showFeed(app);
       updateNav('feed');
-    } else if (section === 'blogs') {
-      showHome(app);
+    } else if (section === 'blogs' || tag) {
+      showHome(app, tag);
       updateNav('blogs');
-    } else if (section === 'topics') {
-      showTags(app);
-      updateNav('topics');
     } else if (section === 'notes') {
       showNotes(app);
       updateNav('notes');
@@ -73,11 +64,23 @@ function updateNav(active) {
   }
 }
 
-// Navigation
+// Navigation — go to blogs page with tag filter
 export function goTag(tag) {
   console.log('goTag:', tag);
-  window.location.href = '/?section=topics&tag=' + encodeURIComponent(tag);
+  if (tag) {
+    history.pushState(null, '', '/?section=blogs&tag=' + encodeURIComponent(tag));
+  } else {
+    history.pushState(null, '', '/?section=blogs');
+  }
+  init();
 }
 
-// Make goTag available globally for onclick handlers
+// Clear tag filter — go to blogs page
+export function clearTag() {
+  history.pushState(null, '', '/?section=blogs');
+  init();
+}
+
+// Make globally available for onclick handlers
 window.goTag = goTag;
+window.clearTag = clearTag;

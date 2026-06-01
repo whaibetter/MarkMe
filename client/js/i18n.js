@@ -7,7 +7,6 @@ var translations = {
     // Nav
     'nav.feed': 'Feed',
     'nav.blogs': 'Blogs',
-    'nav.topics': 'Topics',
     'nav.notes': 'Notes',
     'nav.about': 'About',
     // Feed page
@@ -23,6 +22,10 @@ var translations = {
     'blog.articles': 'Articles',
     'blog.pages': 'Pages',
     'blog.empty': 'No articles yet',
+    'blog.filterByTag': 'Filter by tag',
+    'blog.showing': 'Showing',
+    'blog.clearFilter': 'Show all',
+    'blog.emptyTag': 'No articles with this tag',
     // Common
     'common.prev': 'Prev',
     'common.next': 'Next',
@@ -42,7 +45,6 @@ var translations = {
     // Nav
     'nav.feed': '信息流',
     'nav.blogs': '博客',
-    'nav.topics': '话题',
     'nav.notes': '笔记',
     'nav.about': '关于',
     // Feed page
@@ -58,6 +60,10 @@ var translations = {
     'blog.articles': '文章',
     'blog.pages': '页',
     'blog.empty': '暂无文章',
+    'blog.filterByTag': '按标签筛选',
+    'blog.showing': '当前',
+    'blog.clearFilter': '显示全部',
+    'blog.emptyTag': '该标签下暂无文章',
     // Common
     'common.prev': '上一页',
     'common.next': '下一页',
