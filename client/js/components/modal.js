@@ -37,23 +37,48 @@ export function openHtmlModal(title, htmlContent) {
 
   var modal = document.createElement('div');
   modal.className = 'preview-modal';
-  modal.innerHTML =
-    '<div class="preview-overlay"></div>' +
-    '<div class="preview-container preview-container--wide">' +
-      '<div class="preview-header">' +
-        '<span>' + escapeHtml(title) + '</span>' +
-        '<button class="preview-close">&times;</button>' +
-      '</div>' +
-      '<div class="preview-content preview-content--html">' +
-        '<iframe class="html-embed-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" srcdoc="' + escapeAttr(wrapHtml(htmlContent)) + '"></iframe>' +
-      '</div>' +
-    '</div>';
 
+  // Build modal shell
+  var overlay = document.createElement('div');
+  overlay.className = 'preview-overlay';
+
+  var container = document.createElement('div');
+  container.className = 'preview-container preview-container--wide';
+
+  var header = document.createElement('div');
+  header.className = 'preview-header';
+  header.innerHTML = '<span>' + escapeHtml(title) + '</span><button class="preview-close">&times;</button>';
+
+  var content = document.createElement('div');
+  content.className = 'preview-content preview-content--html';
+
+  // Build iframe with srcdoc set via property (avoids HTML entity escaping issues)
+  var iframe = document.createElement('iframe');
+  iframe.className = 'html-embed-frame';
+  iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation');
+  iframe.srcdoc = htmlContent;
+
+  // Auto-resize iframe to fit content
+  iframe.addEventListener('load', function() {
+    try {
+      var doc = iframe.contentDocument || iframe.contentWindow.document;
+      if (doc && doc.body) {
+        var h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+        iframe.style.height = Math.min(h + 20, window.innerHeight * 0.88) + 'px';
+      }
+    } catch(e) {}
+  });
+
+  content.appendChild(iframe);
+  container.appendChild(header);
+  container.appendChild(content);
+  modal.appendChild(overlay);
+  modal.appendChild(container);
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
 
-  modal.querySelector('.preview-overlay').addEventListener('click', closeModal);
-  modal.querySelector('.preview-close').addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
+  header.querySelector('.preview-close').addEventListener('click', closeModal);
 
   document.addEventListener('keydown', onEsc);
 }
@@ -73,14 +98,6 @@ export function openFeedModal(title, content, format) {
     default:
       openMarkdownModal(title, content);
   }
-}
-
-function wrapHtml(html) {
-  return html.replace(/"/g, '&quot;');
-}
-
-function escapeAttr(str) {
-  return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 export function closeModal() {
