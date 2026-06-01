@@ -13,7 +13,7 @@ instructions: |
   2. 如果 configured=false，询问用户 WhaiBlog 服务器地址，然后调用 set_markme_config 保存
   3. 配置完成后才能使用其他工具
 
-  配置文件保存在 ~/.markme/config.json，所有 WhaiBlog 工具共享此配置。
+  配置文件保存在 ~/.whaiblog/config.json，所有 WhaiBlog 工具共享此配置。
 
 tools:
   # 配置管理

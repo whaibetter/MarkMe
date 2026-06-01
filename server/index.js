@@ -11,7 +11,37 @@ const PORT = config.PORT;
 const DATA_DIR = process.env.DATA_DIR || __dirname;
 
 app.use(cors());
-app.use(express.json());
+
+// Handle Windows curl encoding: convert GBK/CP936 to UTF-8 when needed
+app.use(express.json({
+  limit: '50mb',
+  verify: function(req, res, buf) {
+    var contentType = req.headers['content-type'] || '';
+    var hasCharset = contentType.toLowerCase().includes('charset');
+    if (!hasCharset) {
+      // Check if valid UTF-8 (no replacement characters)
+      var str = buf.toString('utf-8');
+      if (str.indexOf('\ufffd') >= 0) {
+        try {
+          var iconv = require('iconv-lite');
+          str = iconv.decode(buf, 'gbk');
+        } catch(e) {}
+        // Store decoded string for express.json to re-parse
+        req._decodedBody = str;
+      }
+    }
+  }
+}));
+
+// If GBK was detected, replace the parsed body
+app.use(function(req, res, next) {
+  if (req._decodedBody && !req.body) {
+    try {
+      req.body = JSON.parse(req._decodedBody);
+    } catch(e) {}
+  }
+  next();
+});
 
 const uploadsDir = path.join(DATA_DIR, 'uploads');
 app.use('/uploads', express.static(uploadsDir));

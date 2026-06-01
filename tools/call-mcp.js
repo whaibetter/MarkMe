@@ -10,9 +10,9 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-// 读取配置文件 ~/.markme/config.json
+// 读取配置文件 ~/.whaiblog/config.json
 function loadConfig() {
-  const configPath = path.join(os.homedir(), '.markme', 'config.json');
+  const configPath = path.join(os.homedir(), '.whaiblog', 'config.json');
   try {
     if (fs.existsSync(configPath)) {
       return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
@@ -62,7 +62,7 @@ function callTool(name, args = {}) {
     });
 
     req.on('error', (err) => {
-      const configPath = path.join(os.homedir(), '.markme', 'config.json');
+      const configPath = path.join(os.homedir(), '.whaiblog', 'config.json');
       reject(new Error(`无法连接到 WhaiBlog 服务器 (${BRIDGE_HOST}:${BRIDGE_PORT}): ${err.message}\n请检查配置文件: ${configPath}\n或设置环境变量: MARKME_HOST / MCP_BRIDGE_PORT`));
     });
 
@@ -84,12 +84,12 @@ WhaiBlog MCP 工具调用器
 
 配置 (优先级从高到低):
   1. 环境变量: MARKME_HOST, MCP_BRIDGE_PORT, MARKME_API_KEY
-  2. 配置文件: ~/.markme/config.json
+  2. 配置文件: ~/.whaiblog/config.json
   3. 默认值: localhost:8081
 
 配置文件:
   当前配置: ${config ? JSON.stringify(config) : '未配置'}
-  配置路径: ${path.join(os.homedir(), '.markme', 'config.json')}
+  配置路径: ${path.join(os.homedir(), '.whaiblog', 'config.json')}
 
 示例:
   node call-mcp.js get_stats

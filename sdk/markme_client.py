@@ -11,8 +11,8 @@ from pathlib import Path
 
 
 def _load_config() -> Dict:
-    """读取 ~/.markme/config.json 配置文件"""
-    config_path = Path.home() / '.markme' / 'config.json'
+    """读取 ~/.whaiblog/config.json 配置文件"""
+    config_path = Path.home() / '.whaiblog' / 'config.json'
     try:
         if config_path.exists():
             return json.loads(config_path.read_text(encoding='utf-8'))
@@ -22,8 +22,8 @@ def _load_config() -> Dict:
 
 
 def _save_config(config: Dict):
-    """保存配置到 ~/.markme/config.json"""
-    config_dir = Path.home() / '.markme'
+    """保存配置到 ~/.whaiblog/config.json"""
+    config_dir = Path.home() / '.whaiblog'
     config_dir.mkdir(parents=True, exist_ok=True)
     config_path = config_dir / 'config.json'
     config_path.write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding='utf-8')
