@@ -1,0 +1,375 @@
+/* ===== RSS Reader Page ===== */
+
+.rss-section {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rss-section:last-child {
+  border-bottom: none;
+}
+
+.rss-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.rss-section-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.rss-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 40px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.rss-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== Buttons ===== */
+.rss-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.05em;
+  transition: all var(--transition-fast);
+}
+
+.rss-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rss-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.rss-btn--primary:hover {
+  background: var(--accent-light);
+  color: var(--bg);
+}
+
+.rss-btn--small {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+.rss-btn--danger {
+  color: var(--rose);
+  border-color: var(--rose);
+}
+
+.rss-btn--danger:hover {
+  background: var(--rose);
+  color: #fff;
+}
+
+/* ===== Add Source Form ===== */
+.rss-add-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.rss-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  transition: border-color var(--transition-fast);
+}
+
+.rss-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.rss-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ===== Source Cards ===== */
+.rss-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.rss-source-card {
+  background: var(--bg);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: background var(--transition-fast);
+}
+
+.rss-source-card:hover {
+  background: var(--surface);
+}
+
+.rss-source-card.disabled {
+  opacity: 0.5;
+}
+
+.rss-source-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rss-source-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+
+.rss-source-url {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}
+
+.rss-source-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.rss-source-errors {
+  color: var(--rose);
+  font-weight: 600;
+}
+
+.rss-source-error-msg {
+  color: var(--rose);
+  opacity: 0.7;
+}
+
+.rss-source-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ===== Empty State ===== */
+.rss-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 20px;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+/* ===== RSS Item Cards ===== */
+.rss-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.rss-item-card {
+  background: var(--bg);
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.rss-item-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.rss-item-card:hover {
+  background: var(--surface);
+}
+
+.rss-item-card:hover::after {
+  opacity: 1;
+}
+
+.rss-item-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.rss-item-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-bright);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.rss-item-source {
+  flex-shrink: 0;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rss-item-summary {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rss-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rss-item-date {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.rss-item-link {
+  color: var(--accent);
+  font-size: 11px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.rss-item-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== RSS Subscribe Links ===== */
+.rss-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rss-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.rss-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .rss-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rss-source-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .rss-source-url {
+    max-width: 100%;
+  }
+
+  .rss-source-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .rss-add-form {
+    flex-direction: column;
+  }
+
+  .rss-input {
+    min-width: 100%;
+  }
+
+  .rss-item-header {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rss-links {
+    flex-direction: column;
+  }
+}

@@ -57,6 +57,20 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS rss_sources (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url TEXT NOT NULL UNIQUE,
+    title TEXT,
+    description TEXT,
+    last_fetched DATETIME,
+    fetch_interval INTEGER DEFAULT 3600,
+    enabled INTEGER DEFAULT 1,
+    error_count INTEGER DEFAULT 0,
+    last_error TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Migration: add format column to existing feeds table

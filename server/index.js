@@ -162,6 +162,54 @@ app.get('/api/feeds/:id', (req, res) => {
   res.json(feed);
 });
 
+// ===== RSS Feed Generation =====
+const rss = require('./rss');
+const rssFetcher = require('./rss-fetcher');
+
+app.get('/rss/posts.xml', (req, res) => {
+  res.set('Content-Type', 'application/rss+xml; charset=utf-8');
+  res.send(rss.generatePostsRSS());
+});
+
+app.get('/rss/feeds.xml', (req, res) => {
+  res.set('Content-Type', 'application/rss+xml; charset=utf-8');
+  res.send(rss.generateFeedsRSS());
+});
+
+app.get('/rss/all.xml', (req, res) => {
+  res.set('Content-Type', 'application/rss+xml; charset=utf-8');
+  res.send(rss.generateAllRSS());
+});
+
+// ===== RSS Source Management API =====
+app.get('/api/rss/sources', (req, res) => {
+  res.json(rssFetcher.listSources());
+});
+
+app.post('/api/rss/sources', (req, res) => {
+  const { url, title } = req.body;
+  if (!url) return res.status(400).json({ error: 'url required' });
+  res.json(rssFetcher.addSource(url, title));
+});
+
+app.delete('/api/rss/sources/:id', (req, res) => {
+  res.json(rssFetcher.removeSource(Number(req.params.id)));
+});
+
+app.put('/api/rss/sources/:id', (req, res) => {
+  res.json(rssFetcher.updateSource(Number(req.params.id), req.body));
+});
+
+app.post('/api/rss/fetch', async (req, res) => {
+  const results = await rssFetcher.fetchAllSources();
+  res.json({ success: true, results });
+});
+
+app.post('/api/rss/fetch/:id', async (req, res) => {
+  const result = await rssFetcher.fetchOneSource(Number(req.params.id));
+  res.json(result);
+});
+
 app.get('/api/stats', (req, res) => {
   const posts = db.prepare('SELECT COUNT(*) as count FROM posts WHERE status = ?').get('published');
   const files = db.prepare('SELECT COUNT(*) as count FROM files').get();
@@ -236,4 +284,7 @@ app.listen(PORT, () => {
   console.log(`WhaiBlog server running on http://localhost:${PORT}`);
   // 后台初始化笔记仓库（不阻塞启动）
   notesSync.initNotesRepo();
+
+  // 启动 RSS 定时抓取
+  rssFetcher.startCronJob();
 });

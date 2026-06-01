@@ -8,6 +8,7 @@ import { showHome } from './pages/home.js';
 import { showPost } from './pages/post.js';
 import { showNotes } from './pages/notes.js';
 import { showFeed } from './pages/feed.js';
+import { showRssReader } from './pages/rss-reader.js';
 
 export function init() {
   console.log('init called');
@@ -45,6 +46,9 @@ export function init() {
     } else if (section === 'about') {
       showProfile(app);
       updateNav('about');
+    } else if (section === 'rss') {
+      showRssReader(app);
+      updateNav('rss');
     } else {
       showFeed(app);
       updateNav('feed');
