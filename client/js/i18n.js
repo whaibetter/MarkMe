@@ -15,6 +15,8 @@ var translations = {
     'feed.subtitle': 'Curated news and insights',
     'feed.items': 'Items',
     'feed.empty': 'No feed items yet',
+    'feed.filterBySource': 'Filter by source',
+    'feed.emptySource': 'No feed items from this source',
     // Blog page
     'blog.issue': 'Personal Blog',
     'blog.title': "Wenhai's Blog",
@@ -86,6 +88,8 @@ var translations = {
     'feed.subtitle': '精选资讯与洞察',
     'feed.items': '条目',
     'feed.empty': '暂无信息流',
+    'feed.filterBySource': '按来源筛选',
+    'feed.emptySource': '该来源下暂无条目',
     // Blog page
     'blog.issue': '个人博客',
     'blog.title': 'Wenhai 的博客',

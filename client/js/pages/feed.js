@@ -8,6 +8,7 @@ var appEl = null;
 var currentPage = 1;
 var currentSource = '';
 var limit = 20;
+var allSources = [];
 
 export function showFeed(app) {
   appEl = app;
@@ -18,30 +19,35 @@ export function showFeed(app) {
 
 function loadSources() {
   fetchJSON(API + '/feeds/sources')
-    .then(function(data) { renderSourceBar(data.sources || []); })
-    .catch(function() { /* ignore, still load feeds */ })
-    .finally(function() { loadPage(); });
+    .then(function(data) {
+      allSources = (data.sources || []).filter(function(s) { return s.value !== ''; });
+      loadPage();
+    })
+    .catch(function() { loadPage(); });
 }
 
-function renderSourceBar(sources) {
-  var html = '<div class="feed-source-bar">';
-  for (var i = 0; i < sources.length; i++) {
-    var s = sources[i];
-    var active = currentSource === s.value ? ' active' : '';
-    html += '<button class="feed-source-btn' + active + '" data-source="' + escapeHtml(s.value) + '">' + escapeHtml(s.name) + '</button>';
+function renderSourceFilter() {
+  if (allSources.length <= 1) return '';
+  var html = '<div class="tag-filter reveal">';
+  html += '<div class="tag-filter-label">' + t('feed.filterBySource') + '</div>';
+  html += '<div class="tag-filter-list">';
+  for (var i = 0; i < allSources.length; i++) {
+    var s = allSources[i];
+    var isActive = currentSource === s.value;
+    html += '<span class="tag tag-filter-item' + (isActive ? ' active' : '') + '" data-source="' + escapeHtml(s.value) + '">' + escapeHtml(s.name) + '</span>';
   }
   html += '</div>';
-  var existing = appEl.querySelector('.feed-source-bar');
-  if (existing) existing.remove();
-  appEl.insertAdjacentHTML('afterbegin', html);
-  appEl.querySelector('.feed-source-bar').addEventListener('click', function(e) {
-    var btn = e.target.closest('.feed-source-btn');
-    if (btn) {
-      currentSource = btn.getAttribute('data-source') || '';
-      currentPage = 1;
-      loadPage();
+  if (currentSource) {
+    var activeName = allSources.filter(function(s) { return s.value === currentSource; })[0];
+    if (activeName) {
+      html += '<div class="tag-filter-active">';
+      html += '<span class="tag-filter-current">' + t('blog.showing') + ': <strong>' + escapeHtml(activeName.name) + '</strong></span>';
+      html += '<button class="tag-filter-clear" data-clear-source>&times;</button>';
+      html += '</div>';
     }
-  });
+  }
+  html += '</div>';
+  return html;
 }
 
 function loadPage() {
@@ -64,8 +70,10 @@ function loadPage() {
       html += '</div>';
       html += '</section>';
 
+      html += renderSourceFilter();
+
       if (data.feeds.length === 0) {
-        html += '<div class="feed-empty">' + t('feed.empty') + '</div>';
+        html += '<div class="feed-empty">' + (currentSource ? t('feed.emptySource') : t('feed.empty')) + '</div>';
       } else {
         html += '<div class="feed-list">';
         for (var i = 0; i < data.feeds.length; i++) {
@@ -84,20 +92,25 @@ function loadPage() {
         html += '</div>';
       }
 
-      var existingContent = appEl.querySelector('.hero');
-      if (existingContent) existingContent.remove();
-      var existingList = appEl.querySelector('.feed-list');
-      if (existingList) existingList.remove();
-      var existingPagination = appEl.querySelector('.pagination');
-      if (existingPagination) existingPagination.remove();
-      var existingEmpty = appEl.querySelector('.feed-empty');
-      if (existingEmpty) existingEmpty.remove();
+      appEl.innerHTML = html;
 
-      var sourceBar = appEl.querySelector('.feed-source-bar');
-      if (sourceBar) {
-        sourceBar.insertAdjacentHTML('afterend', html);
-      } else {
-        appEl.innerHTML = html;
+      var filterEl = appEl.querySelector('.tag-filter');
+      if (filterEl) {
+        filterEl.addEventListener('click', function(e) {
+          var clearBtn = e.target.closest('[data-clear-source]');
+          if (clearBtn) {
+            currentSource = '';
+            currentPage = 1;
+            loadPage();
+            return;
+          }
+          var tag = e.target.closest('.tag-filter-item');
+          if (tag) {
+            currentSource = tag.getAttribute('data-source') || '';
+            currentPage = 1;
+            loadPage();
+          }
+        });
       }
 
       var feedList = appEl.querySelector('.feed-list');
