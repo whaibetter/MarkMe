@@ -1,4 +1,4 @@
-name: markme-blog-manager
+name: whaiblog-blog-manager
 version: 2.1.0
 description: WhaiBlog 博客系统管理工具 - 支持文章、信息流和文件的完整 CRUD 操作
 author: WhaiBlog
@@ -9,21 +9,21 @@ instructions: |
   所有数据管理都通过此工具进行，前端页面仅用于展示。
 
   【重要】首次使用前必须先配置服务器地址：
-  1. 调用 get_markme_config 检查是否已配置
-  2. 如果 configured=false，询问用户 WhaiBlog 服务器地址，然后调用 set_markme_config 保存
+  1. 调用 get_whaiblog_config 检查是否已配置
+  2. 如果 configured=false，询问用户 WhaiBlog 服务器地址，然后调用 set_whaiblog_config 保存
   3. 配置完成后才能使用其他工具
 
   配置文件保存在 ~/.whaiblog/config.json，所有 WhaiBlog 工具共享此配置。
 
 tools:
   # 配置管理
-  - name: get_markme_config
+  - name: get_whaiblog_config
     description: 获取 WhaiBlog 客户端配置。首次使用前必须先调用此工具检查。
     parameters:
       type: object
       properties: {}
 
-  - name: set_markme_config
+  - name: set_whaiblog_config
     description: 设置 WhaiBlog 客户端配置（服务器地址和可选 API Key）
     parameters:
       type: object

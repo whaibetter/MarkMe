@@ -9,16 +9,19 @@ const {
 const db = require('./db');
 const path = require('path');
 const fs = require('fs');
-const markmeConfig = require('./markme-config');
+const config = require('./config');
+const whaiblogConfig = require('./whaiblog-config');
 const notes = require('./notes-sync');
 
 const server = new Server(
-  { name: 'markme-blog', version: '1.0.0' },
+  { name: 'whaiblog-blog', version: '1.0.0' },
   { capabilities: { tools: {} } }
 );
 
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  const apiKeyProp = { type: 'string', description: 'API key for authentication (required when MARKME_API_KEY is set on server)' };
+
+  const tools = [
     {
       name: 'create_post',
       description: 'Create a new blog post',
@@ -29,7 +32,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           content: { type: 'string', description: 'Post content (markdown)' },
           summary: { type: 'string', description: 'Post summary' },
           tags: { type: 'array', items: { type: 'string' }, description: 'Post tags' },
-          status: { type: 'string', enum: ['published', 'draft'], description: 'Post status' }
+          status: { type: 'string', enum: ['published', 'draft'], description: 'Post status' },
+          api_key: apiKeyProp
         },
         required: ['title', 'content']
       }
@@ -45,7 +49,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           content: { type: 'string' },
           summary: { type: 'string' },
           tags: { type: 'array', items: { type: 'string' } },
-          status: { type: 'string', enum: ['published', 'draft'] }
+          status: { type: 'string', enum: ['published', 'draft'] },
+          api_key: apiKeyProp
         },
         required: ['id']
       }
@@ -56,7 +61,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       inputSchema: {
         type: 'object',
         properties: {
-          id: { type: 'number', description: 'Post ID' }
+          id: { type: 'number', description: 'Post ID' },
+          api_key: apiKeyProp
         },
         required: ['id']
       }
@@ -67,15 +73,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       inputSchema: {
         type: 'object',
         properties: {
-          page: { type: 'number' },
-          limit: { type: 'number' },
-          status: { type: 'string', enum: ['published', 'draft', 'all'] }
+          page: { type: 'number', description: 'Page number, default 1' },
+          limit: { type: 'number', description: 'Items per page, default 20' },
+          status: { type: 'string', enum: ['published', 'draft', 'all'], description: 'Post status filter' }
         }
       }
     },
     {
       name: 'get_post',
-      description: 'Get a specific blog post',
+      description: 'Get a single post by ID',
       inputSchema: {
         type: 'object',
         properties: {
@@ -86,24 +92,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     },
     {
       name: 'upload_file',
-      description: 'Upload a file to the blog',
+      description: 'Upload a file from a local path',
       inputSchema: {
         type: 'object',
         properties: {
-          file_path: { type: 'string', description: 'Absolute path to the file' },
-          post_id: { type: 'number', description: 'Associated post ID (optional)' }
+          file_path: { type: 'string', description: 'Local file path' },
+          post_id: { type: 'number', description: 'Optional post ID to associate' },
+          api_key: apiKeyProp
         },
         required: ['file_path']
       }
     },
     {
       name: 'upload_folder',
-      description: 'Upload all files from a folder to the blog',
+      description: 'Upload all files from a local folder',
       inputSchema: {
         type: 'object',
         properties: {
-          folder_path: { type: 'string', description: 'Absolute path to the folder' },
-          post_id: { type: 'number', description: 'Associated post ID (optional)' }
+          folder_path: { type: 'string', description: 'Local folder path' },
+          post_id: { type: 'number', description: 'Optional post ID to associate' },
+          api_key: apiKeyProp
         },
         required: ['folder_path']
       }
@@ -111,14 +119,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: 'list_files',
       description: 'List all uploaded files',
-      inputSchema: {
-        type: 'object',
-        properties: {}
-      }
-    },
-    {
-      name: 'get_stats',
-      description: 'Get blog statistics (post count, file count)',
       inputSchema: {
         type: 'object',
         properties: {}
@@ -137,50 +137,40 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     },
     {
       name: 'update_file',
-      description: 'Update file metadata (original_name, post_id)',
+      description: 'Update file metadata (name, associated post)',
       inputSchema: {
         type: 'object',
         properties: {
           id: { type: 'number', description: 'File ID' },
-          original_name: { type: 'string', description: 'New display name' },
-          post_id: { type: 'number', description: 'Associate with post (null to unlink)' }
+          original_name: { type: 'string', description: 'New file name' },
+          post_id: { type: 'number', description: 'New post ID association' },
+          api_key: apiKeyProp
         },
         required: ['id']
       }
     },
     {
       name: 'replace_file',
-      description: 'Replace file content with a new file (server-side path)',
+      description: 'Replace file content from local path',
       inputSchema: {
         type: 'object',
         properties: {
           id: { type: 'number', description: 'File ID' },
-          file_path: { type: 'string', description: 'Path to new file' }
+          file_path: { type: 'string', description: 'New local file path' },
+          api_key: apiKeyProp
         },
         required: ['id', 'file_path']
       }
     },
     {
-      name: 'upload_content',
-      description: 'Upload a file by content (base64) - for remote clients',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          filename: { type: 'string', description: 'File name with extension' },
-          content: { type: 'string', description: 'File content as base64 encoded string' },
-          post_id: { type: 'number', description: 'Associated post ID (optional)' }
-        },
-        required: ['filename', 'content']
-      }
-    },
-    {
       name: 'replace_file_content',
-      description: 'Replace file content by base64 content - for remote clients',
+      description: 'Replace file content from base64 data',
       inputSchema: {
         type: 'object',
         properties: {
           id: { type: 'number', description: 'File ID' },
-          content: { type: 'string', description: 'New file content as base64 encoded string' }
+          content: { type: 'string', description: 'New file content (base64)' },
+          api_key: apiKeyProp
         },
         required: ['id', 'content']
       }
@@ -191,143 +181,178 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       inputSchema: {
         type: 'object',
         properties: {
-          id: { type: 'number', description: 'File ID' }
+          id: { type: 'number', description: 'File ID' },
+          api_key: apiKeyProp
+        },
+        required: ['id']
+      }
+    },
+    {
+      name: 'get_stats',
+      description: 'Get blog statistics (post and file counts)',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      }
+    },
+    {
+      name: 'get_system_info',
+      description: 'Get system resource usage (CPU, memory, disk)',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      }
+    },
+    {
+      name: 'get_whaiblog_config',
+      description: 'Get current WhaiBlog client configuration',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      }
+    },
+    {
+      name: 'set_whaiblog_config',
+      description: 'Set WhaiBlog client configuration (server URL and optional API key)',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          server_url: { type: 'string', description: 'WhaiBlog server URL, e.g. http://117.72.196.45:8080' },
+          api_key: { type: 'string', description: 'API key for authentication (optional)' }
+        },
+        required: ['server_url']
+      }
+    },
+    {
+      name: 'list_notes',
+      description: 'List notes directory tree from the learning-notes repository (read-only)',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          path: { type: 'string', description: 'Relative path within repo, default root' },
+          depth: { type: 'number', description: 'Tree depth, default 2' }
+        }
+      }
+    },
+    {
+      name: 'get_note',
+      description: 'Get a note file content by its relative path',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          path: { type: 'string', description: 'Relative path within the notes repo, e.g. "javascript/promises.md"' }
+        },
+        required: ['path']
+      }
+    },
+    {
+      name: 'notes_status',
+      description: 'Get learning notes repository sync status',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      }
+    },
+    {
+      name: 'upload_content',
+      description: 'Upload file content directly from base64 string',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          filename: { type: 'string', description: 'File name' },
+          content: { type: 'string', description: 'File content (base64)' },
+          post_id: { type: 'number', description: 'Optional post ID to associate' },
+          api_key: apiKeyProp
+        },
+        required: ['filename', 'content']
+      }
+    },
+    {
+      name: 'create_feed',
+      description: 'Create a new feed item',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          title: { type: 'string', description: 'Feed item title' },
+          content: { type: 'string', description: 'Feed item content' },
+          summary: { type: 'string' },
+          source: { type: 'string', description: 'Source name' },
+          url: { type: 'string', description: 'Source URL' },
+          tags: { type: 'array', items: { type: 'string' } },
+          format: { type: 'string', enum: ['markdown', 'html', 'text'], description: 'Content format, default markdown' },
+          api_key: apiKeyProp
+        },
+        required: ['title', 'content']
+      }
+    },
+    {
+      name: 'update_feed',
+      description: 'Update an existing feed item',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', description: 'Feed ID' },
+          title: { type: 'string' },
+          content: { type: 'string' },
+          summary: { type: 'string' },
+          source: { type: 'string' },
+          url: { type: 'string' },
+          tags: { type: 'array', items: { type: 'string' } },
+          format: { type: 'string', enum: ['markdown', 'html', 'text'] },
+          api_key: apiKeyProp
+        },
+        required: ['id']
+      }
+    },
+    {
+      name: 'delete_feed',
+      description: 'Delete a feed item',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', description: 'Feed ID' },
+          api_key: apiKeyProp
+        },
+        required: ['id']
+      }
+    },
+    {
+      name: 'list_feeds',
+      description: 'List all feed items',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          page: { type: 'number', description: 'Page number, default 1' },
+          limit: { type: 'number', description: 'Items per page, default 20' }
+        }
+      }
+    },
+    {
+      name: 'get_feed',
+      description: 'Get a single feed item by ID',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', description: 'Feed ID' }
         },
         required: ['id']
       }
     }
-  , {
-    name: 'get_system_info',
-    description: 'Get system resource usage of the WhaiBlog application (CPU, memory, disk, uptime)',
-    inputSchema: {
-      type: 'object',
-      properties: {}
-    }
-  },
-  {
-    name: 'get_markme_config',
-    description: 'Get WhaiBlog client configuration (server URL, API key status)',
-    inputSchema: {
-      type: 'object',
-      properties: {}
-    }
-  },
-  {
-    name: 'set_markme_config',
-    description: 'Set WhaiBlog client configuration (server URL and optional API key)',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        server_url: { type: 'string', description: 'WhaiBlog server URL, e.g. http://117.72.196.45:8080' },
-        api_key: { type: 'string', description: 'API key for authentication (optional)' }
-      },
-      required: ['server_url']
-    }
-  },
-  {
-    name: 'list_notes',
-    description: 'List notes directory tree from the learning-notes repository (read-only)',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        path: { type: 'string', description: 'Relative path within repo, default root' },
-        depth: { type: 'number', description: 'Tree depth, default 2' }
-      }
-    }
-  },
-  {
-    name: 'get_note',
-    description: 'Get the content of a specific note file (read-only)',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        path: { type: 'string', description: 'Relative path to the file' }
-      },
-      required: ['path']
-    }
-  },
-  {
-    name: 'notes_status',
-    description: 'Get notes repository sync status (cloning/ready/error)',
-    inputSchema: {
-      type: 'object',
-      properties: {}
-    }
-  },
-  {
-    name: 'create_feed',
-    description: 'Create a new feed item',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        title: { type: 'string', description: 'Feed title' },
-        content: { type: 'string', description: 'Feed content' },
-        summary: { type: 'string', description: 'Feed summary' },
-        source: { type: 'string', description: 'Feed source name' },
-        url: { type: 'string', description: 'Source URL' },
-        tags: { type: 'array', items: { type: 'string' }, description: 'Feed tags' },
-        format: { type: 'string', enum: ['markdown', 'html', 'text'], description: 'Content format: markdown (default), html, or text' }
-      },
-      required: ['title', 'content']
-    }
-  },
-  {
-    name: 'list_feeds',
-    description: 'List all feed items',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        page: { type: 'number', description: 'Page number' },
-        limit: { type: 'number', description: 'Items per page' }
-      }
-    }
-  },
-  {
-    name: 'get_feed',
-    description: 'Get a specific feed item',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', description: 'Feed ID' }
-      },
-      required: ['id']
-    }
-  },
-  {
-    name: 'update_feed',
-    description: 'Update an existing feed item',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', description: 'Feed ID' },
-        title: { type: 'string' },
-        content: { type: 'string' },
-        summary: { type: 'string' },
-        source: { type: 'string' },
-        url: { type: 'string' },
-        tags: { type: 'array', items: { type: 'string' } },
-        format: { type: 'string', enum: ['markdown', 'html', 'text'] },
-        status: { type: 'string', enum: ['published', 'draft'] }
-      },
-      required: ['id']
-    }
-  },
-  {
-    name: 'delete_feed',
-    description: 'Delete a feed item',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', description: 'Feed ID' }
-      },
-      required: ['id']
-    }
-  }
-  ]
-}));
+  ];
+
+  return { tools };
+});
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+
+  // API key auth for modification tools
+  const readOnly = ['get_whaiblog_config', 'list_posts', 'get_post', 'list_feeds', 'get_feed', 'list_files', 'get_file', 'get_stats', 'get_system_info', 'list_notes', 'get_note', 'notes_status'];
+  if (config.API_KEY && !readOnly.includes(name)) {
+    if (!args || !args.api_key || args.api_key !== config.API_KEY) {
+      return { content: [{ type: 'text', text: 'Unauthorized: valid api_key required' }], isError: true };
+    }
+  }
 
   try {
     switch (name) {
@@ -604,7 +629,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const totalCpuMs = (cpu.user + cpu.system) / 1000;
         const cpuPercent = uptimeSec > 0 ? ((totalCpuMs / (uptimeSec * 1000)) * 100).toFixed(1) : '0.0';
 
-        const dbPath = path.join(__dirname, 'markme.db');
+        const dbPath = path.join(__dirname, 'whaiblog.db');
         const dbSize = fs.existsSync(dbPath) ? fs.statSync(dbPath).size : 0;
 
         let uploadsSize = 0, uploadsCount = 0;
@@ -649,18 +674,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }, null, 2) }] };
       }
 
-      case 'get_markme_config': {
-        const config = markmeConfig.getConfig();
-        if (!config || !config.server_url) {
-          return { content: [{ type: 'text', text: JSON.stringify({ configured: false, message: 'WhaiBlog server URL not configured. Use set_markme_config to set the server URL.' }) }] };
+      case 'get_whaiblog_config': {
+        const cfg = whaiblogConfig.getConfig();
+        if (!cfg || !cfg.server_url) {
+          return { content: [{ type: 'text', text: JSON.stringify({ configured: false, message: 'WhaiBlog server URL not configured. Use set_whaiblog_config to set the server URL.' }) }] };
         }
-        return { content: [{ type: 'text', text: JSON.stringify({ configured: true, server_url: config.server_url, api_key_set: !!config.api_key }) }] };
+        return { content: [{ type: 'text', text: JSON.stringify({ configured: true, server_url: cfg.server_url, api_key_set: !!cfg.api_key }) }] };
       }
 
-      case 'set_markme_config': {
+      case 'set_whaiblog_config': {
         const { server_url, api_key } = args;
-        markmeConfig.setConfig(server_url, api_key || '');
-        return { content: [{ type: 'text', text: JSON.stringify({ success: true, server_url, message: 'Configuration saved to ' + markmeConfig.getConfigPath() }) }] };
+        whaiblogConfig.setConfig(server_url, api_key || '');
+        return { content: [{ type: 'text', text: JSON.stringify({ success: true, server_url, message: 'Configuration saved to ' + whaiblogConfig.getConfigPath() }) }] };
       }
 
       case 'list_notes': {

@@ -52,9 +52,9 @@ start-all.bat      # Windows
 
 所有 Agent 首次使用时会自动检测配置：
 
-1. 调用 `get_markme_config` 检查是否已配置
+1. 调用 `get_whaiblog_config` 检查是否已配置
 2. 如果未配置，询问用户 WhaiBlog 服务器地址
-3. 调用 `set_markme_config` 保存配置
+3. 调用 `set_whaiblog_config` 保存配置
 4. 后续调用自动使用已保存的配置
 
 ### 手动配置
@@ -63,10 +63,10 @@ start-all.bat      # Windows
 
 ```bash
 # 使用 CLI 工具
-node tools/call-mcp.js set_markme_config '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}'
+node tools/call-mcp.js set_whaiblog_config '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}'
 
 # 使用 curl
-curl -X POST http://localhost:8080/bridge/tools/set_markme_config \
+curl -X POST http://localhost:8080/bridge/tools/set_whaiblog_config \
   -H "Content-Type: application/json" \
   -d '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}'
 
@@ -82,7 +82,7 @@ echo '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}' > ~/.whai
 |------|----------------------|
 | CLI 工具 | `MARKME_HOST`, `MARKME_API_KEY` |
 | Python SDK | 构造函数参数 `base_url`, `api_key` |
-| MCP Server | 通过 `set_markme_config` 工具配置 |
+| MCP Server | 通过 `set_whaiblog_config` 工具配置 |
 
 ---
 
@@ -96,12 +96,12 @@ Claude Desktop 通过 MCP（Model Context Protocol）Stdio 协议与 WhaiBlog �
    - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
    - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-2. 编辑配置文件，添加 `markme` 服务：
+2. 编辑配置文件，添加 `whaiblog` 服务：
 
 ```json
 {
   "mcpServers": {
-    "markme": {
+    "whaiblog": {
       "command": "node",
       "args": ["C:/Users/whai/Documents/Project/MarkMe/server/mcp-server.js"]
     }
@@ -109,7 +109,7 @@ Claude Desktop 通过 MCP（Model Context Protocol）Stdio 协议与 WhaiBlog �
 }
 ```
 
-> 如果已有其他 MCP 服务，把 `markme` 添加到 `mcpServers` 对象中即可。
+> 如果已有其他 MCP 服务，把 `whaiblog` 添加到 `mcpServers` 对象中即可。
 
 3. 重启 Claude Desktop。
 
@@ -138,13 +138,13 @@ Claude Code 通过 skill 文件识别可用工具。
 mkdir -p ~/.claude/skills
 
 # 复制 skill 文件
-cp skills/markme-manager.json ~/.claude/skills/
+cp skills/whaiblog-manager.json ~/.claude/skills/
 ```
 
 2. 在 Claude Code 中直接使用自然语言操作：
 
 ```
-使用 markme-manager 创建一篇标题为"Hello World"的博客文章
+使用 whaiblog-manager 创建一篇标题为"Hello World"的博客文章
 ```
 
 ### 工作原理
@@ -165,7 +165,7 @@ OpenClaw 使用 YAML 格式的 skill 定义。
 
 ```bash
 mkdir -p ~/.openclaw/skills
-cp skills/markme-openclaw.yaml ~/.openclaw/skills/
+cp skills/whaiblog-openclaw.yaml ~/.openclaw/skills/
 ```
 
 2. 在 OpenClaw Agent 代码中引用：
@@ -175,7 +175,7 @@ from openclaw import Agent
 
 agent = Agent(
     name="blog-manager",
-    skills=["markme-blog-manager"]  # 对应 yaml 中的 name 字段
+    skills=["whaiblog-blog-manager"]  # 对应 yaml 中的 name 字段
 )
 
 agent.run("帮我创建一篇关于AI的博客文章")
@@ -228,7 +228,7 @@ pip install mcp
 ### 方式 A：HTTP REST API（只读）
 
 ```python
-from sdk.markme_client import WhaiBlogClient
+from sdk.whaiblog_client import WhaiBlogClient
 
 client = WhaiBlogClient("http://localhost:8080/api")
 
@@ -244,7 +244,7 @@ stats = client.get_stats()
 
 ```python
 import asyncio
-from sdk.markme_client import WhaiBlogMCPClient
+from sdk.whaiblog_client import WhaiBlogMCPClient
 
 async def main():
     client = WhaiBlogMCPClient(
@@ -497,7 +497,7 @@ MARKME_HOST=117.72.196.45 MARKME_API_KEY=your_key node tools/call-mcp.js get_sta
 ### Claude Code 无法调用工具
 
 - 确认 WhaiBlog 主服务器正在运行（`npm start`）
-- 确认 `markme-manager.json` 已复制到 `~/.claude/skills/`
+- 确认 `whaiblog-manager.json` 已复制到 `~/.claude/skills/`
 - 尝试用 curl 手动测试：`curl http://localhost:8080/bridge/tools`
 
 ### 远程访问 401 错误

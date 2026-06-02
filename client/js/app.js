@@ -39,7 +39,7 @@ window.addEventListener('popstate', function() {
 // System theme change
 if (window.matchMedia) {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-    if (!localStorage.getItem('markme-theme')) {
+    if (!localStorage.getItem('whaiblog-theme')) {
       document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
     }
   });

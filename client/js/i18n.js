@@ -67,6 +67,12 @@ var translations = {
     'rss.active': 'Active',
     'rss.disabled': 'Disabled',
     'rss.original': 'Original',
+    'rss.adminMode': 'Admin Mode',
+    'rss.readOnly': 'Read Only',
+    'rss.login': 'Login',
+    'rss.logout': 'Logout',
+    'rss.keyPlaceholder': 'Enter API Key',
+    'rss.confirm': 'Confirm',
   },
   zh: {
     // Nav
@@ -132,11 +138,17 @@ var translations = {
     'rss.active': '启用',
     'rss.disabled': '禁用',
     'rss.original': '原文',
+    'rss.adminMode': '管理员模式',
+    'rss.readOnly': '只读模式',
+    'rss.login': '登录',
+    'rss.logout': '退出',
+    'rss.keyPlaceholder': '输入 API Key',
+    'rss.confirm': '确认',
   }
 };
 
 export function initLang() {
-  var saved = localStorage.getItem('markme-lang');
+  var saved = localStorage.getItem('whaiblog-lang');
   if (saved && translations[saved]) {
     currentLang = saved;
   }
@@ -147,7 +159,7 @@ export function initLang() {
 export function setLang(lang) {
   if (!translations[lang]) return;
   currentLang = lang;
-  localStorage.setItem('markme-lang', lang);
+  localStorage.setItem('whaiblog-lang', lang);
   updateLangLabel();
   updateNavText();
 }

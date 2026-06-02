@@ -8,6 +8,7 @@ const config = require('./config');
 
 const app = express();
 const PORT = config.PORT;
+const API_KEY = config.API_KEY;
 const DATA_DIR = process.env.DATA_DIR || __dirname;
 
 app.use(cors());
@@ -181,31 +182,43 @@ app.get('/rss/all.xml', (req, res) => {
   res.send(rss.generateAllRSS());
 });
 
+// ===== RSS Auth Middleware =====
+function rssAuth(req, res, next) {
+  if (!API_KEY) return next();
+  const auth = req.headers.authorization;
+  if (auth === 'Bearer ' + API_KEY) return next();
+  res.status(401).json({ success: false, error: 'Unauthorized' });
+}
+
 // ===== RSS Source Management API =====
 app.get('/api/rss/sources', (req, res) => {
   res.json(rssFetcher.listSources());
 });
 
-app.post('/api/rss/sources', (req, res) => {
+app.get('/api/rss/auth', (req, res) => {
+  res.json({ required: !!API_KEY });
+});
+
+app.post('/api/rss/sources', rssAuth, (req, res) => {
   const { url, title } = req.body;
   if (!url) return res.status(400).json({ error: 'url required' });
   res.json(rssFetcher.addSource(url, title));
 });
 
-app.delete('/api/rss/sources/:id', (req, res) => {
+app.delete('/api/rss/sources/:id', rssAuth, (req, res) => {
   res.json(rssFetcher.removeSource(Number(req.params.id)));
 });
 
-app.put('/api/rss/sources/:id', (req, res) => {
+app.put('/api/rss/sources/:id', rssAuth, (req, res) => {
   res.json(rssFetcher.updateSource(Number(req.params.id), req.body));
 });
 
-app.post('/api/rss/fetch', async (req, res) => {
+app.post('/api/rss/fetch', rssAuth, async (req, res) => {
   const results = await rssFetcher.fetchAllSources();
   res.json({ success: true, results });
 });
 
-app.post('/api/rss/fetch/:id', async (req, res) => {
+app.post('/api/rss/fetch/:id', rssAuth, async (req, res) => {
   const result = await rssFetcher.fetchOneSource(Number(req.params.id));
   res.json(result);
 });

@@ -7,7 +7,18 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-const db = new Database(path.join(dataDir, 'markme.db'));
+// Migration: rename old markme.db to whaiblog.db
+const oldDbPath = path.join(dataDir, 'markme.db');
+const newDbPath = path.join(dataDir, 'whaiblog.db');
+if (fs.existsSync(oldDbPath) && !fs.existsSync(newDbPath)) {
+  fs.renameSync(oldDbPath, newDbPath);
+  // also rename WAL/SHM files
+  for (const ext of ['-wal', '-shm']) {
+    const old = oldDbPath + ext;
+    if (fs.existsSync(old)) fs.renameSync(old, newDbPath + ext);
+  }
+}
+const db = new Database(newDbPath);
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');

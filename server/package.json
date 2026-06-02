@@ -1,5 +1,5 @@
 {
-  "name": "markme-server",
+  "name": "whaiblog-server",
   "version": "1.0.0",
   "description": "WhaiBlog Blog System - Backend",
   "main": "index.js",

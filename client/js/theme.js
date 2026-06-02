@@ -14,7 +14,7 @@ var themeLabels = {
 var dropdownOpen = false;
 
 export function initTheme() {
-  var saved = localStorage.getItem('markme-theme');
+  var saved = localStorage.getItem('whaiblog-theme');
   if (saved && themes.indexOf(saved) >= 0) {
     document.documentElement.setAttribute('data-theme', saved);
   } else if (window.matchMedia && window.matchMedia('(prefers-color-theme: light)').matches) {
@@ -50,7 +50,7 @@ export function cycleTheme() {
 
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('markme-theme', theme);
+  localStorage.setItem('whaiblog-theme', theme);
   updateToggleLabel();
   updateDropdownActive();
 }

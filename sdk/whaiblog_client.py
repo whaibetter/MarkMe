@@ -77,11 +77,11 @@ class WhaiBlogClient:
 
     def get_config(self) -> Dict:
         """获取 WhaiBlog 客户端配置"""
-        return self._call_tool('get_markme_config')
+        return self._call_tool('get_whaiblog_config')
 
     def set_config(self, server_url: str, api_key: str = '') -> Dict:
         """设置 WhaiBlog 客户端配置"""
-        result = self._call_tool('set_markme_config', {
+        result = self._call_tool('set_whaiblog_config', {
             'server_url': server_url,
             'api_key': api_key
         })
@@ -221,10 +221,10 @@ class WhaiBlogMCPClient:
         return result
 
     async def get_config(self) -> Dict:
-        return await self.call_tool('get_markme_config', {})
+        return await self.call_tool('get_whaiblog_config', {})
 
     async def set_config(self, server_url: str, api_key: str = '') -> Dict:
-        return await self.call_tool('set_markme_config', {
+        return await self.call_tool('set_whaiblog_config', {
             'server_url': server_url,
             'api_key': api_key
         })

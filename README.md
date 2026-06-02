@@ -34,7 +34,7 @@ npm start
 ```json
 {
   "mcpServers": {
-    "markme": {
+    "whaiblog": {
       "command": "node",
       "args": ["C:/Users/whai/Documents/Project/MarkMe/server/mcp-server.js"]
     }
@@ -48,8 +48,8 @@ npm start
 
 ### 4. 使用 Skills
 
-- **Claude Code Skill**: 将 `skills/markme-manager.json` 复制到 Claude Code 的 skills 目录
-- **OpenClaw Skill**: 将 `skills/markme-openclaw.yaml` 复制到 OpenClaw 的 skills 目录
+- **Claude Code Skill**: 将 `skills/whaiblog-manager.json` 复制到 Claude Code 的 skills 目录
+- **OpenClaw Skill**: 将 `skills/whaiblog-openclaw.yaml` 复制到 OpenClaw 的 skills 目录
 
 ## API 接口
 
@@ -122,8 +122,8 @@ WhaiBlog/
 │   ├── style.css
 │   └── app.js
 ├── skills/           # AI Skills
-│   ├── markme-manager.json    # Claude Code Skill
-│   └── markme-openclaw.yaml   # OpenClaw Skill
+│   ├── whaiblog-manager.json    # Claude Code Skill
+│   └── whaiblog-openclaw.yaml   # OpenClaw Skill
 └── uploads/          # 上传的文件
 ```
 

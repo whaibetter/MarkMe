@@ -10,7 +10,7 @@ WhaiBlog 是一个 AI 驱动的轻量级博客系统。前端为**只读展示**
 
 - **后端**: Node.js + Express + better-sqlite3（同步 API）
 - **前端**: 原生 HTML/CSS/JS SPA + marked.js
-- **数据库**: SQLite（WAL 模式，文件: `server/markme.db`）
+- **数据库**: SQLite（WAL 模式，文件: `server/whaiblog.db`）
 
 ## 开发命令
 
@@ -56,11 +56,13 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 
 - **三处 `executeTool()` 副本**：`bridge-router.js`、`mcp-http-bridge.js`、`mcp-server.js` 各有一份工具定义和执行逻辑。前两处返回 `{success, data}` JSON，`mcp-server.js` 返回 MCP 格式 `content: [{type: "text", text: ...}]`。修改工具行为时需同步更新三处
 - 前端 SPA 使用 `history.pushState` 路由，所有非 API/静态文件请求都返回 `index.html`
+- 国际化：`js/i18n.js` 提供 `t(key)` 翻译函数，支持 zh/en 切换，偏好存储在 `localStorage('whaiblog-lang')`
+- 模态框：`js/components/modal.js` 提供 `openModal(title, html)` 和 `openMarkdownModal(title, md)` 复用 `.preview-modal` CSS
 - SQLite 使用 WAL journal 模式 + 外键约束
-- `folders` 表已定义但当前未被任何工具使用
 - 文件上传存储在 `server/uploads/`，使用时间戳重命名
 - `mcp-server.js` 依赖 `@modelcontextprotocol/sdk`，但该包未在 `package.json` 中声明，需手动安装
 - `/api/profile` 端点从 GitHub 获取 `whaibetter` 的 README，服务端缓存 1 小时
+- **服务管理**：`whaiblog.js` 提供交互式和命令行方式管理服务（启动/停止/重启/状态），PID 和日志文件存储在 `.whaiblog.pid` 和 `.whaiblog.log`
 
 ### 前端
 
@@ -68,9 +70,14 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 - 入口：`client/index.html` → `client/js/app.js`（模块系统）
 - **遗留文件**：`client/app.js`（单体旧版）和 `client/style.css`（单体旧版 CSS）仍存在但**不再被加载**，当前使用 `client/js/` 模块 + `client/css/` 模块化样式
 - 主题系统：`data-theme` 属性（dark/light/nord/dracula/forest/cyberpunk/retro），用 `localStorage` 持久化，`index.html` 内联脚本防止 FOUC
+- CSS 模块化：`client/css/` 下按职责拆分（base/layout/components/hero/post-card/post-detail/toc/tags/modal/profile/notes/feed/rss-reader/responsive），在 `index.html` 中按顺序加载
 - Markdown 渲染：`marked.min.js`（本地 vendor），MathJax（CDN）用于 LaTeX 公式（`$...$` 行内，`$$...$$` 块级，手动触发 `typesetMath`）
 - 字体：Google Fonts Outfit + Playfair Display
 - 路由：`js/router.js` 监听 `popstate` 和链接点击（`data-link` 属性），根据 URL 路径切换视图
+  - 默认页面：`/?section=feed`（信息流）
+  - 其他页面：`/?section=blogs`、`/?section=notes`、`/?section=about`、`/?section=rss`
+  - 文章详情：`/post/:id`
+  - 标签过滤：`/?section=blogs&tag=xxx`
 - 阅读时间计算支持中文（400 字/分钟）和非中文（200 词/分钟）
 - 调试页面：`client/debug.html`（自动测试 API 和渲染）、`client/test.html`（基础连通性测试）
 
@@ -81,11 +88,19 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 - `client/js/pages/notes.js` — 前端笔记浏览页面（Markdown 渲染 + 目录树）
 - 笔记仓库地址可通过 `NOTES_REPO_URL` 环境变量配置
 
+### RSS 阅读器系统
+
+- `server/rss.js` — RSS XML 生成（`/rss/posts.xml`、`/rss/feeds.xml`、`/rss/all.xml`）
+- `server/rss-fetcher.js` — 外部 RSS 源抓取，支持定时任务（`/api/rss/sources`、`/api/rss/fetch`）
+- `client/js/pages/rss-reader.js` — 前端 RSS 阅读页面（`/?section=rss`）
+
 ### 数据库表
 
 - `posts`: id, title, content, summary, tags (JSON text), status (published/draft), created_at, updated_at
+- `feeds`: id, title, content, summary, source, url, tags (JSON text), format (markdown/html/text), status (published/draft), created_at, updated_at
 - `files`: id, filename (存储名), original_name, mime_type, size, post_id (FK), created_at
-- `folders`: id, name, path (UNIQUE), parent_id (自引用 FK CASCADE), created_at
+- `folders`: id, name, path (UNIQUE), parent_id (自引用 FK CASCADE), created_at — 已定义但当前未被任何工具使用
+- `rss_sources`: id, url (UNIQUE), title, description, last_fetched, fetch_interval, enabled, error_count, last_error, created_at, updated_at
 
 ### 配置
 
@@ -113,20 +128,20 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 
 **配置优先级**：环境变量 > 配置文件 > 默认值
 
-Agent 首次使用时会通过 `get_markme_config` 检查配置，未配置时询问用户并调用 `set_markme_config` 保存。
+Agent 首次使用时会通过 `get_whaiblog_config` 检查配置，未配置时询问用户并调用 `set_whaiblog_config` 保存。
 
 相关文件：
-- `server/markme-config.js` — 共享配置模块（读写配置文件）
+- `server/whaiblog-config.js` — 共享配置模块（读写配置文件）
 - `tools/call-mcp.js` — CLI 工具读取配置
-- `sdk/markme_client.py` — Python SDK 读取配置
+- `sdk/whaiblog_client.py` — Python SDK 读取配置
 
 ## MCP 工具
 
 26 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
 
-- **配置**: `get_markme_config` (获取配置), `set_markme_config` (设置服务器地址和 API Key)
+- **配置**: `get_whaiblog_config` (获取配置), `set_whaiblog_config` (设置服务器地址和 API Key)
 - **文章**: `create_post`, `update_post`, `delete_post`, `list_posts`, `get_post`
-- **信息流**: `create_feed`, `update_feed`, `delete_feed`, `list_feeds`, `get_feed`
+- **信息流**: `create_feed`, `update_feed`, `delete_feed`, `list_feeds`, `get_feed`（支持 `format` 字段：markdown/html/text）
 - **文件**: `upload_file`, `upload_folder`, `upload_content` (内容直接写入), `list_files`, `get_file`, `update_file`, `replace_file`, `replace_file_content`, `delete_file`
 - **统计**: `get_stats`
 - **系统监控**: `get_system_info` (返回 CPU、内存、磁盘、运行时间等系统资源使用情况)
@@ -155,17 +170,27 @@ node tools/call-mcp.js create_post '{"title":"标题","content":"内容"}'
 |------|----------|------|
 | MCP Stdio | Claude Desktop | `server/mcp-server.js` |
 | HTTP Bridge | 自定义 Agent | `server/mcp-http-bridge.js` 或 `/bridge` 路由 |
-| Python SDK | Python Agent | `sdk/markme_client.py`（`WhaiBlogClient` 同步 HTTP + `WhaiBlogMCPClient` 异步 MCP，`create_client()` 工厂函数） |
-| Claude Code Skill | Claude Code | `skills/markme-manager.json` |
-| OpenClaw Skill | OpenClaw | `skills/markme-openclaw.yaml` |
+| Python SDK | Python Agent | `sdk/whaiblog_client.py`（`WhaiBlogClient` 同步 HTTP + `WhaiBlogMCPClient` 异步 MCP，`create_client()` 工厂函数） |
+| Claude Code Skill | Claude Code | `skills/whaiblog-manager.json` |
+| OpenClaw Skill | OpenClaw | `skills/whaiblog-openclaw.yaml` |
 | WhaiBlog Skill | OpenClaw | `skills/openclaw/whaiblog/SKILL.md` |
 
 ## 启动脚本
 
 | 脚本 | 作用 |
 |------|------|
+| `whaiblog.js` | 交互式服务管理（启动/停止/重启/状态） |
 | `start.bat` / `start.sh` | 仅启动主服务器（`server/index.js`） |
 | `start-all.bat` / `start-all.sh` | 启动主服务器 + MCP HTTP Bridge（双进程） |
+
+`whaiblog.js` 用法：
+```bash
+node whaiblog.js              # 交互式菜单
+node whaiblog.js --start      # 启动服务
+node whaiblog.js --stop       # 停止服务
+node whaiblog.js --restart    # 重启服务
+node whaiblog.js --status     # 查看状态
+```
 
 ## 文档
 
