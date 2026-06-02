@@ -140,7 +140,7 @@ Agent 首次使用时会通过 `get_whaiblog_config` 检查配置，未配置时
 
 ## MCP 工具
 
-26 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
+31 个工具，通过 MCP stdio 或 HTTP Bridge 均可调用：
 
 - **配置**: `get_whaiblog_config` (获取配置), `set_whaiblog_config` (设置服务器地址和 API Key)
 - **文章**: `create_post`, `update_post`, `delete_post`, `list_posts`, `get_post`
@@ -149,6 +149,7 @@ Agent 首次使用时会通过 `get_whaiblog_config` 检查配置，未配置时
 - **统计**: `get_stats`
 - **系统监控**: `get_system_info` (返回 CPU、内存、磁盘、运行时间等系统资源使用情况)
 - **学习笔记**: `list_notes` (列出笔记目录树), `get_note` (获取笔记内容), `notes_status` (同步状态)
+- **RSS**: `add_rss_source` (添加源), `list_rss_sources` (列出源), `remove_rss_source` (删除源), `fetch_rss` (抓取), `get_rss_status` (状态) — 写操作需 API Key
 
 ## HTTP Bridge 调用示例
 

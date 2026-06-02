@@ -13,6 +13,7 @@ const fs = require('fs');
 const config = require('./config');
 const whaiblogConfig = require('./whaiblog-config');
 const notes = require('./notes-sync');
+const rssFetcher = require('./rss-fetcher');
 
 const app = express();
 const PORT = config.MCP_BRIDGE_PORT;
@@ -290,11 +291,31 @@ const TOOLS = {
   delete_feed: {
     description: "Delete a feed item",
     parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] }
+  },
+  add_rss_source: {
+    description: "Add an external RSS source for auto-fetching",
+    parameters: { type: "object", properties: { url: { type: "string", description: "RSS feed URL" }, title: { type: "string", description: "Display name" } }, required: ["url"] }
+  },
+  list_rss_sources: {
+    description: "List all RSS sources",
+    parameters: { type: "object", properties: {} }
+  },
+  remove_rss_source: {
+    description: "Remove an RSS source by ID",
+    parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] }
+  },
+  fetch_rss: {
+    description: "Fetch new items from RSS sources (all or one by ID)",
+    parameters: { type: "object", properties: { id: { type: "number", description: "Source ID (omit to fetch all)" } } }
+  },
+  get_rss_status: {
+    description: "Get RSS system status (source count, auth info)",
+    parameters: { type: "object", properties: {} }
   }
 };
 
 // 工具执行逻辑
-function executeTool(name, args) {
+async function executeTool(name, args) {
   try {
     switch (name) {
       case 'create_post': {
@@ -685,6 +706,28 @@ function executeTool(name, args) {
         db.prepare('DELETE FROM feeds WHERE id = ?').run(args.id);
         return { success: true, message: `Feed ${args.id} deleted` };
       }
+      case 'add_rss_source': {
+        const result = rssFetcher.addSource(args.url, args.title);
+        return { success: true, data: result };
+      }
+      case 'list_rss_sources': {
+        return { success: true, data: rssFetcher.listSources() };
+      }
+      case 'remove_rss_source': {
+        const result = rssFetcher.removeSource(Number(args.id));
+        return { success: true, data: result };
+      }
+      case 'fetch_rss': {
+        if (args.id) {
+          return await rssFetcher.fetchOneSource(Number(args.id));
+        }
+        const results = await rssFetcher.fetchAllSources();
+        return { success: true, results };
+      }
+      case 'get_rss_status': {
+        const sources = rssFetcher.listSources();
+        return { success: true, data: { source_count: sources.length, auth_required: !!API_KEY, sources: sources } };
+      }
 
       default:
         return { success: false, error: `Unknown tool: ${name}` };
@@ -707,7 +750,7 @@ app.get('/tools', (req, res) => {
 });
 
 // 调用工具
-app.post('/tools/:name', (req, res) => {
+app.post('/tools/:name', async (req, res) => {
   const { name } = req.params;
   const args = req.body;
 
@@ -715,19 +758,19 @@ app.post('/tools/:name', (req, res) => {
     return res.status(404).json({ success: false, error: `Tool '${name}' not found` });
   }
 
-  const result = executeTool(name, args);
+  const result = await executeTool(name, args);
   res.json(result);
 });
 
 // MCP 兼容格式调用
-app.post('/call', (req, res) => {
+app.post('/call', async (req, res) => {
   const { tool, arguments: args } = req.body;
 
   if (!tool || !TOOLS[tool]) {
     return res.status(400).json({ success: false, error: 'Invalid tool' });
   }
 
-  const result = executeTool(tool, args || {});
+  const result = await executeTool(tool, args || {});
   res.json(result);
 });
 

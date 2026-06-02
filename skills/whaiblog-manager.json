@@ -1,8 +1,8 @@
 {
   "name": "whaiblog-manager",
-  "description": "WhaiBlog 博客管理系统 - 通过 AI 管理博客文章、信息流和文件",
-  "version": "2.1.0",
-  "instructions": "这是一个 WhaiBlog 博客管理工具。你可以使用这些工具来管理博客文章、信息流和上传的文件。支持完整的 CRUD 操作。\n\n【重要】首次使用前必须先配置服务器地址：\n1. 调用 get_whaiblog_config 检查是否已配置\n2. 如果 configured=false，必须询问用户 WhaiBlog 服务器地址（如 http://117.72.196.45:8080），然后调用 set_whaiblog_config 保存\n3. 配置完成后才能使用其他工具\n\n配置文件保存在 ~/.whaiblog/config.json，所有 WhaiBlog 工具共享此配置。",
+  "description": "WhaiBlog 博客管理系统 - 通过 AI 管理博客文章、信息流、RSS 订阅和文件",
+  "version": "2.2.0",
+  "instructions": "这是一个 WhaiBlog 博客管理工具。你可以使用这些工具来管理博客文章、信息流、RSS 订阅源和上传的文件。支持完整的 CRUD 操作。\n\n【重要】首次使用前必须先配置服务器地址：\n1. 调用 get_whaiblog_config 检查是否已配置\n2. 如果 configured=false，必须询问用户 WhaiBlog 服务器地址（如 http://117.72.196.45:8080），然后调用 set_whaiblog_config 保存\n3. 配置完成后才能使用其他工具\n\n【RSS 安全】RSS 写操作（添加/删除/抓取）需要 API Key。如果服务器配置了 API_KEY，调用这些工具时必须传入 api_key 参数。只读工具（list_rss_sources、get_rss_status）不需要认证。\n\n配置文件保存在 ~/.whaiblog/config.json，所有 WhaiBlog 工具共享此配置。",
   "tools": [
     {
       "name": "get_whaiblog_config",
@@ -361,6 +361,55 @@
     {
       "name": "notes_status",
       "description": "获取笔记仓库同步状态（克隆中/就绪/错误）",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "add_rss_source",
+      "description": "添加外部 RSS 订阅源（需要 API Key）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string", "description": "RSS 订阅源 URL" },
+          "title": { "type": "string", "description": "显示名称（可选）" }
+        },
+        "required": ["url"]
+      }
+    },
+    {
+      "name": "list_rss_sources",
+      "description": "列出所有 RSS 订阅源（只读）",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "remove_rss_source",
+      "description": "删除 RSS 订阅源（需要 API Key）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "description": "订阅源 ID" }
+        },
+        "required": ["id"]
+      }
+    },
+    {
+      "name": "fetch_rss",
+      "description": "从 RSS 源抓取新内容（需要 API Key）",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "number", "description": "订阅源 ID（省略则抓取全部）" }
+        }
+      }
+    },
+    {
+      "name": "get_rss_status",
+      "description": "获取 RSS 系统状态（只读）",
       "parameters": {
         "type": "object",
         "properties": {}

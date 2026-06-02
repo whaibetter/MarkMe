@@ -1,6 +1,6 @@
 ---
 name: whaiblog
-description: WhaiBlog 博客系统管理工具 - 通过 HTTP Bridge API 管理文章、信息流、文件和系统监控
+description: WhaiBlog 博客系统管理工具 - 通过 HTTP Bridge API 管理文章、信息流、RSS 订阅、文件和系统监控
 ---
 
 这是 WhaiBlog 博客系统的管理工具，通过 HTTP Bridge API 操作博客。
@@ -180,6 +180,44 @@ POST /bridge/tools/list_notes
 ```json
 POST /bridge/tools/get_note
 {"path": "Java开发/Java基础.md"}
+```
+
+### RSS 订阅管理
+
+> **安全提示**: 写操作（添加/删除/抓取）需要 API Key 认证。只读工具（list_rss_sources、get_rss_status）无需认证。
+
+#### add_rss_source - 添加 RSS 源 🔒
+```json
+POST /bridge/tools/add_rss_source
+{"url": "https://hnrss.org/frontpage", "title": "Hacker News"}
+```
+
+#### list_rss_sources - 列出 RSS 源
+```json
+POST /bridge/tools/list_rss_sources
+{}
+```
+
+#### remove_rss_source - 删除 RSS 源 🔒
+```json
+POST /bridge/tools/remove_rss_source
+{"id": 1}
+```
+
+#### fetch_rss - 抓取 RSS 内容 🔒
+```json
+POST /bridge/tools/fetch_rss
+{}
+
+# 抓取指定源
+POST /bridge/tools/fetch_rss
+{"id": 1}
+```
+
+#### get_rss_status - 获取 RSS 状态
+```json
+POST /bridge/tools/get_rss_status
+{}
 ```
 
 ## 使用示例
