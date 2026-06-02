@@ -139,8 +139,7 @@ app.get('/api/tags', (req, res) => {
 // Feed API
 app.get('/api/feeds/sources', (req, res) => {
   const sources = db.prepare("SELECT DISTINCT source FROM feeds WHERE status = 'published' AND source IS NOT NULL AND source != '' ORDER BY source").all().map(function(r) { return r.source; });
-  const local = db.prepare("SELECT COUNT(*) as count FROM feeds WHERE status = 'published' AND (source IS NULL OR source = '')").get().count;
-  res.json({ sources: [{ name: '本地', value: '__local__' }, { name: '全部', value: '' }].concat(sources.map(function(s) { return { name: s, value: s }; })) });
+  res.json({ sources: sources });
 });
 
 app.get('/api/feeds', (req, res) => {

@@ -16,6 +16,8 @@ var translations = {
     'feed.items': 'Items',
     'feed.empty': 'No feed items yet',
     'feed.filterBySource': 'Filter by source',
+    'feed.allSources': 'All',
+    'feed.local': 'Local',
     'feed.emptySource': 'No feed items from this source',
     // Blog page
     'blog.issue': 'Personal Blog',
@@ -89,6 +91,8 @@ var translations = {
     'feed.items': '条目',
     'feed.empty': '暂无信息流',
     'feed.filterBySource': '按来源筛选',
+    'feed.allSources': '全部',
+    'feed.local': '本地',
     'feed.emptySource': '该来源下暂无条目',
     // Blog page
     'blog.issue': '个人博客',

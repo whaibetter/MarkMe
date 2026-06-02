@@ -1,6 +1,7 @@
 import { fetchJSON, escapeHtml, formatDate } from '../utils.js';
 import { renderError } from '../components/error.js';
 import { openFeedModal } from '../components/modal.js';
+import { initAnimations, observeElements } from '../animations.js';
 import { t } from '../i18n.js';
 
 var API = '/api';
@@ -10,41 +11,44 @@ var currentSource = '';
 var limit = 20;
 var allSources = [];
 
-export function showFeed(app) {
+export function showFeed(app, source) {
   appEl = app;
   currentPage = 1;
-  currentSource = '';
+  currentSource = source || '';
   loadSources();
 }
 
 function loadSources() {
   fetchJSON(API + '/feeds/sources')
     .then(function(data) {
-      allSources = (data.sources || []).filter(function(s) { return s.value !== ''; });
+      allSources = data.sources || [];
       loadPage();
     })
     .catch(function() { loadPage(); });
 }
 
 function renderSourceFilter() {
-  if (allSources.length <= 1) return '';
+  if (allSources.length === 0) return '';
   var html = '<div class="tag-filter reveal">';
   html += '<div class="tag-filter-label">' + t('feed.filterBySource') + '</div>';
   html += '<div class="tag-filter-list">';
+  // "All" button
+  html += '<span class="tag tag-filter-item' + (currentSource === '' ? ' active' : '') + '" data-source="">' + t('feed.allSources') + '</span>';
+  // "Local" button
+  html += '<span class="tag tag-filter-item' + (currentSource === '__local__' ? ' active' : '') + '" data-source="__local__">' + t('feed.local') + '</span>';
+  // RSS sources
   for (var i = 0; i < allSources.length; i++) {
     var s = allSources[i];
-    var isActive = currentSource === s.value;
-    html += '<span class="tag tag-filter-item' + (isActive ? ' active' : '') + '" data-source="' + escapeHtml(s.value) + '">' + escapeHtml(s.name) + '</span>';
+    var isActive = currentSource === s;
+    html += '<span class="tag tag-filter-item' + (isActive ? ' active' : '') + '" data-source="' + escapeHtml(s) + '">' + escapeHtml(s) + '</span>';
   }
   html += '</div>';
   if (currentSource) {
-    var activeName = allSources.filter(function(s) { return s.value === currentSource; })[0];
-    if (activeName) {
-      html += '<div class="tag-filter-active">';
-      html += '<span class="tag-filter-current">' + t('blog.showing') + ': <strong>' + escapeHtml(activeName.name) + '</strong></span>';
-      html += '<button class="tag-filter-clear" data-clear-source>&times;</button>';
-      html += '</div>';
-    }
+    var displayName = currentSource === '__local__' ? t('feed.local') : currentSource;
+    html += '<div class="tag-filter-active">';
+    html += '<span class="tag-filter-current">' + t('blog.showing') + ': <strong>' + escapeHtml(displayName) + '</strong></span>';
+    html += '<button class="tag-filter-clear" data-clear-source>' + t('blog.clearFilter') + ' &times;</button>';
+    html += '</div>';
   }
   html += '</div>';
   return html;
@@ -93,6 +97,10 @@ function loadPage() {
       }
 
       appEl.innerHTML = html;
+
+      // Init scroll animations
+      initAnimations();
+      observeElements();
 
       var filterEl = appEl.querySelector('.tag-filter');
       if (filterEl) {

@@ -35,7 +35,8 @@ export function init() {
     var tag = params.get('tag');
 
     if (section === 'feed' && !tag) {
-      showFeed(app);
+      var source = params.get('source') || '';
+      showFeed(app, source);
       updateNav('feed');
     } else if (section === 'blogs' || tag) {
       showHome(app, tag);

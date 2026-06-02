@@ -56,6 +56,8 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 
 - **三处 `executeTool()` 副本**：`bridge-router.js`、`mcp-http-bridge.js`、`mcp-server.js` 各有一份工具定义和执行逻辑。前两处返回 `{success, data}` JSON，`mcp-server.js` 返回 MCP 格式 `content: [{type: "text", text: ...}]`。修改工具行为时需同步更新三处
 - 前端 SPA 使用 `history.pushState` 路由，所有非 API/静态文件请求都返回 `index.html`
+- 请求体解析：自定义 UTF-8 解析中间件，自动检测 GBK/GB18030 编码并转换为 UTF-8（依赖 `iconv-lite`）
+- 信息流支持按来源筛选：`/api/feeds?source=xxx`，`/api/feeds/sources` 返回所有来源列表
 - 国际化：`js/i18n.js` 提供 `t(key)` 翻译函数，支持 zh/en 切换，偏好存储在 `localStorage('whaiblog-lang')`
 - 模态框：`js/components/modal.js` 提供 `openModal(title, html)` 和 `openMarkdownModal(title, md)` 复用 `.preview-modal` CSS
 - SQLite 使用 WAL journal 模式 + 外键约束
@@ -93,6 +95,7 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 - `server/rss.js` — RSS XML 生成（`/rss/posts.xml`、`/rss/feeds.xml`、`/rss/all.xml`）
 - `server/rss-fetcher.js` — 外部 RSS 源抓取，支持定时任务（`/api/rss/sources`、`/api/rss/fetch`）
 - `client/js/pages/rss-reader.js` — 前端 RSS 阅读页面（`/?section=rss`）
+- **权限控制**：GET 端点公开，POST/PUT/DELETE 端点需 `API_KEY` 认证（`Authorization: Bearer <key>`）。未配置 `API_KEY` 时全部开放。前端通过 `/api/rss/auth` 检查是否需要认证，API Key 存储在 `localStorage('whaiblog-rss-key')`
 
 ### 数据库表
 
