@@ -186,6 +186,33 @@ class WhaiBlogClient:
         """获取系统资源使用情况"""
         return self._call_tool('get_system_info')
 
+    # ========== RSS ==========
+
+    def add_rss_source(self, url: str, title: str = None) -> Dict:
+        """添加 RSS 订阅源"""
+        args = {'url': url}
+        if title:
+            args['title'] = title
+        return self._call_tool('add_rss_source', args)
+
+    def list_rss_sources(self) -> Dict:
+        """列出所有 RSS 订阅源"""
+        return self._call_tool('list_rss_sources')
+
+    def remove_rss_source(self, source_id: int) -> Dict:
+        """删除 RSS 订阅源"""
+        return self._call_tool('remove_rss_source', {'id': source_id})
+
+    def fetch_rss(self, source_id: int = None) -> Dict:
+        """从 RSS 源抓取新内容"""
+        if source_id:
+            return self._call_tool('fetch_rss', {'id': source_id})
+        return self._call_tool('fetch_rss')
+
+    def get_rss_status(self) -> Dict:
+        """获取 RSS 系统状态"""
+        return self._call_tool('get_rss_status')
+
 
 class WhaiBlogMCPClient:
     """通过 MCP 协议调用 WhaiBlog (需要 mcp 包)"""

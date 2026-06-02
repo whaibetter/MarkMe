@@ -12,6 +12,7 @@ const fs = require('fs');
 const config = require('./config');
 const whaiblogConfig = require('./whaiblog-config');
 const notes = require('./notes-sync');
+const rssFetcher = require('./rss-fetcher');
 
 const server = new Server(
   { name: 'whaiblog-blog', version: '1.0.0' },
@@ -338,6 +339,58 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
         required: ['id']
       }
+    },
+    {
+      name: 'add_rss_source',
+      description: 'Add an external RSS source for auto-fetching',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          url: { type: 'string', description: 'RSS feed URL' },
+          title: { type: 'string', description: 'Display name for the source' },
+          api_key: apiKeyProp
+        },
+        required: ['url']
+      }
+    },
+    {
+      name: 'list_rss_sources',
+      description: 'List all RSS sources',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      }
+    },
+    {
+      name: 'remove_rss_source',
+      description: 'Remove an RSS source by ID',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', description: 'Source ID' },
+          api_key: apiKeyProp
+        },
+        required: ['id']
+      }
+    },
+    {
+      name: 'fetch_rss',
+      description: 'Fetch new items from RSS sources (all or one by ID)',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', description: 'Source ID (omit to fetch all)' },
+          api_key: apiKeyProp
+        }
+      }
+    },
+    {
+      name: 'get_rss_status',
+      description: 'Get RSS system status (source count, auth info)',
+      inputSchema: {
+        type: 'object',
+        properties: {}
+      }
     }
   ];
 
@@ -348,7 +401,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   // API key auth for modification tools
-  const readOnly = ['get_whaiblog_config', 'list_posts', 'get_post', 'list_feeds', 'get_feed', 'list_files', 'get_file', 'get_stats', 'get_system_info', 'list_notes', 'get_note', 'notes_status'];
+  const readOnly = ['get_whaiblog_config', 'list_posts', 'get_post', 'list_feeds', 'get_feed', 'list_files', 'get_file', 'get_stats', 'get_system_info', 'list_notes', 'get_note', 'notes_status', 'list_rss_sources', 'get_rss_status'];
   if (config.API_KEY && !readOnly.includes(name)) {
     if (!args || !args.api_key || args.api_key !== config.API_KEY) {
       return { content: [{ type: 'text', text: 'Unauthorized: valid api_key required' }], isError: true };
@@ -762,6 +815,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'delete_feed': {
         db.prepare('DELETE FROM feeds WHERE id = ?').run(args.id);
         return { content: [{ type: 'text', text: `Feed ${args.id} deleted` }] };
+      }
+      case 'add_rss_source': {
+        const result = rssFetcher.addSource(args.url, args.title);
+        return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      }
+      case 'list_rss_sources': {
+        return { content: [{ type: 'text', text: JSON.stringify(rssFetcher.listSources(), null, 2) }] };
+      }
+      case 'remove_rss_source': {
+        const result = rssFetcher.removeSource(Number(args.id));
+        return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      }
+      case 'fetch_rss': {
+        if (args.id) {
+          const result = await rssFetcher.fetchOneSource(Number(args.id));
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        }
+        const results = await rssFetcher.fetchAllSources();
+        return { content: [{ type: 'text', text: JSON.stringify({ success: true, results }, null, 2) }] };
+      }
+      case 'get_rss_status': {
+        const sources = rssFetcher.listSources();
+        return { content: [{ type: 'text', text: JSON.stringify({ source_count: sources.length, auth_required: !!config.API_KEY, sources }, null, 2) }] };
       }
 
       default:
