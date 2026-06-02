@@ -318,12 +318,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     },
     {
       name: 'list_feeds',
-      description: 'List all feed items',
+      description: 'List all feed items, optionally filtered by source',
       inputSchema: {
         type: 'object',
         properties: {
           page: { type: 'number', description: 'Page number, default 1' },
-          limit: { type: 'number', description: 'Items per page, default 20' }
+          limit: { type: 'number', description: 'Items per page, default 20' },
+          source: { type: 'string', description: "Filter by source name, or '__local__' for manually created feeds" }
         }
       }
     },
@@ -715,10 +716,33 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: 'text', text: JSON.stringify({ id: result.lastInsertRowid, title, format }) }] };
       }
       case 'list_feeds': {
-        const { page = 1, limit = 20 } = args;
+        const { page = 1, limit = 20, source } = args;
         const offset = (page - 1) * limit;
-        const feeds = db.prepare('SELECT * FROM feeds ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
-        const total = db.prepare('SELECT COUNT(*) as count FROM feeds').get().count;
+        let query = 'SELECT * FROM feeds';
+        const params = [];
+        if (source) {
+          if (source === '__local__') {
+            query += " WHERE (source IS NULL OR source = '')";
+          } else {
+            query += ' WHERE source = ?';
+            params.push(source);
+          }
+        }
+        query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        params.push(limit, offset);
+        const feeds = db.prepare(query).all(...params);
+
+        let totalQuery = 'SELECT COUNT(*) as count FROM feeds';
+        const totalParams = [];
+        if (source) {
+          if (source === '__local__') {
+            totalQuery += " WHERE (source IS NULL OR source = '')";
+          } else {
+            totalQuery += ' WHERE source = ?';
+            totalParams.push(source);
+          }
+        }
+        const total = db.prepare(totalQuery).get(...totalParams).count;
         return { content: [{ type: 'text', text: JSON.stringify({ feeds, total, page, limit }, null, 2) }] };
       }
       case 'get_feed': {

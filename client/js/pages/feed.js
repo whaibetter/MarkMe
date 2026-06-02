@@ -1,5 +1,3 @@
-// ===== Feed Page =====
-
 import { fetchJSON, escapeHtml, formatDate } from '../utils.js';
 import { renderError } from '../components/error.js';
 import { openFeedModal } from '../components/modal.js';
@@ -8,21 +6,53 @@ import { t } from '../i18n.js';
 var API = '/api';
 var appEl = null;
 var currentPage = 1;
+var currentSource = '';
 var limit = 20;
 
 export function showFeed(app) {
   appEl = app;
   currentPage = 1;
-  loadPage();
+  currentSource = '';
+  loadSources();
+}
+
+function loadSources() {
+  fetchJSON(API + '/feeds/sources')
+    .then(function(data) { renderSourceBar(data.sources || []); })
+    .catch(function() { /* ignore, still load feeds */ })
+    .finally(function() { loadPage(); });
+}
+
+function renderSourceBar(sources) {
+  var html = '<div class="feed-source-bar">';
+  for (var i = 0; i < sources.length; i++) {
+    var s = sources[i];
+    var active = currentSource === s.value ? ' active' : '';
+    html += '<button class="feed-source-btn' + active + '" data-source="' + escapeHtml(s.value) + '">' + escapeHtml(s.name) + '</button>';
+  }
+  html += '</div>';
+  var existing = appEl.querySelector('.feed-source-bar');
+  if (existing) existing.remove();
+  appEl.insertAdjacentHTML('afterbegin', html);
+  appEl.querySelector('.feed-source-bar').addEventListener('click', function(e) {
+    var btn = e.target.closest('.feed-source-btn');
+    if (btn) {
+      currentSource = btn.getAttribute('data-source') || '';
+      currentPage = 1;
+      loadPage();
+    }
+  });
 }
 
 function loadPage() {
-  fetchJSON(API + '/feeds?page=' + currentPage + '&limit=' + limit)
+  var url = API + '/feeds?page=' + currentPage + '&limit=' + limit;
+  if (currentSource) url += '&source=' + encodeURIComponent(currentSource);
+
+  fetchJSON(url)
     .then(function(data) {
       var totalPages = Math.ceil(data.total / limit);
       var html = '';
 
-      // Hero
       html += '<section class="hero">';
       html += '<div class="hero-content">';
       html += '<div class="hero-issue hero-reveal" style="animation-delay:0.1s">' + t('feed.issue') + '</div>';
@@ -34,7 +64,6 @@ function loadPage() {
       html += '</div>';
       html += '</section>';
 
-      // Feed cards
       if (data.feeds.length === 0) {
         html += '<div class="feed-empty">' + t('feed.empty') + '</div>';
       } else {
@@ -45,7 +74,6 @@ function loadPage() {
         html += '</div>';
       }
 
-      // Pagination
       if (totalPages > 1) {
         html += '<div class="pagination reveal">';
         html += '<button ' + (currentPage <= 1 ? 'disabled' : '') + ' onclick="window._feedPage(' + (currentPage - 1) + ')">&#8249; ' + t('common.prev') + '</button>';
@@ -56,9 +84,22 @@ function loadPage() {
         html += '</div>';
       }
 
-      appEl.innerHTML = html;
+      var existingContent = appEl.querySelector('.hero');
+      if (existingContent) existingContent.remove();
+      var existingList = appEl.querySelector('.feed-list');
+      if (existingList) existingList.remove();
+      var existingPagination = appEl.querySelector('.pagination');
+      if (existingPagination) existingPagination.remove();
+      var existingEmpty = appEl.querySelector('.feed-empty');
+      if (existingEmpty) existingEmpty.remove();
 
-      // Event delegation for feed cards
+      var sourceBar = appEl.querySelector('.feed-source-bar');
+      if (sourceBar) {
+        sourceBar.insertAdjacentHTML('afterend', html);
+      } else {
+        appEl.innerHTML = html;
+      }
+
       var feedList = appEl.querySelector('.feed-list');
       if (feedList) {
         feedList.addEventListener('click', function(e) {

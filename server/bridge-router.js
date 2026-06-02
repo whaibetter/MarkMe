@@ -57,7 +57,7 @@ const TOOLS = {
   get_note: { description: "Get the content of a specific note file (read-only)", parameters: { type: "object", properties: { path: { type: "string", description: "Relative path to the file" } }, required: ["path"] } },
   notes_status: { description: "Get notes repository sync status (cloning/ready/error)", parameters: { type: "object", properties: {} } },
   create_feed: { description: "Create a new feed item", parameters: { type: "object", properties: { title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, format: { type: "string", enum: ["markdown", "html", "text"], description: "Content format: markdown (default), html, or text" } }, required: ["title", "content"] } },
-  list_feeds: { description: "List all feed items", parameters: { type: "object", properties: { page: { type: "number" }, limit: { type: "number" } } } },
+  list_feeds: { description: "List all feed items, optionally filtered by source", parameters: { type: "object", properties: { page: { type: "number" }, limit: { type: "number" }, source: { type: "string", description: "Filter by source name, or '__local__' for manually created feeds with no source" } } } },
   get_feed: { description: "Get a specific feed item", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } },
   update_feed: { description: "Update an existing feed item", parameters: { type: "object", properties: { id: { type: "number" }, title: { type: "string" }, content: { type: "string" }, summary: { type: "string" }, source: { type: "string" }, url: { type: "string" }, tags: { type: "array", items: { type: "string" } }, format: { type: "string", enum: ["markdown", "html", "text"] }, status: { type: "string", enum: ["published", "draft"] } }, required: ["id"] } },
   delete_feed: { description: "Delete a feed item", parameters: { type: "object", properties: { id: { type: "number" } }, required: ["id"] } }
@@ -300,10 +300,33 @@ function executeTool(name, args) {
         return { success: true, data: { id: result.lastInsertRowid, title, format } };
       }
       case 'list_feeds': {
-        const { page = 1, limit = 20 } = args;
+        const { page = 1, limit = 20, source } = args;
         const offset = (page - 1) * limit;
-        const feeds = db.prepare('SELECT * FROM feeds ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
-        const total = db.prepare('SELECT COUNT(*) as count FROM feeds').get().count;
+        let query = 'SELECT * FROM feeds';
+        const params = [];
+        if (source) {
+          if (source === '__local__') {
+            query += " WHERE (source IS NULL OR source = '')";
+          } else {
+            query += ' WHERE source = ?';
+            params.push(source);
+          }
+        }
+        query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        params.push(limit, offset);
+        const feeds = db.prepare(query).all(...params);
+
+        let totalQuery = 'SELECT COUNT(*) as count FROM feeds';
+        const totalParams = [];
+        if (source) {
+          if (source === '__local__') {
+            totalQuery += " WHERE (source IS NULL OR source = '')";
+          } else {
+            totalQuery += ' WHERE source = ?';
+            totalParams.push(source);
+          }
+        }
+        const total = db.prepare(totalQuery).get(...totalParams).count;
         return { success: true, data: { feeds, total, page, limit } };
       }
       case 'get_feed': {
