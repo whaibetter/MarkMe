@@ -62,7 +62,7 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 - 模态框：`js/components/modal.js` 提供 `openModal(title, html)` 和 `openMarkdownModal(title, md)` 复用 `.preview-modal` CSS
 - SQLite 使用 WAL journal 模式 + 外键约束
 - 文件上传存储在 `server/uploads/`，使用时间戳重命名
-- `mcp-server.js` 依赖 `@modelcontextprotocol/sdk`，但该包未在 `package.json` 中声明，需手动安装
+- `mcp-server.js` 依赖 `@modelcontextprotocol/sdk`（已在 package.json 中声明）
 - `/api/profile` 端点从 GitHub 获取 `whaibetter` 的 README，服务端缓存 1 小时
 - **服务管理**：`whaiblog.js` 提供交互式和命令行方式管理服务（启动/停止/重启/状态），PID 和日志文件存储在 `.whaiblog.pid` 和 `.whaiblog.log`
 

@@ -1,6 +1,7 @@
 const Parser = require('rss-parser');
 const db = require('./db');
 const cron = require('node-cron');
+const { extractArticle, isContentTooShort } = require('./article-extractor');
 
 const parser = new Parser({
   timeout: 10000,
@@ -74,12 +75,24 @@ async function fetchSource(source) {
       if (item.link && existingUrls.has(item.link)) continue;
 
       const title = item.title || 'Untitled';
-      const content = item['content:encoded'] || item.content || item.contentSnippet || '';
-      const summary = item.contentSnippet || content.substring(0, 200);
+      let content = item['content:encoded'] || item.content || item.contentSnippet || '';
+      let summary = item.contentSnippet || content.substring(0, 200);
       const source_name = feed.title || source.title || 'RSS';
       const url = item.link || null;
       const tags = item.categories || [];
-      const format = item['content:encoded'] ? 'html' : 'markdown';
+      let format = item['content:encoded'] ? 'html' : 'markdown';
+
+      // 如果内容太短且有原文链接，尝试提取完整文章
+      if (isContentTooShort(content) && url) {
+        console.log(`[RSS] Content too short for "${title}", extracting from ${url}`);
+        const article = await extractArticle(url);
+        if (article && article.content) {
+          content = article.content;
+          summary = article.textContent ? article.textContent.substring(0, 200) : summary;
+          format = 'html';
+          console.log(`[RSS] Extracted ${article.textContent.length} chars from article`);
+        }
+      }
 
       if (title && content) {
         insertStmt.run(title, content, summary, source_name, url, JSON.stringify(tags), format);
