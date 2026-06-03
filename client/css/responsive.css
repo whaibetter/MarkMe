@@ -156,11 +156,8 @@
     margin-top: 6px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     gap: 2px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
     width: 100%;
     padding-bottom: 4px;
   }
@@ -172,19 +169,18 @@
   .nav a {
     padding: 6px 8px;
     flex: 1;
-    min-width: 0;
     text-align: center;
     font-size: 11px;
     white-space: nowrap;
-    flex-shrink: 0;
   }
 
   .nav-controls {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-left: 4px;
-    flex-shrink: 0;
+    position: absolute;
+    right: 20px;
+    top: 16px;
   }
 
   .lang-toggle {
