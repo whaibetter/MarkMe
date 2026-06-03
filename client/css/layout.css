@@ -2,7 +2,7 @@
 .container {
   max-width: 820px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 var(--space-8);
 }
 
 .container:has(.notes-layout) {
@@ -14,7 +14,7 @@
   flex: 1;
   min-width: 0;
   width: 100%;
-  padding: 56px 0;
+  padding: var(--space-14) 0;
 }
 
 /* ===== Header ===== */
@@ -31,7 +31,7 @@
 
 /* Subtle header shadow on scroll (added via JS) */
 .header.scrolled {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 24px oklch(0% 0 0 / 0.12);
 }
 
 .header .container {
@@ -44,12 +44,12 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .logo a {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--text-bright);
   text-decoration: none;
@@ -86,7 +86,7 @@
 }
 
 .logo-tagline {
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 400;
   color: var(--text-muted);
   letter-spacing: 0.15em;
@@ -103,9 +103,9 @@
   color: var(--text-secondary);
   text-decoration: none;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: var(--text-sm);
   font-weight: 500;
-  padding: 8px 16px;
+  padding: var(--space-2) var(--space-4);
   min-width: 76px;
   text-align: center;
   border-radius: var(--radius-sm);
@@ -147,10 +147,10 @@
 /* ===== Footer ===== */
 .footer {
   border-top: 1px solid var(--border);
-  padding: 40px 0;
+  padding: var(--space-10) 0;
   text-align: center;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--text-xs);
   margin-top: auto;
   font-weight: 400;
   letter-spacing: 0.12em;
@@ -162,7 +162,7 @@
   width: 48px;
   height: 1px;
   background: linear-gradient(to right, transparent, var(--accent), transparent);
-  margin: 0 auto 20px;
+  margin: 0 auto var(--space-5);
   opacity: 0.5;
 }
 
@@ -170,15 +170,15 @@
 .loading {
   text-align: center;
   color: var(--text-muted);
-  padding: 120px 20px;
+  padding: var(--space-25) 20px;
   font-weight: 300;
-  font-size: 14px;
+  font-size: var(--text-base);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 .loading-ring {
