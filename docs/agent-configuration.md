@@ -43,7 +43,7 @@ start-all.bat      # Windows
 
 ```json
 {
-  "server_url": "http://117.72.196.45:8080",
+  "server_url": "http://your-server:8080",
   "api_key": "your-secret-key"
 }
 ```
@@ -63,15 +63,15 @@ start-all.bat      # Windows
 
 ```bash
 # 使用 CLI 工具
-node tools/call-mcp.js set_whaiblog_config '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}'
+node tools/call-mcp.js set_whaiblog_config '{"server_url":"http://your-server:8080","api_key":"your-key"}'
 
 # 使用 curl
 curl -X POST http://localhost:8080/bridge/tools/set_whaiblog_config \
   -H "Content-Type: application/json" \
-  -d '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}'
+  -d '{"server_url":"http://your-server:8080","api_key":"your-key"}'
 
 # 直接编辑文件
-echo '{"server_url":"http://117.72.196.45:8080","api_key":"your-key"}' > ~/.whaiblog/config.json
+echo '{"server_url":"http://your-server:8080","api_key":"your-key"}' > ~/.whaiblog/config.json
 ```
 
 ### 配置优先级
@@ -370,7 +370,7 @@ curl -X POST http://localhost:8080/bridge/tools/get_system_info \
 ### 远程服务器 + API Key
 
 ```bash
-export MARKME_HOST=117.72.196.45
+export MARKME_HOST=your-server
 export MARKME_API_KEY=your-api-key
 
 curl -X POST http://$MARKME_HOST:8080/bridge/tools/list_posts \
@@ -432,7 +432,7 @@ node tools/call-mcp.js get_system_info
 ### 远程调用
 
 ```bash
-MARKME_HOST=117.72.196.45 MARKME_API_KEY=your_key node tools/call-mcp.js get_stats
+MARKME_HOST=your-server MARKME_API_KEY=your_key node tools/call-mcp.js get_stats
 ```
 
 ---

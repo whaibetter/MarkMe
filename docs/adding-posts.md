@@ -6,8 +6,8 @@ WhaiBlog 的前端页面是只读的，所有数据管理通过 MCP 或 API 进�
 
 | 项目 | 值 |
 |------|-----|
-| 服务器地址 | `http://117.72.196.45:8080` |
-| Bridge 地址 | `http://117.72.196.45:8080/bridge/tools/:name` |
+| 服务器地址 | `http://your-server:8080` |
+| Bridge 地址 | `http://your-server:8080/bridge/tools/:name` |
 | API Key | 服务器 `.env` 中配置的 `MARKME_API_KEY` |
 
 ---
@@ -18,7 +18,7 @@ WhaiBlog 的前端页面是只读的，所有数据管理通过 MCP 或 API 进�
 
 ```bash
 # 设置环境变量
-export MARKME_HOST=117.72.196.45
+export MARKME_HOST=your-server
 export MCP_BRIDGE_PORT=8080
 export MARKME_API_KEY=your-api-key
 
@@ -68,7 +68,7 @@ node tools/call-mcp.js delete_post '{"id":1}'
 
 ```bash
 # 创建文章
-curl -X POST http://117.72.196.45:8080/bridge/tools/create_post \
+curl -X POST http://your-server:8080/bridge/tools/create_post \
   -H "Authorization: Bearer your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -78,7 +78,7 @@ curl -X POST http://117.72.196.45:8080/bridge/tools/create_post \
   }'
 
 # 查看文章
-curl -X POST http://117.72.196.45:8080/bridge/tools/list_posts \
+curl -X POST http://your-server:8080/bridge/tools/list_posts \
   -H "Authorization: Bearer your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"limit":5}'

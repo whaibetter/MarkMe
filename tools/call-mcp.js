@@ -101,7 +101,7 @@ WhaiBlog MCP 工具调用器
   node call-mcp.js upload_content '{"filename":"test.md","content":"base64内容"}'
   node call-mcp.js upload_folder '{"folder_path":"C:/path/to/folder"}'
   node call-mcp.js get_whaiblog_config
-  node call-mcp.js set_whaiblog_config '{"server_url":"http://117.72.196.45:8080"}'
+  node call-mcp.js set_whaiblog_config '{"server_url":"http://your-server:8080"}'
 
 可用工具:
   create_post, update_post, delete_post, list_posts, get_post

@@ -36,6 +36,15 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 
 ## 架构
 
+### ⚠️ 重要：部署说明
+
+**本项目运行在本地机器上**，通过 FRP 反向代理或直接暴露端口对外提供服务。
+
+- 本地机器：运行 WhaiBlog 服务（默认端口 8080）
+- 部署命令：`node whaiblog.js --restart`（在本地执行）
+- 客户端配置：通过 `~/.whaiblog/config.json` 或环境变量 `MARKME_HOST` 设置实际服务器地址
+- 文档中的 `http://your-server:8080` 为占位符，部署时替换为实际地址
+
 ### 三层访问入口
 
 1. **主服务器** (`server/index.js`, 默认端口 8080)
@@ -124,7 +133,7 @@ node tools/call-mcp.js <tool_name> '<json_args>'
 
 ```json
 {
-  "server_url": "http://117.72.196.45:8080",
+  "server_url": "http://your-server:8080",
   "api_key": "your-secret-key"
 }
 ```
@@ -216,4 +225,18 @@ node whaiblog.js --status     # 查看状态
 
 - 默认无认证，`bridge-router.js` 和 `mcp-http-bridge.js` 支持可选的 API key 认证
 - 有路径遍历保护（`isPathSafe`）和文件扩展名白名单
+- **注意**：`mcp-server.js` **缺少** `isPathSafe()` / `isAllowedFile()` 安全检查，其他两个入口都有
+- `multer` 在 `index.js` 中配置但**未被工具使用**，所有文件操作使用原生 `fs`
 - 仅适用于本地/可信网络环境
+
+API key 认证（`MARKME_API_KEY` 环境变量）在各入口的表现：
+
+| 入口 | 写操作认证 | 读操作认证 |
+|------|-----------|-----------|
+| `bridge-router.js` (`/bridge/*`) | ✅ Bearer token | ✅ Bearer token |
+| `mcp-http-bridge.js` (端口 8081) | ✅ Bearer token | ✅ Bearer token |
+| `mcp-server.js` (stdio) | ✅ `api_key` 参数 | ❌ 无认证 |
+| `index.js` `/api/rss/*` | ✅ Bearer token | ❌ 无认证 |
+| `index.js` `/api/*` GET | N/A | ❌ 公开 |
+
+`call-mcp.js` 和 Python SDK 会自动读取 `~/.whaiblog/config.json` 并发送 Bearer token。

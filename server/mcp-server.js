@@ -218,7 +218,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       inputSchema: {
         type: 'object',
         properties: {
-          server_url: { type: 'string', description: 'WhaiBlog server URL, e.g. http://117.72.196.45:8080' },
+          server_url: { type: 'string', description: 'WhaiBlog server URL, e.g. http://your-server:8080' },
           api_key: { type: 'string', description: 'API key for authentication (optional)' }
         },
         required: ['server_url']
