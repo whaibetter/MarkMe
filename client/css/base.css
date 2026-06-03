@@ -1,3 +1,8 @@
+/* Hallmark · macrostructure: Long Document · tone: editorial · anchor hue: warm-gold
+ * theme: Editorial · font: Playfair Display + Outfit
+ * spacing: 4pt scale · motion: motion-cut
+ */
+
 /* ===== CSS Variables & Reset ===== */
 
 *,
@@ -10,12 +15,26 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  overflow-x: clip; /* gate 62: clip not hidden */
+}
+
+body {
+  overflow-x: clip; /* gate 62 */
 }
 
 ::selection {
   background: var(--accent-soft);
   color: var(--text-bright);
+}
+
+/* Focus-visible — visible ring at ≥3:1 contrast, never animated (gate 47) */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 :root {

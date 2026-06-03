@@ -94,6 +94,8 @@
   color: var(--text-bright);
   max-width: 640px;
   position: relative;
+  overflow-wrap: anywhere; /* gate 63 */
+  min-width: 0;
 }
 
 /* Decorative accent on first letter */

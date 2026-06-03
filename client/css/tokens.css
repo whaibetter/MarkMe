@@ -1,0 +1,105 @@
+/* Hallmark · tokens: Editorial · font: Playfair Display + Outfit
+ * paper: oklch(13% 0.005 60) · accent: oklch(62% 0.12 75) warm-gold
+ * spacing: 4pt scale · motion: motion-cut
+ */
+
+:root {
+  /* ── Paper band ── */
+  --color-paper: oklch(13% 0.005 60);
+  --color-paper-2: oklch(10% 0.004 60);
+  --color-paper-3: oklch(17% 0.006 55);
+
+  /* ── Text ── */
+  --color-text: oklch(90% 0.008 70);
+  --color-text-secondary: oklch(68% 0.015 65);
+  --color-text-muted: oklch(48% 0.015 60);
+  --color-text-bright: oklch(97% 0.003 80);
+
+  /* ── Accent ── */
+  --color-accent: oklch(62% 0.12 75);
+  --color-accent-light: oklch(68% 0.12 75);
+  --color-accent-soft: oklch(62% 0.12 75 / 0.12);
+  --color-accent-glow: oklch(62% 0.12 75 / 0.08);
+
+  /* ── Supporting ── */
+  --color-blue: oklch(58% 0.08 250);
+  --color-rose: oklch(55% 0.12 15);
+  --color-green: oklch(62% 0.08 150);
+
+  /* ── Surface ── */
+  --color-surface: oklch(100% 0 0 / 0.03);
+  --color-surface-hover: oklch(100% 0 0 / 0.06);
+  --color-border: oklch(100% 0 0 / 0.06);
+  --color-border-hover: oklch(100% 0 0 / 0.12);
+  --color-header-bg: oklch(13% 0.005 60 / 0.85);
+  --color-panel-bg: oklch(14% 0.006 55 / 0.95);
+  --color-modal-bg: oklch(14% 0.006 55 / 0.92);
+  --color-code-bg: oklch(0% 0 0 / 0.4);
+  --color-code-border: oklch(100% 0 0 / 0.05);
+
+  /* ── Focus ── */
+  --color-focus: oklch(62% 0.12 75);
+
+  /* ── Typography ── */
+  --font-display: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Type scale — modular, 1.25 ratio */
+  --text-xs: 0.6875rem;   /* 11px */
+  --text-sm: 0.8125rem;   /* 13px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.5rem;     /* 40px */
+  --text-5xl: 3.5rem;     /* 56px */
+  --text-display: 5rem;   /* 80px */
+
+  /* ── Spacing — 4pt scale ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-25: 100px;
+
+  /* Semantic spacing */
+  --space-section: var(--space-14);
+  --space-card: var(--space-8);
+  --space-element: var(--space-4);
+
+  /* ── Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* ── Effects ── */
+  --blur: 16px;
+  --blur-strong: 32px;
+  --shadow-sm: 0 2px 8px oklch(0% 0 0 / 0.3);
+  --shadow-md: 0 8px 32px oklch(0% 0 0 / 0.4);
+  --shadow-lg: 0 16px 64px oklch(0% 0 0 / 0.5);
+  --shadow-glow: 0 0 40px oklch(62% 0.12 75 / 0.06);
+
+  /* ── Motion ── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 200ms;
+  --dur-normal: 400ms;
+  --dur-slow: 700ms;
+
+  /* ── Mesh overlay ── */
+  --mesh-opacity: 0.035;
+}
