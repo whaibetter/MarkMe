@@ -12,16 +12,58 @@ WhaiBlog 是一个 AI 驱动的轻量级博客系统。前端为**只读展示**
 - **前端**: 原生 HTML/CSS/JS SPA + marked.js
 - **数据库**: SQLite（WAL 模式，文件: `server/whaiblog.db`）
 
+## 项目结构
+
+```
+MarkMe/
+├── client/                 # 前端 SPA（原生 HTML/CSS/JS，无构建步骤）
+│   ├── index.html          # 入口文件，加载所有 CSS 和 JS 模块
+│   ├── js/                 # ES Modules（app.js, router.js, i18n.js, pages/, components/）
+│   └── css/                # 模块化样式（base/layout/components 等）
+├── server/                 # 后端服务
+│   ├── index.js            # 主服务器（Express + 静态文件 + 只读 API + Bridge 路由）
+│   ├── mcp-server.js       # MCP Stdio 服务器（供 Claude Desktop 使用）
+│   ├── mcp-http-bridge.js  # MCP HTTP Bridge（可选，已挂载到主服务器 /bridge 路径）
+│   ├── bridge-router.js    # Bridge 路由（挂载到主服务器的 /bridge 路径）
+│   ├── rss-fetcher.js      # RSS 抓取器（定时任务）
+│   ├── rss.js              # RSS XML 生成
+│   ├── notes-sync.js       # 学习笔记同步（从 Git 仓库克隆/更新）
+│   ├── notes-router.js     # 笔记 API 路由（/api/notes/*）
+│   ├── db.js               # SQLite 数据库（WAL 模式）
+│   ├── config.js           # 配置（环境变量 → 默认值）
+│   ├── whaiblog-config.js  # 共享配置模块（读写 ~/.whaiblog/config.json）
+│   ├── article-extractor.js # 文章正文提取（用于 RSS 内容过短时自动补充）
+│   └── uploads/            # 上传文件存储
+├── sdk/                    # Python SDK（whaiblog_client.py）
+├── tools/                  # CLI 工具（call-mcp.js）
+├── skills/                 # AI Skill 定义文件（Claude Code / OpenClaw）
+├── docs/                   # 文档
+└── whaiblog.js             # 服务管理脚本（启动/停止/重启/状态）
+```
+
 ## 开发命令
 
+### 后端服务
 ```bash
 cd server
 npm install
-npm run dev          # node --watch index.js（开发模式，文件变更自动重启）
-npm start            # node index.js（生产模式）
+npm run dev          # 开发模式（node --watch index.js，文件变更自动重启）
+npm start            # 生产模式（node index.js）
 ```
 
-启动所有服务（主服务器 + MCP Bridge）：
+### 管理脚本
+```bash
+# 交互式菜单
+node whaiblog.js
+
+# 快速启动/停止
+node whaiblog.js --start     # 启动主服务器
+node whaiblog.js --stop      # 停止服务
+node whaiblog.js --restart   # 重启服务（自动备份数据库 + git pull）
+node whaiblog.js --status    # 查看运行状态
+```
+
+### 一键启动所有服务（主服务器 + MCP HTTP Bridge）
 ```bash
 # Windows
 start-all.bat
@@ -29,9 +71,15 @@ start-all.bat
 ./start-all.sh
 ```
 
-CLI 工具调用 MCP（连接独立 bridge，端口 8081）：
+### MCP 工具调用
 ```bash
+# 通过 CLI 工具（连接独立 bridge，端口 8081）
 node tools/call-mcp.js <tool_name> '<json_args>'
+
+# 通过 curl 调用 HTTP Bridge（推荐，无需单独启动 bridge）
+curl -X POST http://localhost:8080/bridge/tools/<tool_name> \
+  -H "Content-Type: application/json" \
+  -d '<json_params>'
 ```
 
 ## 架构
