@@ -28,6 +28,10 @@
   box-shadow: 0 4px 12px oklch(62% 0.12 75 / 0.2);
 }
 
+.tag:active {
+  transform: scale(0.98);
+}
+
 /* ===== Back Link ===== */
 .back-link {
   display: inline-flex;
@@ -225,7 +229,7 @@
 .theme-dropdown-dot[data-theme="dracula"] { background: #282a36; }
 .theme-dropdown-dot[data-theme="forest"] { background: #1a1f16; }
 .theme-dropdown-dot[data-theme="cyberpunk"] { background: #0a0a1a; }
-.theme-dropdown-dot[data-theme="retro"] { background: #f7d5d5; }
+.theme-dropdown-dot[data-theme="retro"] { background: #f5e6d3; }
 
 /* ===== Error State ===== */
 .error {
@@ -253,7 +257,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 2px;
+  height: 3px;
   z-index: 200;
   background: transparent;
   pointer-events: none;

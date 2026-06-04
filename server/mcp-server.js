@@ -14,6 +14,13 @@ const whaiblogConfig = require('./whaiblog-config');
 const notes = require('./notes-sync');
 const rssFetcher = require('./rss-fetcher');
 
+// Path safety check (same as bridge-router.js)
+function isPathSafe(filePath) {
+  const normalized = path.normalize(filePath);
+  if (normalized.includes('..')) return false;
+  return true;
+}
+
 const server = new Server(
   { name: 'whaiblog-blog', version: '1.0.0' },
   { capabilities: { tools: {} } }
@@ -474,6 +481,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'upload_file': {
         const { file_path, post_id } = args;
+        if (!isPathSafe(file_path)) return { content: [{ type: 'text', text: 'Invalid file path' }], isError: true };
         if (!fs.existsSync(file_path)) {
           return { content: [{ type: 'text', text: 'File not found' }], isError: true };
         }
@@ -512,6 +520,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'upload_folder': {
         const { folder_path, post_id } = args;
+        if (!isPathSafe(folder_path)) return { content: [{ type: 'text', text: 'Invalid folder path' }], isError: true };
         if (!fs.existsSync(folder_path)) {
           return { content: [{ type: 'text', text: 'Folder not found' }], isError: true };
         }
@@ -605,6 +614,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'replace_file': {
         const { id, file_path } = args;
+        if (!isPathSafe(file_path)) return { content: [{ type: 'text', text: 'Invalid file path' }], isError: true };
         const file = db.prepare('SELECT * FROM files WHERE id = ?').get(id);
         if (!file) return { content: [{ type: 'text', text: 'File not found' }], isError: true };
         if (!fs.existsSync(file_path)) return { content: [{ type: 'text', text: 'Source file not found' }], isError: true };

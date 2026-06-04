@@ -295,9 +295,9 @@ body {
 
 /* ===== RETRO THEME (WhaiMusic inspired) ===== */
 [data-theme="retro"] {
-  --bg: #f7d5d5;
-  --bg-deep: #f0c4c4;
-  --bg-warm: #faf1e8;
+  --bg: #f5e6d3;
+  --bg-deep: #efe0d0;
+  --bg-warm: #f8efe4;
   --surface: rgba(0, 0, 0, 0.03);
   --surface-hover: rgba(0, 0, 0, 0.06);
   --border: rgba(0, 0, 0, 0.12);
@@ -370,11 +370,11 @@ body::before {
 }
 
 [data-theme="light"] body::before {
-  --mesh-opacity: 0.02;
+  --mesh-opacity: 0.04;
 }
 
 [data-theme="retro"] body::before {
-  --mesh-opacity: 0.025;
+  --mesh-opacity: 0.02;
 }
 
 /* ===== Scroll-Triggered Reveal System ===== */
@@ -444,3 +444,29 @@ body::before {
 [data-stagger-delay="1"] .reveal-stagger:nth-child(5) { transition-delay: 0.25s; }
 [data-stagger-delay="1"] .reveal-stagger:nth-child(6) { transition-delay: 0.3s; }
 [data-stagger-delay="1"] .reveal-stagger:nth-child(7) { transition-delay: 0.35s; }
+
+/* ===== Reduced Motion (P0 accessibility) ===== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-stagger, .reveal-left, .reveal-right, .reveal-scale {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .loading-ring {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

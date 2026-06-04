@@ -229,7 +229,7 @@
 }
 
 [data-theme="retro"] .noise-bg {
-  opacity: 0.025;
+  opacity: 0.02;
   mix-blend-mode: multiply;
 }
 
