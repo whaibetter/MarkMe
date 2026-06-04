@@ -13,6 +13,12 @@ const DATA_DIR = process.env.DATA_DIR || __dirname;
 
 app.use(cors());
 
+// Security headers
+app.use(function(req, res, next) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
+
 // Robust UTF-8 body parser: auto-detect and convert GBK/GB18030 to UTF-8
 // Replaces express.json() to handle Windows clients that send non-UTF-8 bytes
 app.use(function(req, res, next) {
@@ -87,7 +93,9 @@ const upload = multer({ storage });
 
 // API Routes
 app.get('/api/posts', (req, res) => {
-  const { page = 1, limit = 10, tag, status = 'published' } = req.query;
+  let page = Math.max(1, parseInt(req.query.page) || 1);
+  let limit = Math.max(1, Math.min(parseInt(req.query.limit) || 10, 100));
+  const { tag, status = 'published' } = req.query;
   const offset = (page - 1) * limit;
   let query = 'SELECT * FROM posts WHERE status = ?';
   const params = [status];
@@ -143,7 +151,9 @@ app.get('/api/feeds/sources', (req, res) => {
 });
 
 app.get('/api/feeds', (req, res) => {
-  const { page = 1, limit = 20, tag, source } = req.query;
+  let page = Math.max(1, parseInt(req.query.page) || 1);
+  let limit = Math.max(1, Math.min(parseInt(req.query.limit) || 20, 100));
+  const { tag, source } = req.query;
   const offset = (page - 1) * limit;
   let query = 'SELECT * FROM feeds WHERE status = ?';
   const params = ['published'];

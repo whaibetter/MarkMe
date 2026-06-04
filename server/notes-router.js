@@ -4,7 +4,9 @@ const notes = require('./notes-sync');
 
 router.get('/tree', (req, res) => {
   const dirPath = req.query.path || '';
-  const depth = parseInt(req.query.depth) || 2;
+  let depth = parseInt(req.query.depth);
+  if (isNaN(depth) || depth < 0) depth = 2;
+  if (depth > 8) depth = 8;
 
   if (dirPath.includes('..')) {
     return res.status(400).json({ error: 'Invalid path' });
