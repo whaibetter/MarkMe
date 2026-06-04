@@ -66,6 +66,7 @@
   }
 
   .toc-mobile-panel.open {
+    display: block;
     transform: translateX(0);
   }
 
