@@ -77,6 +77,10 @@
   width: 100%;
 }
 
+.back-link:active {
+  transform: scale(0.98);
+}
+
 /* ===== Theme Toggle ===== */
 .theme-toggle {
   background: none;
@@ -331,6 +335,10 @@
 .pagination button:hover:not(:disabled) {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.pagination button:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .pagination button.active {
