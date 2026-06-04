@@ -262,8 +262,8 @@ body {
   --bg-warm: #12122a;
   --surface: rgba(255, 255, 255, 0.03);
   --surface-hover: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 45, 123, 0.15);
-  --border-hover: rgba(255, 45, 123, 0.3);
+  --border: rgba(255, 45, 123, 0.1);
+  --border-hover: rgba(255, 45, 123, 0.2);
 
   --text: #e0e0ff;
   --text-secondary: #9090cc;

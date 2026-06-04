@@ -58,6 +58,17 @@ export function showPost(app, id) {
       app.innerHTML = html;
       typesetMath(app);
 
+      // External link indicators (report §4.2.3)
+      var contentLinks = app.querySelectorAll('.post-content a');
+      for (var li = 0; li < contentLinks.length; li++) {
+        var a = contentLinks[li];
+        if (a.hostname && a.hostname !== window.location.hostname) {
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.classList.add('external-link');
+        }
+      }
+
       // Generate TOC
       var headings = app.querySelectorAll('.post-content h2, .post-content h3');
       var tocItems = [];
@@ -85,6 +96,29 @@ export function showPost(app, id) {
         sidebar.className = 'toc-sidebar';
         sidebar.innerHTML = buildTocHtml(tocItems);
         layout.appendChild(sidebar);
+
+        // Inline TOC toggle for 900-1200px range (report §4.2.1)
+        var toggleBtn = document.createElement('button');
+        toggleBtn.className = 'toc-inline-toggle';
+        toggleBtn.innerHTML = '&#9776; Contents';
+        toggleBtn.addEventListener('click', function() {
+          sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+          sidebar.style.position = 'fixed';
+          sidebar.style.right = '32px';
+          sidebar.style.top = '72px';
+          sidebar.style.zIndex = '100';
+          sidebar.style.background = 'var(--panel-bg)';
+          sidebar.style.backdropFilter = 'blur(var(--blur-strong))';
+          sidebar.style.border = '1px solid var(--border)';
+          sidebar.style.borderRadius = 'var(--radius-sm)';
+          sidebar.style.padding = '16px';
+          sidebar.style.boxShadow = 'var(--shadow-md)';
+        });
+        var postDetail = layout.querySelector('.post-detail');
+        if (postDetail) {
+          postDetail.insertBefore(toggleBtn, postDetail.firstChild);
+        }
+
         app.appendChild(layout);
         createMobileToc(tocItems);
         setupScrollSpy(tocItems);
