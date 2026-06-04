@@ -140,6 +140,12 @@
     padding-bottom: 16px;
   }
 
+  .header.scrolled .container {
+    height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
   .header-left {
     gap: 10px;
   }

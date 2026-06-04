@@ -14,13 +14,16 @@
   flex: 1;
   min-width: 0;
   width: 100%;
-  padding: var(--space-14) 0;
+  padding-top: calc(72px + var(--space-14));
+  padding-bottom: var(--space-14);
 }
 
 /* ===== Header ===== */
 .header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   background: var(--header-bg);
   backdrop-filter: blur(var(--blur-strong)) saturate(1.5);
@@ -39,6 +42,12 @@
   justify-content: space-between;
   align-items: center;
   height: 72px;
+  transition: height 0.3s var(--ease-out);
+}
+
+/* Shrink header on scroll */
+.header.scrolled .container {
+  height: 52px;
 }
 
 .header-left {
@@ -54,8 +63,12 @@
   color: var(--text-bright);
   text-decoration: none;
   letter-spacing: -0.02em;
-  transition: all var(--transition-fast);
+  transition: all 0.3s var(--ease-out);
   position: relative;
+}
+
+.header.scrolled .logo a {
+  font-size: var(--text-xl);
 }
 
 .logo a::after {

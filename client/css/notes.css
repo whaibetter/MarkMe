@@ -16,6 +16,7 @@
   padding-right: var(--space-4);
   align-self: start;
   width: 320px;
+  transition: top 0.3s var(--ease-out);
 }
 
 .notes-sidebar::-webkit-scrollbar {

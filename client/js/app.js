@@ -48,7 +48,6 @@ if (window.matchMedia) {
 // Header scroll effect
 var header = document.querySelector('.header');
 if (header) {
-  var lastScroll = 0;
   window.addEventListener('scroll', function() {
     var scrollY = window.scrollY;
     if (scrollY > 20) {
@@ -56,7 +55,12 @@ if (header) {
     } else {
       header.classList.remove('scrolled');
     }
-    lastScroll = scrollY;
+    // Sync sidebar top positions with header state
+    var tocSidebars = document.querySelectorAll('.toc-sidebar, .notes-sidebar, .notes-toc-layout .notes-toc-sidebar');
+    var top = header.classList.contains('scrolled') ? '68px' : '96px';
+    for (var i = 0; i < tocSidebars.length; i++) {
+      tocSidebars[i].style.top = top;
+    }
   }, { passive: true });
 }
 

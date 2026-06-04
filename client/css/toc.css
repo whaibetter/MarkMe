@@ -7,6 +7,8 @@
   max-height: calc(100vh - 120px);
   overflow-y: auto;
   padding: 0;
+  align-self: flex-start;
+  transition: top 0.3s var(--ease-out);
 }
 
 .toc-sidebar::-webkit-scrollbar {
