@@ -69,6 +69,12 @@ export function showPost(app, id) {
         }
       }
 
+      // Image lazy loading (report §5.1)
+      var contentImgs = app.querySelectorAll('.post-content img');
+      for (var img_i = 0; img_i < contentImgs.length; img_i++) {
+        contentImgs[img_i].loading = 'lazy';
+      }
+
       // Generate TOC
       var headings = app.querySelectorAll('.post-content h2, .post-content h3');
       var tocItems = [];

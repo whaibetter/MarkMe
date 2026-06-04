@@ -181,6 +181,9 @@
   margin: 2em 0;
   width: 100%;
   border: 1px solid var(--border);
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .post-content th,
