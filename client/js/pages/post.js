@@ -1,7 +1,7 @@
 // ===== Post Detail Page =====
 
 import { fetchJSON, escapeHtml, formatDate, renderMd, typesetMath, calcReadingTime, formatSize } from '../utils.js';
-import { buildTocHtml, createMobileToc, setupScrollSpy } from '../toc.js';
+import { buildTocHtml, createMobileToc, setupScrollSpy, bindTocClicks } from '../toc.js';
 import { setupReadingProgress } from '../reading-progress.js';
 import { renderError } from '../components/error.js';
 
@@ -88,6 +88,7 @@ export function showPost(app, id) {
         app.appendChild(layout);
         createMobileToc(tocItems);
         setupScrollSpy(tocItems);
+        bindTocClicks(layout);
       }
 
       setupReadingProgress();

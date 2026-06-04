@@ -9,11 +9,33 @@ export function buildTocHtml(items) {
   html += '<ul class="toc-list">';
   for (var i = 0; i < items.length; i++) {
     var cls = items[i].level === 'h3' ? 'toc-link toc-h3' : 'toc-link';
-    html += '<li><a class="' + cls + '" href="#' + items[i].id + '">' +
+    html += '<li><a class="' + cls + '" href="#' + items[i].id + '" data-toc-link>' +
             escapeHtml(items[i].text) + '</a></li>';
   }
   html += '</ul>';
   return html;
+}
+
+export function bindTocClicks(container) {
+  var links = (container || document).querySelectorAll('[data-toc-link]');
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', function(e) {
+      e.preventDefault();
+      var href = this.getAttribute('href');
+      var id = href.replace('#', '');
+      var target = document.getElementById(id);
+      if (target) {
+        var headerHeight = document.querySelector('.header').offsetHeight || 72;
+        var top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+      // Close mobile TOC panel if open
+      var overlay = document.querySelector('.toc-overlay.open');
+      var panel = document.querySelector('.toc-mobile-panel.open');
+      if (overlay) overlay.classList.remove('open');
+      if (panel) panel.classList.remove('open');
+    });
+  }
 }
 
 export function createMobileToc(items) {

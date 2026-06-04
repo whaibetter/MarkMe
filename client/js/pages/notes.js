@@ -1,7 +1,7 @@
 // ===== Notes Page =====
 
 import { renderMd, fetchJSON } from '../utils.js';
-import { buildTocHtml, createMobileToc, setupScrollSpy, removeMobileToc, disconnectTocObserver } from '../toc.js';
+import { buildTocHtml, createMobileToc, setupScrollSpy, removeMobileToc, disconnectTocObserver, bindTocClicks } from '../toc.js';
 
 var currentPath = '';
 
@@ -322,6 +322,7 @@ function loadFile(filePath) {
             tocLayout.appendChild(tocSidebar);
             createMobileToc(tocItems);
             setupScrollSpy(tocItems);
+            bindTocClicks(tocLayout);
           }
         }
       }
