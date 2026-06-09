@@ -106,15 +106,14 @@ export function openTextModal(title, textContent) {
 }
 
 export function openFeedModal(title, content, format) {
-  switch (format) {
-    case 'html':
-      openHtmlModal(title, content);
-      break;
-    case 'text':
-      openTextModal(title, content);
-      break;
-    default:
-      openMarkdownModal(title, content);
+  // Auto-detect HTML content even when format is 'markdown'
+  var isHtml = format === 'html' || (content && /^\s*<[a-z][\s\S]*>/i.test(content));
+  if (isHtml) {
+    openHtmlModal(title, content);
+  } else if (format === 'text') {
+    openTextModal(title, content);
+  } else {
+    openMarkdownModal(title, content);
   }
 }
 

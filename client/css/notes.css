@@ -1,21 +1,21 @@
 /* ===== Notes Page ===== */
 
 .notes-layout {
-  display: block;
-  position: relative;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-10);
+  align-items: start;
 }
 
-/* Sidebar - fixed on desktop */
+/* Sidebar - sticky on desktop */
 .notes-sidebar {
-  position: fixed;
-  left: max(32px, calc((100vw - 820px) / 2));
+  position: sticky;
   top: 90px;
   max-height: calc(100vh - 110px);
   overflow-y: auto;
   padding-right: var(--space-4);
   width: 320px;
   transition: top 0.3s var(--ease-out);
-  z-index: 50;
 }
 
 .notes-sidebar::-webkit-scrollbar {
@@ -108,11 +108,9 @@
 .notes-content {
   min-width: 0;
   overflow-anchor: none;
-  margin-left: 360px;
-  margin-right: 0;
 }
 
-/* When TOC is visible, add right margin */
+/* TOC layout */
 .notes-toc-layout {
   display: flex;
   gap: var(--space-8);
@@ -125,15 +123,13 @@
 }
 
 .notes-toc-layout .notes-toc-sidebar {
-  position: fixed;
-  right: max(32px, calc((100vw - 820px) / 2));
+  position: sticky;
   top: 90px;
   max-height: calc(100vh - 110px);
   overflow-y: auto;
   width: 200px;
   flex-shrink: 0;
   transition: top 0.3s var(--ease-out);
-  z-index: 50;
 }
 
 .notes-empty {
@@ -347,12 +343,9 @@
 
 /* Tablet: narrower sidebar */
 @media (max-width: 1024px) {
-  .notes-sidebar {
-    width: 260px;
-  }
-
-  .notes-content {
-    margin-left: 300px;
+  .notes-layout {
+    grid-template-columns: 260px 1fr;
+    gap: var(--space-6);
   }
 }
 
@@ -362,8 +355,9 @@
     display: none;
   }
 
-  .notes-content {
-    margin-left: 0;
+  .notes-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 
   .notes-sidebar {
