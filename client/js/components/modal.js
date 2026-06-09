@@ -1,8 +1,9 @@
 // ===== Modal Utility =====
 
 import { renderMd } from '../utils.js';
+import { addTranslateButton } from '../translate.js';
 
-export function openModal(title, contentHtml) {
+export function openModal(title, contentHtml, enableTranslate) {
   closeModal();
 
   var modal = document.createElement('div');
@@ -21,6 +22,14 @@ export function openModal(title, contentHtml) {
 
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
+
+  // Add translate button to modal content
+  if (enableTranslate !== false) {
+    var previewContent = modal.querySelector('.markdown-preview');
+    if (previewContent) {
+      addTranslateButton(previewContent, 'feed');
+    }
+  }
 
   modal.querySelector('.preview-overlay').addEventListener('click', closeModal);
   modal.querySelector('.preview-close').addEventListener('click', closeModal);

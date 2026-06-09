@@ -3,6 +3,7 @@
 import { fetchJSON, escapeHtml, formatDate, renderMd, typesetMath, calcReadingTime, formatSize } from '../utils.js';
 import { buildTocHtml, createMobileToc, setupScrollSpy, bindTocClicks } from '../toc.js';
 import { setupReadingProgress } from '../reading-progress.js';
+import { addTranslateButton } from '../translate.js';
 import { renderError } from '../components/error.js';
 
 var API = '/api';
@@ -73,6 +74,12 @@ export function showPost(app, id) {
       var contentImgs = app.querySelectorAll('.post-content img');
       for (var img_i = 0; img_i < contentImgs.length; img_i++) {
         contentImgs[img_i].loading = 'lazy';
+      }
+
+      // One-click translate button
+      var postContent = app.querySelector('.post-content');
+      if (postContent) {
+        addTranslateButton(postContent, 'post', data.id);
       }
 
       // Generate TOC

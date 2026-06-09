@@ -5,6 +5,7 @@ const multer = require('multer');
 const fs = require('fs');
 const db = require('./db');
 const config = require('./config');
+const { translate, LANGS } = require('./translate');
 
 const app = express();
 const PORT = config.PORT;
@@ -322,6 +323,22 @@ app.get('/api/profile', async (req, res) => {
     }
     res.status(500).json({ error: err.message });
   }
+});
+
+// Translation API
+app.get('/api/translate', async (req, res) => {
+  const { text, to = 'zh', from } = req.query;
+  if (!text) return res.status(400).json({ error: 'text parameter required' });
+  try {
+    const result = await translate(text, to, from);
+    res.json(result);
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
+});
+
+app.get('/api/translate/langs', (req, res) => {
+  res.json(LANGS);
 });
 
 // Catch-all to serve frontend
