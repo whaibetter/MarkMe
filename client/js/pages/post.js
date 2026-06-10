@@ -79,7 +79,7 @@ export function showPost(app, id) {
       // One-click translate button
       var postContent = app.querySelector('.post-content');
       if (postContent) {
-        addTranslateButton(postContent, 'post', data.id);
+        addTranslateButton(postContent, 'post', post.id);
       }
 
       // Generate TOC
